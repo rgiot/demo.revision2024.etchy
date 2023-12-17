@@ -1,4 +1,4 @@
-	org 0x4000
+	org 0x2000
 	run $
 
 BINARY_START
@@ -6,7 +6,9 @@ BINARY_START
 	di
 		ld hl, 0xc9fb
 		ld (0x38), hl
+		defs 10
 	ei
+	ld sp, $
 
 	call engine.init
 	ld hl, test_picture : call engine.prepare_new_picture
@@ -59,4 +61,4 @@ BINARY_END
 	print "UNCRUNHED VERSION FROM ", {hex}BINARY_START, " TO ", {hex}BINARY_END, " FOR ", (BINARY_END-BINARY_START)/1024, " Kbi"
 
 
-	assert $< 0x8000, "0x8000 area is supposed to contains uncrunched data"
+	assert $< 0x4000, "0x8000 area is supposed to contains uncrunched data"

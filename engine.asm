@@ -13,7 +13,7 @@ SCREEN_CRTC_ADDRESS equ 0x3000
 	assert SCREEN_VERTICAL_RESOLUTION < 256
 	assert SCREEN_HORIZONTAL_SOLUTION < 256
 
-NB_DRAWN_PER_FRAME equ 10
+NB_DRAWN_PER_FRAME equ 6
 TRACE_SIZE equ 3
 
 PEN0 equ 0x40
@@ -72,24 +72,26 @@ cover_previous_trace
        ld a, (data.x_byte_delta) : push af
        ld a, (data.x_pixel_pos) : push af
 
-/*
        ld hl, data.trace_buffer
 .buffer_pointer equ $-2
 
        ld b, TRACE_SIZE
 .loop
        ld a, (hl) : cp 0xff : jr z, .finished
-       push hl
+
 .erase_points_variables
+		ld a, (hl) : ld (data.y), a : inc l
+		ld a, (hl) : ld (data.x_byte_delta), a : inc l
+		ld a, (hl) : ld (data.x_pixel_pos), a : inc l
 
-       ld a, (hl) : ld (data.y), a : inc l
-       ld a, (hl) : ld (data.x_byte_delta), a : inc l
-       ld a, (hl) : ld (data.x_pixel_pos), a : inc l
+		push hl
+			call plot_current_point
+		pop hl
 
-       pop hl
        djnz .loop
-.finished ld (.buffer_pointer), hl
-*/
+
+.finished 
+	ld (.buffer_pointer), hl
 
 .restore_point_variables
        pop af : ld (data.x_pixel_pos), a
@@ -110,7 +112,6 @@ store_current_point_in_trace
 
        ld (.buffer_pointer), hl
 
-	   breakpoint
        ret
 
 
@@ -270,7 +271,8 @@ compute_next_point
 		jr .handle_exit_common
 
 ;;
-; plot the current point (one pixel only) with ink 1
+; plot the current point (one pixel only) with selected ink
+; Modified : HL, DE
 plot_current_point
 ; get line address
 	ld hl, (data.y)

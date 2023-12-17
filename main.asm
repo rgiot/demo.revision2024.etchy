@@ -50,7 +50,13 @@ data
 .pixel1_pen3 db 0b01000100
 .pixel2_pen3 db 0b00100010
 .pixel3_pen3 db 0b00010001
+	align 256
+.trace_buffer
+	defs 256, 0xff
 BINARY_END
 
 
 	print "UNCRUNHED VERSION FROM ", {hex}BINARY_START, " TO ", {hex}BINARY_END, " FOR ", (BINARY_END-BINARY_START)/1024, " Kbi"
+
+
+	assert $< 0x8000, "0x8000 area is supposed to contains uncrunched data"

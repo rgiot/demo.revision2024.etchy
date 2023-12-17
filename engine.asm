@@ -43,6 +43,8 @@ start
 	out (c), c: out (c), e
 
 	ld a, high(data.pixel_lut_pen3) : ld (plot_current_point.lut_for_pen), a
+	call cover_previous_trace
+
 	ld b, NB_DRAWN_PER_FRAME - TRACE_SIZE
 .pixels_loop1
 	push bc
@@ -57,10 +59,59 @@ start
 	push bc
 		call compute_next_point
 		call plot_current_point
+		call store_current_point_in_trace
 	pop bc
 	djnz .pixels_loop2
 
 	jp .frame_loop
+
+
+cover_previous_trace
+.save_point_variables
+       ld a, (data.y) : push af
+       ld a, (data.x_byte_delta) : push af
+       ld a, (data.x_pixel_pos) : push af
+
+/*
+       ld hl, data.trace_buffer
+.buffer_pointer equ $-2
+
+       ld b, TRACE_SIZE
+.loop
+       ld a, (hl) : cp 0xff : jr z, .finished
+       push hl
+.erase_points_variables
+
+       ld a, (hl) : ld (data.y), a : inc l
+       ld a, (hl) : ld (data.x_byte_delta), a : inc l
+       ld a, (hl) : ld (data.x_pixel_pos), a : inc l
+
+       pop hl
+       djnz .loop
+.finished ld (.buffer_pointer), hl
+*/
+
+.restore_point_variables
+       pop af : ld (data.x_pixel_pos), a
+       pop af : ld (data.x_byte_delta), a
+       pop af : ld (data.y), a
+
+       ret
+
+;;
+; Store the current point information in the trace buffer
+store_current_point_in_trace
+		ld hl, data.trace_buffer
+.buffer_pointer equ $-2
+
+       ld a, (data.y) : ld (hl), a : inc l
+       ld a, (data.x_byte_delta) : ld (hl), a : inc l
+       ld a, (data.x_pixel_pos) : ld (hl), a : inc l
+
+       ld (.buffer_pointer), hl
+
+	   breakpoint
+       ret
 
 
 ;;

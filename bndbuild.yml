@@ -1,0 +1,17 @@
+- tgt: sna
+  dep: etch_a_sketch.sna
+
+- tgt: m4
+  dep: sna
+  cmd: xfer 192.168.1.27 -y etch_a_sketch.sna
+
+- tgt: etch_a_sketch.sna
+  dep: "*.asm"
+  cmd: basm --sna main.asm -o etch_a_sketch.sna --lst etch_a_sketch.lst --sym etch_a_sketch.sym
+
+- tgt: clean
+  cmd: -rm *.sym *.lst
+
+- tgt: distclean
+  dep: clean
+  cmd: -rm etch_a_sketch.sna

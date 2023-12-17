@@ -1,0 +1,255 @@
+;;
+; Etch a sketch engine
+;
+
+SCREEN_VERTICAL_RESOLUTION equ 25*8
+SCREEN_HORIZONTAL_SOLUTION equ 40*4
+
+SCREEN_MEMORY_ADDRESS equ 0xc000
+SCREEN_CRTC_ADDRESS equ 0x3000
+
+	print "EFFECT RESOLUTION IS ",  SCREEN_HORIZONTAL_SOLUTION, "x", SCREEN_VERTICAL_RESOLUTION
+
+	assert SCREEN_VERTICAL_RESOLUTION < 256
+	assert SCREEN_HORIZONTAL_SOLUTION < 256
+
+module engine
+
+start
+.loop
+	ld b, 0xf5
+.vsync_loop
+	in a, (c)
+	rra : jr nc, .vsync_loop
+
+.set_color
+	ld bc, 0x7f00 : ld hl, 0x404b : ld de, 0x5445
+	out (c), c: out (c), h : inc c
+	out (c), c: out (c), l : inc c
+	out (c), c: out (c), d : inc c
+	out (c), c: out (c), e
+
+
+	call compute_next_point
+	call plot_current_point
+
+	jp .loop
+
+
+;;
+; setp up the various variables to be able to start a new pic
+; Input: 
+;  -HL: address
+prepare_new_picture
+	ld (compute_next_point.picture_address), hl
+	ld a, 1
+	ld (compute_next_point.first_flag), a
+	ld (compute_next_point.current_repetition_counter), a
+	ret
+
+
+;;
+; cmpute the coordinate of the next point
+compute_next_point
+	ld hl, 0xdead
+.picture_address equ $-2
+
+	ld a, 1 ; 1 for true, 0 for false
+.first_flag equ $-1
+	or a : jr z, .not_first
+
+	; This is the first command, so we read the start position
+.is_first
+	; reset first flag
+	xor a : ld (.first_flag), a 
+
+	; get pixel horizontal position
+	ld a, (hl) : and 0b11 : ld (data.x_pixel_pos), a
+
+	; get screen horizontal byte delta
+	ld a, (hl) : srl a : srl a : ld (data.x_byte_delta), a
+
+	; get vertical position
+	inc hl 
+	ld a, (hl) : ld (data.y), a
+
+	; save buffer pointer
+	inc hl
+	ld (.picture_address), hl
+	ret
+
+
+	; This is not the first command, so either repreat the previous action, either read the next command
+.not_first
+
+	ld a, 1 ; we want to be 
+.current_repetition_counter equ $-1
+	dec a
+	or a : jr nz, .continue_same_movement
+
+.read_next_movement
+	ld a, (hl)
+	or a : jp z, .finished
+
+	; move in the data table
+	inc hl : ld (.picture_address), hl
+
+	; store the movement
+	ld b, a
+	if SELECTED_DATA_ENCODING == DATA_ENCODING1
+		and 0b1111
+	else if SELECTED_DATA_ENCODING == DATA_ENCODING2
+		and 0b111
+	else
+		fail "unhandled case"
+	endif
+	ld (.movement), a
+
+	; store the amount
+	ld a, b
+	if SELECTED_DATA_ENCODING == DATA_ENCODING1
+		srl a : srl a : srl a : srl a
+	else if SELECTED_DATA_ENCODING == DATA_ENCODING2
+		srl a: srl a: srl a
+	else
+		fail "unhandled case"
+	endif
+	
+.continue_same_movement
+	ld (.current_repetition_counter), a ; store the counter (either after decrement or because it is a new one)
+
+
+	ld a, 0
+.movement equ $-1
+	if SELECTED_DATA_ENCODING == DATA_ENCODING1
+		bit 0, a : call nz, .handle_up
+		bit 1, a : call nz, .handle_down
+		bit 2, a : call nz, .handle_left
+		bit 3, a : call nz, .handle_right
+	else if SELECTED_DATA_ENCODING == DATA_ENCODING2
+		cp FLAG_UP : call z, .handle_up
+		cp FLAG_UP_LEFT : call  z, .handle_up
+		cp FLAG_UP_RIGHT : call z, .handle_up
+		cp FLAG_DOWN : call z, .handle_down
+		cp FLAG_DOWN_LEFT : call z, .handle_down
+		cp FLAG_DOWN_RIGHT : call z, .handle_down
+		cp FLAG_LEFT : call z, .handle_left
+		cp FLAG_UP_LEFT : call z, .handle_left
+		cp FLAG_DOWN_LEFT : call z, .handle_left
+		cp FLAG_RIGHT : call z, .handle_right		
+		cp FLAG_UP_RIGHT : call z, .handle_right		
+		cp FLAG_DOWN_RIGHT : call z, .handle_right		
+	else
+		fail "unhandled case"
+	endif
+.finished
+	ret
+
+.handle_up
+	exa
+		ld a, (data.y) ; get y position
+		or a : jr z, .handle_exit_common ; leave if impossible to decrease
+		dec a : ld (data.y), a ; store updated position
+.handle_exit_common
+	exa
+	ret
+
+.handle_down
+	exa
+		ld a, (data.y) ; get y position
+		cp MAX_POS_Y : jr z, .handle_exit_common
+		inc a : ld (data.y), a
+		jr .handle_exit_common
+
+.handle_left
+	exa
+		ld a, (data.x_pixel_pos)
+		or a : jr z, .handle_left_previous_byte
+.handle_left_previous_pixel
+		dec a : ld (data.x_pixel_pos), a
+		jr .handle_exit_common
+.handle_left_previous_byte
+		ld a, (data.x_byte_delta)
+		or a : jr z, .handle_exit_common ; no change can be done
+.handle_left_previous_byte_possible
+		dec a : ld (data.x_byte_delta), a
+		ld a, 3 : ld (data.x_pixel_pos), a
+		jr .handle_exit_common
+
+.handle_right
+	exa
+		ld a, (data.x_pixel_pos)
+		cp 3 : jr z, .handle_right_next_byte
+.handle_right_next_pixel
+		inc a : ld (data.x_pixel_pos), a
+		jr .handle_exit_common
+.handle_right_next_byte
+		ld a, (data.x_byte_delta)
+		CP MAX_POS_X_BYTE_RESOLUTION : jr z, .handle_exit_common ; no change can be done
+.handle_right_next_byte_possible
+		inc a : ld (data.x_byte_delta), a
+		xor a : ld (data.x_pixel_pos), a
+		jr .handle_exit_common
+
+;;
+; plot the current point (one pixel only) with ink 1
+plot_current_point
+; get line address
+	ld hl, (data.y)
+	ld e, (hl) : inc h : ld d, (hl)
+; get column delta
+	ld hl, (data.x_byte_delta)
+	add hl, de ; <= HL = screen address at the right byte
+; get pixel position
+	ld a, (data.x_pixel_pos) : ld e, a
+	ld d, high(data.pixel_lut_pen1)
+	ld a, (de) ; get pixel
+	or (hl) : ld (hl), a ; merge it
+	ret
+
+
+;;
+; Initialize the various tables and variables needed for the project
+init
+.init_screen_table
+	ld de, SCREEN_MEMORY_ADDRESS
+	ld hl, data.screen_addresses
+	ld b, 256
+.init_screen_table_loop
+		push bc
+			ld (hl), e : inc h : ld (hl), d : dec h : inc l
+			ex de, hl : call bc26 : ex de, hl
+		pop bc
+	djnz .init_screen_table_loop
+
+	; TODO remove if already done by system
+.clear_screen
+	ld hl, SCREEN_MEMORY_ADDRESS : ld de, SCREEN_MEMORY_ADDRESS+1
+	ld bc, 0x4000-1
+	ld (hl), 0
+	ldir
+
+.select_screen
+	ld hl, SCREEN_CRTC_ADDRESS
+	ld bc, 0xbc00 + 12
+	out (c), c : inc b: out (c), h : dec b : inc c
+	out (c), c : inc b: out (c), l
+
+	ret
+
+
+;;
+; BC26 for a standard screen.
+; TOBE adapted when using a fullscreen stuff
+; https://www.cpcwiki.eu/index.php/Programming:Next_/_previous_line_calculation
+bc26
+	ld a,8 
+	add h 
+	ld h,a 
+	ret nc
+	ld bc,#c050
+	add hl,bc 
+	ret
+
+endmodule
+

@@ -44,7 +44,12 @@ data
 .pixel1_pen1 db 0b01000000
 .pixel2_pen1 db 0b00100000
 .pixel3_pen1 db 0b00010000
-
+	align 256
+.pixel_lut_pen3
+.pixel0_pen3 db 0b10001000
+.pixel1_pen3 db 0b01000100
+.pixel2_pen3 db 0b00100010
+.pixel3_pen3 db 0b00010001
 BINARY_END
 
 

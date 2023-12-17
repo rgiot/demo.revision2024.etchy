@@ -13,27 +13,54 @@ SCREEN_CRTC_ADDRESS equ 0x3000
 	assert SCREEN_VERTICAL_RESOLUTION < 256
 	assert SCREEN_HORIZONTAL_SOLUTION < 256
 
+NB_DRAWN_PER_FRAME equ 10
+TRACE_SIZE equ 3
+
+PEN0 equ 0x40
+PEN1 equ 0x4b
+PEN2 equ 0x45
+PEN3 equ 0x54
+
+       assert TRACE_SIZE <= NB_DRAWN_PER_FRAME
+       assert TRACE_SIZE > 0
+
+
+
 module engine
 
 start
-.loop
+.frame_loop
 	ld b, 0xf5
 .vsync_loop
 	in a, (c)
 	rra : jr nc, .vsync_loop
 
 .set_color
-	ld bc, 0x7f00 : ld hl, 0x404b : ld de, 0x5445
+	ld bc, 0x7f00 : ld hl, PEN0*256 + PEN1 : ld de, PEN2*256+PEN3
 	out (c), c: out (c), h : inc c
 	out (c), c: out (c), l : inc c
 	out (c), c: out (c), d : inc c
 	out (c), c: out (c), e
 
+	ld a, high(data.pixel_lut_pen3) : ld (plot_current_point.lut_for_pen), a
+	ld b, NB_DRAWN_PER_FRAME - TRACE_SIZE
+.pixels_loop1
+	push bc
+		call compute_next_point
+		call plot_current_point
+	pop bc
+	djnz .pixels_loop1
 
-	call compute_next_point
-	call plot_current_point
+	ld a, high(data.pixel_lut_pen1) : ld (plot_current_point.lut_for_pen), a
+	ld b, TRACE_SIZE
+.pixels_loop2
+	push bc
+		call compute_next_point
+		call plot_current_point
+	pop bc
+	djnz .pixels_loop2
 
-	jp .loop
+	jp .frame_loop
 
 
 ;;
@@ -203,6 +230,7 @@ plot_current_point
 ; get pixel position
 	ld a, (data.x_pixel_pos) : ld e, a
 	ld d, high(data.pixel_lut_pen1)
+.lut_for_pen equ $-1
 	ld a, (de) ; get pixel
 	or (hl) : ld (hl), a ; merge it
 	ret

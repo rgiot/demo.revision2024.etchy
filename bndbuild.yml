@@ -5,13 +5,21 @@
   dep: sna
   cmd: xfer 192.168.1.27 -y etch_a_sketch.sna
 
-- tgt: etch_a_sketch.sna
+- tgt: etch_a_sketch.sna etch.o
   dep: "*.asm"
   cmd: basm --sna main.asm -o etch_a_sketch.sna --lst etch_a_sketch.lst --sym etch_a_sketch.sym
+
+- tgt: etch.shrink
+  dep: etch.o
+  cmd: "extern ./Shrinkler4.6NoParityContext/linux64/Shrinkler -d -9 ./etch.o etch.shrink"
+
+- tgt: etch4k.sna
+  dep: etch4k.asm etch.shrink etch.o
+  cmd: basm --sna etch4k.asm -o etch4k.sna
 
 - tgt: clean
   cmd: -rm *.sym *.lst
 
 - tgt: distclean
   dep: clean
-  cmd: -rm etch_a_sketch.sna
+  cmd: -rm etch_a_sketch.sna etch4k.sna

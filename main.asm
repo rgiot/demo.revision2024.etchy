@@ -1,4 +1,4 @@
-	org 0x2000
+	org 0x4000
 	run $
 
 BINARY_START
@@ -61,4 +61,9 @@ BINARY_END
 	print "UNCRUNHED VERSION FROM ", {hex}BINARY_START, " TO ", {hex}BINARY_END, " FOR ", (BINARY_END-BINARY_START)/1024, " Kbi"
 
 
-	assert $< 0x4000, "0x8000 area is supposed to contains uncrunched data"
+	assert $< 0x8000, "0x8000 area is supposed to contains uncrunched data"
+
+
+
+
+	SAVE "etch.o", BINARY_START, BINARY_END-BINARY_START

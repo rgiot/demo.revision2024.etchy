@@ -272,8 +272,9 @@ compute_next_point
 
 ;;
 ; plot the current point (one pixel only) with selected ink
-; Modified : HL, DE
+; Modified : HL, DE, B
 plot_current_point
+push bc
 ; get line address
 	ld hl, (data.y)
 	ld e, (hl) : inc h : ld d, (hl)
@@ -281,11 +282,17 @@ plot_current_point
 	ld hl, (data.x_byte_delta)
 	add hl, de ; <= HL = screen address at the right byte
 ; get pixel position
-	ld a, (data.x_pixel_pos) : ld e, a
+	ld a, (data.x_pixel_pos)
+; mask the current byte to keep only the other pielx
+	ld d, high(data.mask) 
+	ld e, a
+	ld a, (de) : and (hl) : ld (hl), a
+; inject the new pixel
 	ld d, high(data.pixel_lut_pen1)
 .lut_for_pen equ $-1
-	ld a, (de) ; get pixel
+	ld a, (de) ; get pixel value
 	or (hl) : ld (hl), a ; merge it
+	pop bc
 	ret
 
 

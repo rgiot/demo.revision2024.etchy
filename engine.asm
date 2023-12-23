@@ -45,23 +45,29 @@ start
 	ld a, high(data.pixel_lut_pen3) : ld (plot_current_point.lut_for_pen), a
 	call cover_previous_trace
 
-	ld b, NB_DRAWN_PER_FRAME - TRACE_SIZE
-.pixels_loop1
-	push bc
+	; using repeat reduce binary of 40 bytes !
+
+	;ld b, NB_DRAWN_PER_FRAME - TRACE_SIZE
+	repeat NB_DRAWN_PER_FRAME - TRACE_SIZE
+;.pixels_loop1
+;	push bc
 		call compute_next_point
 		call plot_current_point
-	pop bc
-	djnz .pixels_loop1
+;	pop bc
+;	djnz .pixels_loop1
+	endr
 
 	ld a, high(data.pixel_lut_pen1) : ld (plot_current_point.lut_for_pen), a
-	ld b, TRACE_SIZE
-.pixels_loop2
-	push bc
+	;ld b, TRACE_SIZE
+	repeat TRACE_SIZE
+;.pixels_loop2
+;	push bc
 		call compute_next_point
 		call plot_current_point
 		call store_current_point_in_trace
-	pop bc
-	djnz .pixels_loop2
+;	pop bc
+;	djnz .pixels_loop2
+	endr
 
 	jp .frame_loop
 

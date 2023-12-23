@@ -1,5 +1,6 @@
-use std::{fs::File, io::BufWriter};
+use std::{fs::File, io::BufWriter, collections::HashMap};
 
+use clap::ArgAction;
 use image::{self, ColorType, GenericImageView, Rgb, RgbImage};
 use petgraph::{self, stable_graph::{NodeIndex, IndexType}, data::Build, Graph, Undirected, algo::min_spanning_tree, graph::Node};
 
@@ -7,12 +8,12 @@ const CPC_WIDTH: usize = 320;
 const CPC_HEIGHT: usize = 200;
 
 
-pub fn convert(ifname: &str, ofname: &str) {
+pub fn convert(ifname: &str, ofname: &str, exact: bool) {
     let grid = get_grid(ifname);
     let g = build_graph(&grid);
     println!("{:?}", (g.node_count(),g.edge_count()));
 
-    let path = compute_path(&g);
+    let path = compute_path(&g, exact);
     generate_code(ofname, &g, &path);
 }
 
@@ -50,7 +51,7 @@ fn generate_code(ofname: &str, g: &Graph<(usize, usize), (), Undirected>, path: 
 }
 
 /// Compute the path. 
-fn compute_path(g: &Graph<(usize, usize),(), Undirected>) -> Vec<NodeIndex> {
+fn compute_path(g: &Graph<(usize, usize),(), Undirected>, exact: bool) -> Vec<NodeIndex> {
     // 1st step consists in computing the distance between each node (the path would be great too, but we'll recompute it later)
     use graphalgs::shortest_path::seidel;
     dbg!("Start to compute distance matrix");
@@ -66,14 +67,25 @@ fn compute_path(g: &Graph<(usize, usize),(), Undirected>) -> Vec<NodeIndex> {
             adj.set(j, i, distances[i][j] as f64);
         }
     }
-    let tsp_solution = walky::solvers::approximate::christofides::christofides::<{walky::computation_mode::PAR_COMPUTATION}>(&adj);
+    let tsp_solution = if exact {
+        walky::solvers::exact::sixth_improved_solver(&adj)
+    } else {
+        walky::solvers::approximate::christofides::christofides::<{walky::computation_mode::PAR_COMPUTATION}>(&adj)
+    };
     dbg!("TSP cost", tsp_solution.0);
+
+
+    // With tsp we go back to the beginning but in fact we do not care
+    // so here we remove the uneeded steps
+    let tsp_full = tsp_solution.1;
+    let mut count_paths = tsp_full.iter();
+    //HashMap::<NodeIndex, usize>;
 
     // 3rd really build the appropriate order
     let mut real_solution = Vec::<NodeIndex>::new();
     let nodes : Vec<_> = g.node_indices().collect();
     //dbg!(&nodes); // need to check ordering
-    for tsp_idx in 0..(tsp_solution.1.len()-1) {
+    for tsp_idx in 0..(tsp_full.len()-1) {
         let curr_start = nodes[tsp_solution.1[tsp_idx+0]];
         let curr_stop = nodes[tsp_solution.1[tsp_idx+1]];
 
@@ -244,11 +256,14 @@ fn main() {
         .about("Generate data files for EtchASketch for CPC")
         .author("Krusty/Benediction")
         .arg(clap::Arg::new("INPUT").help("Input file to convert (bitmap format)").required(true))
-        .arg(clap::Arg::new("OUTPUT").help("Output file to contains the asm code").required(true));
+        .arg(clap::Arg::new("OUTPUT").help("Output file to contains the asm code").required(true))
+        .arg(clap::Arg::new("EXACT").help("Request an exact solution of the TSP. We don't care of global warming here. Anyway it will fail").action(ArgAction::SetTrue).long("exact"))
+        ;
     let args = app.get_matches();
 
     convert(
         args.get_one::<String>("INPUT").unwrap().as_str(),
         args.get_one::<String>("OUTPUT").unwrap().as_str(),
+        args.get_flag("EXACT")
     );
 }

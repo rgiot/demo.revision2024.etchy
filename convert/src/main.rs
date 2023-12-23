@@ -23,27 +23,41 @@ fn generate_code(ofname: &str, g: &Graph<(usize, usize), (), Undirected>, path: 
     let f = File::create(ofname).expect("Unable to create output file");
     let mut w = BufWriter::new(f);
 
-    let mut previous = g.node_weight(*path.first().unwrap()).unwrap();
-    writeln!(w, "\tSTART {}, {}", previous.0, previous.1);
+    let mut previous_coord = g.node_weight(*path.first().unwrap()).unwrap();
+    let mut previous_code = "".to_owned();
+    let mut previous_count = 0;
+    writeln!(w, "\tSTART {}, {}", previous_coord.0, previous_coord.1);
     for i in &path[1..] {
         let current = g.node_weight(*i).unwrap();
 
         let mut code = "".to_owned();
-        if previous.1 == current.1 + 1 {
+        if previous_coord.1 == current.1 + 1 {
             code += "U";
         }
-        else if current.1 == previous.1 + 1 {
+        else if current.1 == previous_coord.1 + 1 {
             code += "D";
         }
 
-        if previous.0 == current.0 + 1 {
+        if previous_coord.0 == current.0 + 1 {
             code += "L";
         }
-        else if current.0 == previous.0 + 1 {
+        else if current.0 == previous_coord.0 + 1 {
             code += "R";
         }    
-        writeln!(w, "\t\t{code} 1");
-        previous = current;
+
+        if code == previous_code {
+            previous_count += 1;
+        } else {
+            if !previous_code.is_empty() {
+                writeln!(w, "\t\t{previous_code} {previous_count}");
+            }
+            previous_count = 1;
+            previous_code = code;
+        }
+        previous_coord = current;
+    }
+    if previous_count == 1 {
+        writeln!(w, "\t\t{previous_code} {previous_count}");
     }
     writeln!(w, "\tSTOP (void)");
 

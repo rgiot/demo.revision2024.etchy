@@ -73,21 +73,18 @@ fn compute_path(g: &Graph<(usize, usize),(), Undirected>, exact: bool) -> Vec<No
         walky::solvers::approximate::christofides::christofides::<{walky::computation_mode::PAR_COMPUTATION}>(&adj)
     };
     dbg!("TSP cost", tsp_solution.0);
+    let tsp_solution  = tsp_solution.1;
 
 
-    // With tsp we go back to the beginning but in fact we do not care
-    // so here we remove the uneeded steps
-    let tsp_full = tsp_solution.1;
-    let mut count_paths = tsp_full.iter();
-    //HashMap::<NodeIndex, usize>;
+
 
     // 3rd really build the appropriate order
     let mut real_solution = Vec::<NodeIndex>::new();
     let nodes : Vec<_> = g.node_indices().collect();
     //dbg!(&nodes); // need to check ordering
-    for tsp_idx in 0..(tsp_full.len()-1) {
-        let curr_start = nodes[tsp_solution.1[tsp_idx+0]];
-        let curr_stop = nodes[tsp_solution.1[tsp_idx+1]];
+    for tsp_idx in 0..(tsp_solution.len()-1) {
+        let curr_start = nodes[tsp_solution[tsp_idx+0]];
+        let curr_stop = nodes[tsp_solution[tsp_idx+1]];
 
         // get path from curr_start to curr_stop
         let curr_path = if g.contains_edge(curr_start, curr_stop) {
@@ -113,8 +110,34 @@ fn compute_path(g: &Graph<(usize, usize),(), Undirected>, exact: bool) -> Vec<No
         }
         real_solution.extend(&curr_path);
 
-        print!("{}", real_solution.len());
+
     }
+
+            // With tsp we go back to the beginning but in fact we do not care
+    // so here we remove the uneeded steps of the end
+    dbg!("Remove end of the path that reuse nodes already drawn as it is a tour");
+    let mut count_node_use = HashMap::<NodeIndex, usize>::default();
+    for idx in real_solution.iter() {
+        let count = count_node_use.entry(*idx)
+            .or_insert(0);
+        *count += 1;
+    }
+    let initial_count = real_solution.len();
+    loop {
+        let last_idx = real_solution.last().unwrap();
+        let count = count_node_use.get_mut(last_idx).unwrap();
+        if *count == 1 {
+            break
+        } else {
+            *count += 1;
+            real_solution.pop(); // remove the last one that is used for nothing
+        }
+    }
+    let next_count = real_solution.len();
+    println!("Reduce the number of main nodes from {initial_count} to {next_count}");
+
+        print!("{}", real_solution.len());
+    
     real_solution
 }
 

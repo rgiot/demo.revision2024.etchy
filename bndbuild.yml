@@ -12,6 +12,14 @@
 - tgt: etch.shrink
   dep: etch.o
   cmd: "extern ./Shrinkler4.6NoParityContext/linux64/Shrinkler -d -9 ./etch.o etch.shrink"
+  constraint: Os(Linux)
+
+
+- tgt: etch.shrink
+  dep: etch.o
+  cmd: "extern ./Shrinkler4.6NoParityContext/win64/Shrinkler.exe -d -9 ./etch.o etch.shrink"
+  constraint: Os(Windows)
+
 
 - tgt: etch4k.sna
   dep: etch4k.asm etch.shrink etch.o

@@ -23,7 +23,7 @@ fn generate_code(ofname: &str, g: &Graph<(usize, usize), (), Undirected>, path: 
     let mut w = BufWriter::new(f);
 
     let mut previous = g.node_weight(*path.first().unwrap()).unwrap();
-    writeln!(w, "\tSTART {}, {}", previous.0, previous.0);
+    writeln!(w, "\tSTART {}, {}", previous.0, previous.1);
     for i in &path[1..] {
         let current = g.node_weight(*i).unwrap();
 

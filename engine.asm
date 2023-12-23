@@ -274,7 +274,6 @@ compute_next_point
 ; plot the current point (one pixel only) with selected ink
 ; Modified : HL, DE, B
 plot_current_point
-push bc
 ; get line address
 	ld hl, (data.y)
 	ld e, (hl) : inc h : ld d, (hl)
@@ -292,7 +291,6 @@ push bc
 .lut_for_pen equ $-1
 	ld a, (de) ; get pixel value
 	or (hl) : ld (hl), a ; merge it
-	pop bc
 	ret
 
 

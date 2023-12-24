@@ -81,16 +81,112 @@ fn compute_path(g: &Graph<(usize, usize),(), Undirected>, exact: bool) -> Vec<No
             adj.set(j, i, distances[i][j] as f64);
         }
     }
-    let tsp_solution = if exact {
+    let (tsp_cost, tsp_solution) = if exact {
         walky::solvers::exact::sixth_improved_solver(&adj)
     } else {
         walky::solvers::approximate::christofides::christofides::<{walky::computation_mode::PAR_COMPUTATION}>(&adj)
     };
-    dbg!("TSP cost", tsp_solution.0);
-    let tsp_solution  = tsp_solution.1;
+    dbg!("TSP cost", tsp_cost);
+    let mut tsp_solution  = tsp_solution;
 
 
+    /// as an additional step we try to improve a bit with random exchanges
+    let nb_nodes_in_graph = distances.len();
+    let nb_nodes_in_path = tsp_solution.len();
+    let mut previous_cost = tsp_cost;
+    let mut recomputed_cost = 0;
+    for i in 0..(nb_nodes_in_graph-1) {
+        recomputed_cost += distances[tsp_solution[i]][tsp_solution[i+1]];
+    }
+    recomputed_cost += distances[tsp_solution[nb_nodes_in_graph-1]][tsp_solution[0]];
 
+    let mut swapped = tsp_solution.clone();
+    let mut previous_cost = recomputed_cost as i32;
+    let start_time = std::time::Instant::now();
+    let mut last_cooling = std::time::Instant::now();
+    let mut temperature = 5000.;
+    let cooling = 0.99;
+    loop  {
+        // allow to optimize during 10s
+        if std::time::Instant::now().duration_since(start_time).as_secs() > 30 {
+            break;
+        }
+
+        if std::time::Instant::now().duration_since(start_time).as_millis() > 100 {
+            temperature *= cooling;
+            last_cooling = std::time::Instant::now();
+
+        }
+
+
+        let i = rand::random::<usize>() % nb_nodes_in_graph;
+        let j = rand::random::<usize>() % nb_nodes_in_graph;
+
+        // skip if distance is wrong
+        if i == j || (i == j+1) || (j==i+1) {
+            continue;
+        }
+        // properly order
+        let (i,j) = (i.min(j), i.max(j));
+
+
+        // compute the cost of the new solution
+        let gain = 
+           distances[tsp_solution[i]][tsp_solution[(j+1) % nb_nodes_in_path]] as i32
+          + distances[tsp_solution[(i+nb_nodes_in_path-1)%nb_nodes_in_path]][tsp_solution[j]] as i32
+          - distances[tsp_solution[(i+nb_nodes_in_path-1)%nb_nodes_in_path]][tsp_solution[i]]  as i32
+          - distances[tsp_solution[j]][tsp_solution[(j+1) % nb_nodes_in_path]]  as i32;
+
+
+        // replace it if needed
+        let update = if gain >  0 {
+            false 
+            /*
+           // eprint!("-");
+           use rand::Rng;
+           let proba = (rand::thread_rng().gen_range(0..=10000) as f64)/10000.;
+           let fy = 1.0/(previous_cost + gain) as f64;
+           let fx = 1.0/previous_cost as f64;
+           let factor = ((fy-fx)/temperature).exp();
+
+       //    eprintln!("proba={}, factor={}, gain={}", proba, factor, gain);
+            if  proba > factor  && std::time::Instant::now().duration_since(start_time).as_secs() < 15 {
+              //  eprint!("#");
+                true
+            } else {
+            //    eprint!("-");
+                false
+            }
+            */
+        } else {
+           // eprint!("+");
+            true
+        };
+
+        if update {
+
+
+            // exchange i and j et revert between them
+            for d in 0..=(j-i) {
+                if i+d >= j-d {
+                    break;
+                }
+                tsp_solution.swap(i+d, j-d);
+            }
+            previous_cost += gain;
+
+        }
+        
+    }
+
+    let mut recomputed_cost2 = 0;
+    for i in 0..(nb_nodes_in_graph-1) {
+        recomputed_cost2 += distances[tsp_solution[i]][tsp_solution[i+1]];
+    }
+    recomputed_cost2 += distances[tsp_solution[nb_nodes_in_graph-1]][tsp_solution[0]];
+    eprintln!("\nOptimized from {tsp_cost}/{recomputed_cost} to {previous_cost}/{recomputed_cost2}");
+
+    // TODO check if we can earn by ordering differently
 
     // 3rd really build the appropriate order
     let mut real_solution = Vec::<NodeIndex>::new();

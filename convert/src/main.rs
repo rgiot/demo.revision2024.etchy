@@ -21,9 +21,18 @@ pub struct PicGraph {
     node2coord: std::collections::HashMap<NodeIndex, (usize, usize)>,
 }
 
-pub struct PicGraphPath<'g> {
+/// This is the solution on the complete graph.
+/// Thus several edges are not present in the image and have
+/// to be replaced by sub-paths. This is the aim of `final_path`` method
+pub struct PicCompleteGraphPath<'g> {
+    distances: Vec<Vec<u32>>,
     solution: Vec<NodeIndex>,
     g: &'g PicGraph,
+}
+
+pub struct PicGraphPath<'p, 'g> {
+    complete_path: &'p PicCompleteGraphPath<'g>,
+    solution: Vec<NodeIndex>,
 }
 
 impl Deref for PicGraph {
@@ -34,7 +43,14 @@ impl Deref for PicGraph {
     }
 }
 
-impl<'g> Deref for PicGraphPath<'g> {
+impl<'g> Deref for PicCompleteGraphPath<'g> {
+    type Target = Vec<NodeIndex>;
+    fn deref(&self) -> &Self::Target {
+        &self.solution
+    }
+}
+
+impl<'p, 'g> Deref for PicGraphPath<'p, 'g> {
     type Target = Vec<NodeIndex>;
     fn deref(&self) -> &Self::Target {
         &self.solution
@@ -51,10 +67,11 @@ impl From<&Path> for PicGraph {
 
 impl PicGraph {
     /// Compute the shortest path
-    pub fn compute_path(&self) -> PicGraphPath {
+    pub fn compute_path(&self) -> PicCompleteGraphPath {
         // 1st step consists in computing the distance between each node (the path would be great too, but we'll recompute it later)
         dbg!("Start to compute distance matrix");
         let distances = seidel(&self.g);
+        let nodes: Vec<NodeIndex> = self.g.node_indices().collect();
 
         // 2nd step compute TSP on the complete graph where all nodes are connected to all others wieghted by the appropriate distance
         dbg!("Start to compute TSP");
@@ -83,12 +100,8 @@ impl PicGraph {
         }
         recomputed_cost += distances[tsp_solution[nb_nodes_in_graph - 1]][tsp_solution[0]];
 
-        let _swapped = tsp_solution.clone();
         let mut previous_cost = recomputed_cost as i32;
         let start_time = std::time::Instant::now();
-        let mut last_cooling = std::time::Instant::now();
-        let mut temperature = 5000.;
-        let cooling = 0.99;
         loop {
             // allow to optimize during 10s
             if std::time::Instant::now()
@@ -97,15 +110,6 @@ impl PicGraph {
                 > 30
             {
                 break;
-            }
-
-            if std::time::Instant::now()
-                .duration_since(start_time)
-                .as_millis()
-                > 100
-            {
-                temperature *= cooling;
-                last_cooling = std::time::Instant::now();
             }
 
             let i = rand::random::<usize>() % nb_nodes_in_graph;
@@ -172,15 +176,27 @@ impl PicGraph {
             "\nOptimized from {tsp_cost}/{recomputed_cost} to {previous_cost}/{recomputed_cost2}"
         );
 
-        // TODO check if we can earn by ordering differently
+        PicCompleteGraphPath {
+            solution: tsp_solution.into_iter().map(|i| nodes[i]).collect::<Vec<_>>(),
+            distances,
+            g: &self,
+        }
+    }
+}
 
+impl<'g> PicCompleteGraphPath<'g> {
+    pub fn g(&self) -> &Graph<(usize, usize), (), Undirected> {
+        &self.g
+    }
+
+    pub fn final_path(&self) -> PicGraphPath {
+        let tsp_solution = &self.solution;
         // 3rd really build the appropriate order
         let mut real_solution = Vec::<NodeIndex>::new();
-        let nodes: Vec<_> = self.node_indices().collect();
         //dbg!(&nodes); // need to check ordering
         for tsp_idx in 0..(tsp_solution.len() - 1) {
-            let curr_start = nodes[tsp_solution[tsp_idx + 0]];
-            let curr_stop = nodes[tsp_solution[tsp_idx + 1]];
+            let curr_start = tsp_solution[tsp_idx + 0];
+            let curr_stop = tsp_solution[tsp_idx + 1];
 
             // get path from curr_start to curr_stop
             let curr_path = if self.g.contains_edge(curr_start, curr_stop) {
@@ -189,11 +205,11 @@ impl PicGraph {
             } else {
                 print!("#");
                 let curr_path = petgraph::algo::astar(
-                    &self.g,
+                    &self.g.g,
                     curr_start,
                     |n| n == curr_stop,
                     |_e| 1,
-                    |i| distances[curr_start.index()][i.index()],
+                    |i| self.distances[curr_start.index()][i.index()],
                 );
                 curr_path.unwrap().1
             };
@@ -232,9 +248,16 @@ impl PicGraph {
         print!("{}", real_solution.len());
 
         PicGraphPath {
+            complete_path: self,
             solution: real_solution,
-            g: &self,
         }
+    }
+}
+
+
+impl<'p,'g> PicGraphPath<'p, 'g> {
+    pub fn g(&self) -> &Graph<(usize, usize), (), Undirected> {
+        self.complete_path.g()
     }
 }
 
@@ -242,8 +265,9 @@ pub fn convert<P: AsRef<Path>>(ifname: P, ofname: &str, _exact: bool) {
     let g = PicGraph::from(ifname.as_ref());
     println!("{:?}", (g.node_count(), g.edge_count()));
 
-    let path = g.compute_path();
-    generate_code(ofname, &path);
+    let c_path = g.compute_path();
+    let f_path = c_path.final_path();
+    generate_code(ofname, &f_path);
 }
 
 // Generate the asm code
@@ -252,12 +276,12 @@ fn generate_code(ofname: &str, path: &PicGraphPath) {
     let f = File::create(ofname).expect("Unable to create output file");
     let mut w = BufWriter::new(f);
 
-    let mut previous_coord = path.g.node_weight(*path.first().unwrap()).unwrap();
+    let mut previous_coord = path.g().node_weight(*path.first().unwrap()).unwrap();
     let mut previous_code = "".to_owned();
     let mut previous_count = 0;
     writeln!(w, "\tSTART {}, {}", previous_coord.0, previous_coord.1);
     for i in &path[1..] {
-        let current = path.g.node_weight(*i).unwrap();
+        let current = path.g().node_weight(*i).unwrap();
 
         let mut code = "".to_owned();
         if previous_coord.1 == current.1 + 1 {

@@ -1,15 +1,12 @@
-use std::{collections::HashMap, fs::File, io::BufWriter, ops::Deref, path::Path};
 use graphalgs::shortest_path::seidel;
+use std::{collections::HashMap, fs::File, io::BufWriter, ops::Deref, path::Path};
 use walky::datastructures::AdjacencyMatrix;
 
-
 use clap::ArgAction;
-use image::{self, ColorType, GenericImageView, Rgb, RgbImage};
+use image::{self, GenericImageView, Rgb, RgbImage};
 use petgraph::{
     self,
-    algo::min_spanning_tree,
     data::Build,
-    graph::Node,
     stable_graph::{IndexType, NodeIndex},
     Graph, Undirected,
 };
@@ -26,7 +23,7 @@ pub struct PicGraph {
 
 pub struct PicGraphPath<'g> {
     solution: Vec<NodeIndex>,
-    g: &'g PicGraph
+    g: &'g PicGraph,
 }
 
 impl Deref for PicGraph {
@@ -70,23 +67,23 @@ impl PicGraph {
         }
 
         let (tsp_cost, tsp_solution) = walky::solvers::approximate::christofides::christofides::<
-                { walky::computation_mode::PAR_COMPUTATION },
-            >(&adj);
-        
+            { walky::computation_mode::PAR_COMPUTATION },
+        >(&adj);
+
         dbg!("TSP cost", tsp_cost);
         let mut tsp_solution = tsp_solution;
 
         /// as an additional step we try to improve a bit with random exchanges
         let nb_nodes_in_graph = distances.len();
         let nb_nodes_in_path = tsp_solution.len();
-        let mut previous_cost = tsp_cost;
+        let _previous_cost = tsp_cost;
         let mut recomputed_cost = 0;
         for i in 0..(nb_nodes_in_graph - 1) {
             recomputed_cost += distances[tsp_solution[i]][tsp_solution[i + 1]];
         }
         recomputed_cost += distances[tsp_solution[nb_nodes_in_graph - 1]][tsp_solution[0]];
 
-        let mut swapped = tsp_solution.clone();
+        let _swapped = tsp_solution.clone();
         let mut previous_cost = recomputed_cost as i32;
         let start_time = std::time::Instant::now();
         let mut last_cooling = std::time::Instant::now();
@@ -195,7 +192,7 @@ impl PicGraph {
                     &self.g,
                     curr_start,
                     |n| n == curr_stop,
-                    |e| 1,
+                    |_e| 1,
                     |i| distances[curr_start.index()][i.index()],
                 );
                 curr_path.unwrap().1
@@ -234,11 +231,14 @@ impl PicGraph {
 
         print!("{}", real_solution.len());
 
-        PicGraphPath{solution: real_solution, g: &self}
+        PicGraphPath {
+            solution: real_solution,
+            g: &self,
+        }
     }
 }
 
-pub fn convert<P: AsRef<Path>>(ifname: P, ofname: &str, exact: bool) {
+pub fn convert<P: AsRef<Path>>(ifname: P, ofname: &str, _exact: bool) {
     let g = PicGraph::from(ifname.as_ref());
     println!("{:?}", (g.node_count(), g.edge_count()));
 
@@ -247,7 +247,7 @@ pub fn convert<P: AsRef<Path>>(ifname: P, ofname: &str, exact: bool) {
 }
 
 // Generate the asm code
-fn generate_code(ofname: &str, path: &PicGraphPath ) {
+fn generate_code(ofname: &str, path: &PicGraphPath) {
     use std::io::Write;
     let f = File::create(ofname).expect("Unable to create output file");
     let mut w = BufWriter::new(f);

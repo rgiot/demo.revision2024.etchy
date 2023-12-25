@@ -13,6 +13,7 @@ use petgraph::{
 
 const CPC_WIDTH: usize = 320;
 const CPC_HEIGHT: usize = 200;
+const OPTIMISATION_DURATION: u64 = 15;
 
 type Coord = (usize, usize);
 
@@ -170,6 +171,20 @@ impl<'g> PicCompleteGraphPath<'g> {
 
     }
 
+
+
+    pub fn optimize_start_here(&mut self, start: Coord) {
+        // generate a good tour starting at the appropriate position
+        let ns = self.g.get_node_index(&start).unwrap(); // get the node at the given end coordinate
+        let idx = self.solution.iter().position(|n2| ns == *n2).unwrap(); // get its position in the current solution
+        self.solution.rotate_left(idx);
+        assert_eq!(Some(ns), self.solution.first().cloned(), "BUG the path does not start as expected");
+
+        self.optimize_between(1, self.solution.len()-1);
+        assert_eq!(Some(ns), self.solution.first().cloned(), "BUG the path does not start as expected");
+
+    }
+
     pub fn optimize_start_here_and_finish_among(&mut self, start: Coord, among: &HashSet<Coord>) {
         // generate a good tour starting at the appropriate position
         let ns = self.g.get_node_index(&start).unwrap(); // get the node at the given end coordinate
@@ -212,6 +227,11 @@ impl<'g> PicCompleteGraphPath<'g> {
 
 
         // optimize the path by always keeping the last node fixed
+        // the optimisation is done 4 times to try to overcome a low quality
+        // due to the various constraints
+        self.optimize_between(1, (self.len()-2)/2);
+        self.optimize_between((self.len()-2)/2, self.len()-2);
+        self.optimize_between((self.len()-2)/2 - (self.len()-2)/4, self.len()-2 - (self.len()-2)/4);
         self.optimize_between(1, self.len()-2);
         assert_eq!(Some(ne), self.solution.last().cloned(), "BUG the path does not finish as expected");
         assert_eq!(Some(ns), self.solution.first().cloned(), "BUG the path does not start as expected");
@@ -235,7 +255,7 @@ impl<'g> PicCompleteGraphPath<'g> {
                 if std::time::Instant::now()
                     .duration_since(start_time)
                     .as_secs()
-                    > 3
+                    > OPTIMISATION_DURATION
                 {
                     break;
                 }
@@ -451,7 +471,7 @@ pub fn convert<P: AsRef<Path>>(ifname: &[P], ofname: &str, _exact: bool) {
         generate_code(ofname, &f_path);
     }
     else {
-    //    let mut full_path = Vec::new();
+        let mut full_path = Vec::new();
 
         let mut already_drawned = HashSet::<Coord>::new();
         let mut next_start = None;
@@ -473,31 +493,33 @@ pub fn convert<P: AsRef<Path>>(ifname: &[P], ofname: &str, _exact: bool) {
             };
 
 
-            let f_path = if i == 0 {
-                // select_one end  and optimize
+            let mut f_path = if i == 0 {
+                // select one end  and optimize
                 let selected_end_intersections = selected_end_intersection.as_ref().unwrap();
                 c_path.optimize_finish_among(selected_end_intersections);
                 c_path.final_path(Shrink::Start)
 
             } else if i != parts.len() - 1 {
+                // continue from last end, select one end, and optimize
                 let selected_end_intersections = selected_end_intersection.as_ref().unwrap();
                 c_path.optimize_start_here_and_finish_among(next_start.unwrap(), selected_end_intersections);
-                let d = c_path.final_path(Shrink::None);
-                generate_code(ofname, &d);
-                todo!()
+                c_path.final_path(Shrink::None)
             } else {
-                todo!()
-                //c_path.optimize_start_here(next_start.unwrap())
+                // continue from last end and optimize
+                c_path.optimize_start_here(next_start.unwrap());
+                c_path.final_path(Shrink::End)
             };
 
             
             next_start = c_path.solution.last()
                 .map(|i| *current_g.node_weight(*i).unwrap());
 
-           // full_path.push( f_path);
-          // generate_code(ofname, &f_path);
+          full_path.append( &mut f_path.solution);
 
         }
+
+        generate_code(ofname, &PicGraphPath{solution: full_path});
+
     }
 
 

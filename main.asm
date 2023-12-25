@@ -22,7 +22,8 @@ BINARY_START
 test_picture
 test_picture_start
 ;	include "test_picture.asm"
-	include "convert/small_connex.asm"
+;	include "convert/small_connex.asm"
+	include "convert/multiple.asm"
 test_picture_stop
 
 	print "Memory dump of picture"

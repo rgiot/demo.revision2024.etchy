@@ -1,5 +1,5 @@
 use graphalgs::shortest_path::seidel;
-use std::{collections::HashMap, fs::File, io::BufWriter, ops::Deref, path::Path};
+use std::{collections::{HashMap, HashSet, VecDeque}, fs::File, io::BufWriter, ops::{Deref, DerefMut}, path::Path, rc::Rc, env::current_exe};
 use walky::datastructures::AdjacencyMatrix;
 
 use clap::ArgAction;
@@ -14,29 +14,31 @@ use petgraph::{
 const CPC_WIDTH: usize = 320;
 const CPC_HEIGHT: usize = 200;
 
+type Coord = (usize, usize);
+
 pub struct PicGraph {
-    g: Graph<(usize, usize), (), Undirected>,
+    g: Graph<Coord, (), Undirected>,
     grid: [[bool; 320]; 200],
-    coord2node: std::collections::HashMap<(usize, usize), NodeIndex>,
-    node2coord: std::collections::HashMap<NodeIndex, (usize, usize)>,
+    coord2node: std::collections::HashMap<Coord, NodeIndex>,
+    node2coord: std::collections::HashMap<NodeIndex, Coord>,
 }
 
 /// This is the solution on the complete graph.
 /// Thus several edges are not present in the image and have
 /// to be replaced by sub-paths. This is the aim of `final_path`` method
+#[derive(Clone)]
 pub struct PicCompleteGraphPath<'g> {
     distances: Vec<Vec<u32>>,
     solution: Vec<NodeIndex>,
     g: &'g PicGraph,
 }
 
-pub struct PicGraphPath<'p, 'g> {
-    complete_path: &'p PicCompleteGraphPath<'g>,
-    solution: Vec<NodeIndex>,
+pub struct PicGraphPath {
+    solution: Vec<Coord>,
 }
 
 impl Deref for PicGraph {
-    type Target = Graph<(usize, usize), (), Undirected>;
+    type Target = Graph<Coord, (), Undirected>;
 
     fn deref(&self) -> &Self::Target {
         &self.g
@@ -50,8 +52,8 @@ impl<'g> Deref for PicCompleteGraphPath<'g> {
     }
 }
 
-impl<'p, 'g> Deref for PicGraphPath<'p, 'g> {
-    type Target = Vec<NodeIndex>;
+impl Deref for PicGraphPath {
+    type Target = Vec<Coord>;
     fn deref(&self) -> &Self::Target {
         &self.solution
     }
@@ -66,6 +68,16 @@ impl From<&Path> for PicGraph {
 }
 
 impl PicGraph {
+
+    pub fn get_node_index(&self, c: &Coord) -> Option<NodeIndex> {
+        self.coord2node.get(c).cloned()
+    }
+
+    /// Return all possible coords
+    pub fn coords(&self) -> HashSet<Coord> {
+        self.coord2node.keys().into_iter().cloned().collect()
+    }
+
     /// Compute the shortest path
     pub fn compute_path(&self) -> PicCompleteGraphPath {
         // 1st step consists in computing the distance between each node (the path would be great too, but we'll recompute it later)
@@ -88,17 +100,190 @@ impl PicGraph {
         >(&adj);
 
         dbg!("TSP cost", tsp_cost);
-        let mut tsp_solution = tsp_solution;
+        let tsp_solution = tsp_solution;
 
-        /// as an additional step we try to improve a bit with random exchanges
-        let nb_nodes_in_graph = distances.len();
-        let nb_nodes_in_path = tsp_solution.len();
-        let _previous_cost = tsp_cost;
-        let mut recomputed_cost = 0;
-        for i in 0..(nb_nodes_in_graph - 1) {
-            recomputed_cost += distances[tsp_solution[i]][tsp_solution[i + 1]];
+        PicCompleteGraphPath {
+            solution: tsp_solution
+                .into_iter()
+                .map(|i| nodes[i])
+                .collect::<Vec<_>>(),
+            distances,
+            g: &self,
         }
-        recomputed_cost += distances[tsp_solution[nb_nodes_in_graph - 1]][tsp_solution[0]];
+    }
+}
+
+impl<'g> PicCompleteGraphPath<'g> {
+    pub fn g(&self) -> &Graph<Coord, (), Undirected> {
+        &self.g
+    }
+
+    /// Compute the cost of the current path
+    pub fn cost(&self) -> u32 {
+        (0..(self.distances.len() - 1))
+            .into_iter()
+            .map(|i| self.distances[self.solution[i].index()][self.solution[i + 1].index()])
+            .sum()
+    }
+
+    /// Compute the gain when swapping two nodes in the path
+    pub fn swap_gain(&self, i: usize, j: usize) -> i32 {
+        let nb_nodes_in_path = self.solution.len();
+
+        self.distances[self.solution[i].index()][self.solution[(j + 1) % nb_nodes_in_path].index()]
+            as i32
+            + self.distances[self.solution[(i + nb_nodes_in_path - 1) % nb_nodes_in_path].index()]
+                [self.solution[j].index()] as i32
+            - self.distances[self.solution[(i + nb_nodes_in_path - 1) % nb_nodes_in_path].index()]
+                [self.solution[i].index()] as i32
+            - self.distances[self.solution[j].index()]
+                [self.solution[(j + 1) % nb_nodes_in_path].index()] as i32
+    }
+
+
+    /// Generate an optimized path that finish in the best nodes among a list of nodes
+    pub fn optimize_finish_among(&mut self, among: &HashSet<Coord>) {
+
+        self.optimize(); // generate a good tour
+        eprintln!("Cost before fixing the end {}", self.cost());
+
+        // get the gain of the solution among the standard path, the position of the end node and its coordinates in pixle
+        let (gain, idx, coord, n)  = among.iter().map(|coord|{
+
+            let n = self.g.get_node_index(coord).unwrap(); // get the node at the given end coordinate
+            let idx = self.solution.iter().position(|n2| n == *n2).unwrap(); // get its position in the current solution
+
+            let gain = self.swap_gain(idx, self.len()-1);
+            (gain, idx, coord, n)
+        }).min().unwrap();
+
+        let delta = self.solution.len()-idx-1;
+        self.solution.rotate_right(delta);
+        eprintln!("Cost after  selecting the end {}", self.cost());
+
+
+
+        // optimize the path by always keeping the last node fixed
+        self.optimize_between(0, self.len()-2);
+        assert_eq!(Some(n), self.solution.last().cloned(), "BUG the path does not finish as expected");
+        eprintln!("Cost after optimizing the end {}", self.cost());
+
+    }
+
+    pub fn optimize_start_here_and_finish_among(&mut self, start: Coord, among: &HashSet<Coord>) {
+        // generate a good tour starting at the appropriate position
+        let ns = self.g.get_node_index(&start).unwrap(); // get the node at the given end coordinate
+        let idx = self.solution.iter().position(|n2| ns == *n2).unwrap(); // get its position in the current solution
+        self.solution.swap(idx, 0);
+        assert_eq!(Some(ns), self.solution.first().cloned(), "BUG the path does not start as expected");
+
+        self.optimize_between(1, self.solution.len()-1);
+        assert_eq!(Some(ns), self.solution.first().cloned(), "BUG the path does not start as expected");
+
+
+        eprintln!("Cost after fixing the start and before fixing the end {}", self.cost());
+
+        // get the gain of the solution among the standard path, the position of the end node and its coordinates in pixle
+        let (cost, new_solution, ne)  = among.iter()
+            .filter(|&&c| c!=start)
+            .map(|coord|{
+
+                let n = self.g.get_node_index(coord).unwrap(); // get the node at the given end coordinate
+                let idx = self.solution.iter().position(|n2| n == *n2).unwrap(); // get its position in the current solution
+
+                // 1st rotation to move the end node to the end
+                let mut new_solution : PicCompleteGraphPath = self.clone();
+                let delta = new_solution.solution.len()-idx-1;
+                new_solution.solution.rotate_right(delta);
+
+                // swap to ensure start is back at start
+                new_solution.swap_path(0, delta);
+                let cost = new_solution.cost();
+
+                (cost, new_solution.solution, n)
+            })
+            .min().unwrap();
+
+        self.solution = new_solution;
+        assert_eq!(Some(ne), self.solution.last().cloned(), "BUG the path does not finish as expected");
+        assert_eq!(Some(ns), self.solution.first().cloned(), "BUG the path does not start as expected");
+        eprintln!("Cost after  selecting the end {}", self.cost());
+
+
+
+        // optimize the path by always keeping the last node fixed
+        self.optimize_between(1, self.len()-2);
+        assert_eq!(Some(ne), self.solution.last().cloned(), "BUG the path does not finish as expected");
+        assert_eq!(Some(ns), self.solution.first().cloned(), "BUG the path does not start as expected");
+        eprintln!("Cost after optimizing the end {}", self.cost());
+
+    }
+
+
+        /// Try to optimize the path
+        /// start and stop included
+        pub fn optimize_between(&mut self, start: usize, stop:usize) {
+            // as an additional step we try to improve a bit with random exchanges
+            let nb_nodes_in_graph = self.distances.len();
+            let _nb_nodes_in_path = self.solution.len();
+            let recomputed_cost = self.cost();
+    
+            let mut previous_cost = recomputed_cost as i32;
+            let start_time = std::time::Instant::now();
+            loop {
+                // allow to optimize during 10s
+                if std::time::Instant::now()
+                    .duration_since(start_time)
+                    .as_secs()
+                    > 3
+                {
+                    break;
+                }
+
+                let rand_start = start;
+                let rand_stop = (self.solution.len() - stop);
+    
+                let i = rand_start + rand::random::<usize>() % (rand_stop);
+                let j = rand_start + rand::random::<usize>() % (rand_stop);
+    
+                // skip if distance is wrong
+                if i == j || (i == j + 1) || (j == i + 1) {
+                    continue;
+                }
+                // properly order
+                let (i, j) = (i.min(j), i.max(j));
+    
+                // compute the cost of the new solution
+                let gain = self.swap_gain(i, j);
+                // replace it if needed
+                let update = if gain > 0 { false } else { true };
+    
+                if update {
+                    self.swap_path(i, j);
+                    previous_cost += gain;
+                }
+            }
+    
+            let recomputed_cost2 = self.cost();
+            eprintln!("\nOptimized from {recomputed_cost} to {previous_cost}/{recomputed_cost2}");
+        }
+    
+
+    fn swap_path(&mut self, i: usize, j: usize) {
+        for d in 0..=(j - i) {
+            if i + d >= j - d {
+                break;
+            }
+            self.solution.swap(i + d, j - d);
+        } 
+    }
+
+    /// Try to optimize the path
+    pub fn optimize(&mut self) {
+        // as an additional step we try to improve a bit with random exchanges
+        let nb_nodes_in_graph = self.distances.len();
+        let _nb_nodes_in_path = self.solution.len();
+        let recomputed_cost = self.cost();
 
         let mut previous_cost = recomputed_cost as i32;
         let start_time = std::time::Instant::now();
@@ -123,37 +308,9 @@ impl PicGraph {
             let (i, j) = (i.min(j), i.max(j));
 
             // compute the cost of the new solution
-            let gain = distances[tsp_solution[i]][tsp_solution[(j + 1) % nb_nodes_in_path]] as i32
-                + distances[tsp_solution[(i + nb_nodes_in_path - 1) % nb_nodes_in_path]]
-                    [tsp_solution[j]] as i32
-                - distances[tsp_solution[(i + nb_nodes_in_path - 1) % nb_nodes_in_path]]
-                    [tsp_solution[i]] as i32
-                - distances[tsp_solution[j]][tsp_solution[(j + 1) % nb_nodes_in_path]] as i32;
-
+            let gain = self.swap_gain(i, j);
             // replace it if needed
-            let update = if gain > 0 {
-                false
-                /*
-                    // eprint!("-");
-                    use rand::Rng;
-                    let proba = (rand::thread_rng().gen_range(0..=10000) as f64)/10000.;
-                    let fy = 1.0/(previous_cost + gain) as f64;
-                    let fx = 1.0/previous_cost as f64;
-                    let factor = ((fy-fx)/temperature).exp();
-
-                //    eprintln!("proba={}, factor={}, gain={}", proba, factor, gain);
-                     if  proba > factor  && std::time::Instant::now().duration_since(start_time).as_secs() < 15 {
-                       //  eprint!("#");
-                         true
-                     } else {
-                     //    eprint!("-");
-                         false
-                     }
-                     */
-            } else {
-                // eprint!("+");
-                true
-            };
+            let update = if gain > 0 { false } else { true };
 
             if update {
                 // exchange i and j et revert between them
@@ -161,38 +318,20 @@ impl PicGraph {
                     if i + d >= j - d {
                         break;
                     }
-                    tsp_solution.swap(i + d, j - d);
+                    self.solution.swap(i + d, j - d);
                 }
                 previous_cost += gain;
             }
         }
 
-        let mut recomputed_cost2 = 0;
-        for i in 0..(nb_nodes_in_graph - 1) {
-            recomputed_cost2 += distances[tsp_solution[i]][tsp_solution[i + 1]];
-        }
-        recomputed_cost2 += distances[tsp_solution[nb_nodes_in_graph - 1]][tsp_solution[0]];
-        eprintln!(
-            "\nOptimized from {tsp_cost}/{recomputed_cost} to {previous_cost}/{recomputed_cost2}"
-        );
-
-        PicCompleteGraphPath {
-            solution: tsp_solution.into_iter().map(|i| nodes[i]).collect::<Vec<_>>(),
-            distances,
-            g: &self,
-        }
-    }
-}
-
-impl<'g> PicCompleteGraphPath<'g> {
-    pub fn g(&self) -> &Graph<(usize, usize), (), Undirected> {
-        &self.g
+        let recomputed_cost2 = self.cost();
+        eprintln!("\nOptimized from {recomputed_cost} to {previous_cost}/{recomputed_cost2}");
     }
 
-    pub fn final_path(&self) -> PicGraphPath {
+    pub fn final_path(&self, shrink: Shrink) -> PicGraphPath {
         let tsp_solution = &self.solution;
         // 3rd really build the appropriate order
-        let mut real_solution = Vec::<NodeIndex>::new();
+        let mut real_solution = VecDeque::<NodeIndex>::new();
         //dbg!(&nodes); // need to check ordering
         for tsp_idx in 0..(tsp_solution.len() - 1) {
             let curr_start = tsp_solution[tsp_idx + 0];
@@ -200,10 +339,10 @@ impl<'g> PicCompleteGraphPath<'g> {
 
             // get path from curr_start to curr_stop
             let curr_path = if self.g.contains_edge(curr_start, curr_stop) {
-                print!(".");
+                eprint!(".");
                 vec![curr_start, curr_stop]
             } else {
-                print!("#");
+                eprint!("#");
                 let curr_path = petgraph::algo::astar(
                     &self.g.g,
                     curr_start,
@@ -215,16 +354,15 @@ impl<'g> PicCompleteGraphPath<'g> {
             };
 
             // inject the path
-            if let Some(last) = real_solution.last() {
+            if let Some(last) = real_solution.back() {
                 if *last == curr_start {
-                    real_solution.pop(); // we remove the last because if will be reinjected
+                    real_solution.pop_back(); // we remove the last because if will be reinjected
                 }
             }
             real_solution.extend(&curr_path);
         }
 
-        // With tsp we go back to the beginning but in fact we do not care
-        // so here we remove the uneeded steps of the end
+        // remove nodes at beginning and end that are drawned seeveral times
         dbg!("Remove end of the path that reuse nodes already drawn as it is a tour");
         let mut count_node_use = HashMap::<NodeIndex, usize>::default();
         for idx in real_solution.iter() {
@@ -232,56 +370,157 @@ impl<'g> PicCompleteGraphPath<'g> {
             *count += 1;
         }
         let initial_count = real_solution.len();
-        loop {
-            let last_idx = real_solution.last().unwrap();
-            let count = count_node_use.get_mut(last_idx).unwrap();
-            if *count == 1 {
-                break;
-            } else {
-                *count += 1;
-                real_solution.pop(); // remove the last one that is used for nothing
+
+        if shrink == Shrink::Both ||shrink == Shrink::Start {
+            loop {
+                let last_idx = real_solution.front().unwrap();
+                let count = count_node_use.get_mut(last_idx).unwrap();
+                if *count == 1 {
+                    break; // if we remove it, it is not drawned !
+                } else {
+                    *count += 1;
+                    real_solution.pop_front(); // remove the last one that is used for nothing
+                }
             }
         }
+
+        if shrink == Shrink::Both ||shrink == Shrink::End {
+            loop {
+                let last_idx = real_solution.back().unwrap();
+                let count = count_node_use.get_mut(last_idx).unwrap();
+                if *count == 1 {
+                    break; // if we remove it, it is not drawned !
+                } else {
+                    *count += 1;
+                    real_solution.pop_back(); // remove the last one that is used for nothing
+                }
+            }
+        }
+
         let next_count = real_solution.len();
         println!("Reduce the number of main nodes from {initial_count} to {next_count}");
 
         print!("{}", real_solution.len());
 
         PicGraphPath {
-            complete_path: self,
-            solution: real_solution,
+            solution: real_solution.into_iter()
+                .map(|i| *self.g().node_weight(i).unwrap())
+                .collect(),
         }
     }
 }
 
-
-impl<'p,'g> PicGraphPath<'p, 'g> {
-    pub fn g(&self) -> &Graph<(usize, usize), (), Undirected> {
-        self.complete_path.g()
+/*
+impl<'g> PicGraphPath<'g> {
+    pub fn g(&self) -> &Graph<Coord, (), Undirected> {
+        &self.g
     }
 }
+*/
 
-pub fn convert<P: AsRef<Path>>(ifname: P, ofname: &str, _exact: bool) {
-    let g = PicGraph::from(ifname.as_ref());
-    println!("{:?}", (g.node_count(), g.edge_count()));
+/// Launch the conversion
+/// 
+pub fn convert<P: AsRef<Path>>(ifname: &[P], ofname: &str, _exact: bool) {
 
-    let c_path = g.compute_path();
-    let f_path = c_path.final_path();
-    generate_code(ofname, &f_path);
+    // open all images parts
+    let mut parts: Vec<_> = ifname.into_iter().map(|f| {
+        eprintln!("Load {}", f.as_ref().display());
+        PicGraph::from(f.as_ref())
+        })
+        .collect();
+
+    // check if they are connected
+    let mut intersections = Vec::new();
+    for i in 0..(parts.len()-1) {
+        let coords_a = parts[i].coords();
+        let coords_b = parts[i+1].coords();
+
+        let inter: HashSet<_>= coords_a.intersection(&coords_b).cloned().collect();
+        if inter.is_empty() {
+            panic!("{} and {} have no pixels in common", ifname[i].as_ref().display(), ifname[i+1].as_ref().display());
+        } else {
+            intersections.push(inter);
+        }
+    }
+
+
+    if parts.len() == 1 {
+        let mut c_path = parts[0].compute_path();
+        c_path.optimize();
+        let f_path = c_path.final_path(Shrink::Both);
+        generate_code(ofname, &f_path);
+    }
+    else {
+    //    let mut full_path = Vec::new();
+
+        let mut already_drawned = HashSet::<Coord>::new();
+        let mut next_start = None;
+        for (i, current_g) in parts.iter().enumerate() {
+            let mut c_path = current_g.compute_path();
+
+            let selected_end_intersection = if i!= parts.len()-1 {
+                let selected_intersections: HashSet<Coord> = intersections[i].iter()
+                    .filter(|idx| {
+                        let n = current_g.get_node_index(*idx).unwrap();
+                        current_g.g.neighbors(n).count() == 1
+                    })
+                    .cloned()
+                    .collect();
+                eprintln!("{} ends are possible among {}", selected_intersections.len(), intersections[i].len());
+                Some(selected_intersections)
+            } else {
+                None
+            };
+
+
+            let f_path = if i == 0 {
+                // select_one end  and optimize
+                let selected_end_intersections = selected_end_intersection.as_ref().unwrap();
+                c_path.optimize_finish_among(selected_end_intersections);
+                c_path.final_path(Shrink::Start)
+
+            } else if i != parts.len() - 1 {
+                let selected_end_intersections = selected_end_intersection.as_ref().unwrap();
+                c_path.optimize_start_here_and_finish_among(next_start.unwrap(), selected_end_intersections);
+                let d = c_path.final_path(Shrink::None);
+                generate_code(ofname, &d);
+                todo!()
+            } else {
+                todo!()
+                //c_path.optimize_start_here(next_start.unwrap())
+            };
+
+            
+            next_start = c_path.solution.last()
+                .map(|i| *current_g.node_weight(*i).unwrap());
+
+           // full_path.push( f_path);
+          // generate_code(ofname, &f_path);
+
+        }
+    }
+
+
 }
 
+#[derive(PartialEq)]
+pub enum Shrink {
+    Start,
+    End,
+    Both,
+    None
+}
 // Generate the asm code
 fn generate_code(ofname: &str, path: &PicGraphPath) {
     use std::io::Write;
     let f = File::create(ofname).expect("Unable to create output file");
     let mut w = BufWriter::new(f);
 
-    let mut previous_coord = path.g().node_weight(*path.first().unwrap()).unwrap();
+    let mut previous_coord = *path.first().unwrap();
     let mut previous_code = "".to_owned();
     let mut previous_count = 0;
     writeln!(w, "\tSTART {}, {}", previous_coord.0, previous_coord.1);
-    for i in &path[1..] {
-        let current = path.g().node_weight(*i).unwrap();
+    for current in &path[1..] {
 
         let mut code = "".to_owned();
         if previous_coord.1 == current.1 + 1 {
@@ -305,7 +544,7 @@ fn generate_code(ofname: &str, path: &PicGraphPath) {
             previous_count = 1;
             previous_code = code;
         }
-        previous_coord = current;
+        previous_coord = *current;
     }
     if previous_count == 1 {
         writeln!(w, "\t\t{previous_code} {previous_count}");
@@ -316,9 +555,9 @@ fn generate_code(ofname: &str, path: &PicGraphPath) {
 /// Generate a graph-view of the image. Crash if data is invalid and generate the image appropriatly
 fn build_graph(grid: [[bool; CPC_WIDTH]; CPC_HEIGHT]) -> PicGraph {
     // (x,y) => idx
-    let mut coord2node = std::collections::HashMap::<(usize, usize), NodeIndex>::default();
+    let mut coord2node = std::collections::HashMap::<Coord, NodeIndex>::default();
     // idx => (x,y)
-    let mut node2coord = std::collections::HashMap::<NodeIndex, (usize, usize)>::default();
+    let mut node2coord = std::collections::HashMap::<NodeIndex, Coord>::default();
 
     let mut g = petgraph::Graph::new_undirected();
 
@@ -336,6 +575,38 @@ fn build_graph(grid: [[bool; CPC_WIDTH]; CPC_HEIGHT]) -> PicGraph {
     // connect nodes
     // TODO finally add ALL connections, it may help to have nicer paths
     for ((x, y), idx1) in coord2node.iter() {
+        if *x < (CPC_WIDTH - 1) && grid[*y][*x + 1]  {
+                let idx2 = coord2node.get(&(*x + 1, *y)).unwrap();
+                g.add_edge(*idx1, *idx2, ());
+        }
+
+        if *y < (CPC_HEIGHT - 1) && grid[*y+1][*x]  {
+            let idx2 = coord2node.get(&(*x, *y+1)).unwrap();
+            g.add_edge(*idx1, *idx2, ());
+        }
+        if *y > 0 && grid[*y-1][*x]  {
+            let idx2 = coord2node.get(&(*x, *y-1)).unwrap();
+            g.add_edge(*idx1, *idx2, ());
+        }
+
+        if *x > 0  && grid[*y][*x - 1]  {
+            let idx2 = coord2node.get(&(*x - 1, *y)).unwrap();
+            g.add_edge(*idx1, *idx2, ());
+        }
+
+        if *x < (CPC_WIDTH - 1) &&  *y < (CPC_HEIGHT - 1) &&  grid[*y+1][*x + 1]  {
+            let idx2 = coord2node.get(&(*x + 1, *y+1)).unwrap();
+            g.add_edge(*idx1, *idx2, ());
+        }
+
+        if *x < (CPC_WIDTH - 1) &&  *y >0 &&  grid[*y-1][*x + 1]  {
+            let idx2 = coord2node.get(&(*x + 1, *y-1)).unwrap();
+            g.add_edge(*idx1, *idx2, ());
+        }
+
+
+
+        /*
         if *x < (CPC_WIDTH - 1) {
             if grid[*y][*x + 1] {
                 let idx2 = coord2node.get(&(*x + 1, *y)).unwrap();
@@ -363,17 +634,18 @@ fn build_graph(grid: [[bool; CPC_WIDTH]; CPC_HEIGHT]) -> PicGraph {
                 g.add_edge(*idx1, *idx2, ());
             }
         }
+        */
     }
 
     // Check if there are several components
     let components = petgraph::algo::kosaraju_scc(&g);
     if components.len() == 1 {
-        PicGraph {
+        return PicGraph {
             g,
             grid,
             coord2node,
             node2coord,
-        }
+        };
     } else {
         eprintln!(
             "[ERROR] There are {} components in the picture",
@@ -381,10 +653,13 @@ fn build_graph(grid: [[bool; CPC_WIDTH]; CPC_HEIGHT]) -> PicGraph {
         );
 
         let mut layers = [[0; CPC_WIDTH]; CPC_HEIGHT];
-        for (i, comp) in components.into_iter().enumerate() {
+        for (i, comp) in components.iter().enumerate() {
+            eprintln!("{} pixels", comp.len());
             for idx in comp.into_iter() {
                 let (x, y) = node2coord.get(&idx).unwrap();
-                layers[*y][*x] = i;
+                layers[*y][*x] = i+1;
+
+
             }
         }
 
@@ -396,8 +671,8 @@ fn build_graph(grid: [[bool; CPC_WIDTH]; CPC_HEIGHT]) -> PicGraph {
                 } else {
                     let palette = [
                         Rgb([0, 89, 0]),
-                        Rgb([0, 0, 120]),
                         Rgb([73, 13, 0]),
+                        Rgb([0, 0, 120]),
                         Rgb([138, 3, 79]),
                         Rgb([0, 90, 138]),
                         Rgb([68, 53, 0]),
@@ -412,7 +687,7 @@ fn build_graph(grid: [[bool; CPC_WIDTH]; CPC_HEIGHT]) -> PicGraph {
         }
 
         imgerr.save("components.png").unwrap();
-        panic!("Look at components.png");
+        panic!("Look at components.png, there are {} connected components", components.len());
     }
 }
 
@@ -445,14 +720,18 @@ fn main() {
     let app = clap::Command::new("EtchASketchConvert")
         .about("Generate data files for EtchASketch for CPC")
         .author("Krusty/Benediction")
-        .arg(clap::Arg::new("INPUT").help("Input file to convert (bitmap format)").required(true))
+        .arg(clap::Arg::new("INPUT").help("Input file to convert (bitmap format)").required(true).num_args(1..))
         .arg(clap::Arg::new("OUTPUT").help("Output file to contains the asm code").required(true))
         .arg(clap::Arg::new("EXACT").help("Request an exact solution of the TSP. We don't care of global warming here. Anyway it will fail").action(ArgAction::SetTrue).long("exact"))
         ;
     let args = app.get_matches();
 
+    let ifname : Vec<_> = args.get_many::<String>("INPUT").unwrap()
+            .into_iter()
+            .map(|s| s.as_str())
+            .collect();
     convert(
-        args.get_one::<String>("INPUT").unwrap().as_str(),
+        &ifname,
         args.get_one::<String>("OUTPUT").unwrap().as_str(),
         args.get_flag("EXACT"),
     );

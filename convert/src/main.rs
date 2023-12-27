@@ -9,7 +9,7 @@ use std::{
     fs::File,
     io::BufWriter,
     ops::{Deref, DerefMut},
-    path::Path,
+    path::{Path, Display},
     rc::Rc,
 };
 use walky::{datastructures::AdjacencyMatrix, solvers::approximate::{christofides::christofides, nearest_neighbour::nearest_neighbour}, computation_mode::PAR_COMPUTATION};
@@ -174,20 +174,23 @@ impl<'g> PicCompleteGraphPath<'g> {
         eprintln!("Cost before fixing the end {}", self.cost());
 
         // get the gain of the solution among the standard path, the position of the end node and its coordinates in pixle
-        let (gain, idx, coord, n) = among
+        let (cost, idx, coord, n, modified_solution) = among
             .iter()
             .map(|coord| {
                 let n = self.g.get_node_index(coord).unwrap(); // get the node at the given end coordinate
                 let idx = self.solution.iter().position(|n2| n == *n2).unwrap(); // get its position in the current solution
 
-                let gain = self.swap_gain(idx, self.len() - 1);
-                (gain, idx, coord, n)
+                let mut modified_solution = self.clone();
+                let delta = modified_solution.solution.len() - idx - 1;
+                modified_solution.solution.rotate_right(delta);
+
+                let cost = modified_solution.cost();
+                (cost, idx, coord, n, modified_solution)
             })
-            .min()
+            .min_by_key(|v| v.0)
             .unwrap();
 
-        let delta = self.solution.len() - idx - 1;
-        self.solution.rotate_right(delta);
+        *self = modified_solution;
         eprintln!("Cost after  selecting the end {}", self.cost());
 
         // optimize the path by always keeping the last node fixed
@@ -301,7 +304,7 @@ impl<'g> PicCompleteGraphPath<'g> {
         let _nb_nodes_in_path = self.solution.len();
         let recomputed_cost = self.cost();
 
-        let mut previous_cost = recomputed_cost as i32;
+        let previous_cost = recomputed_cost as i32;
         let start_time = std::time::Instant::now();
 
         let indexes = (start..stop)
@@ -325,7 +328,7 @@ impl<'g> PicCompleteGraphPath<'g> {
                 .min()
                 .unwrap();
 
-            if min_gain < 0 {
+            if min_gain <= 0 {
                 self.swap_path(i, j);
             }else {
                 break;
@@ -374,52 +377,6 @@ impl<'g> PicCompleteGraphPath<'g> {
         return self.optimize_between(0, self.solution.len());
 
 
-        // as an additional step we try to improve a bit with random exchanges
-        let nb_nodes_in_graph = self.distances.len();
-        let _nb_nodes_in_path = self.solution.len();
-        let recomputed_cost = self.cost();
-
-        let mut previous_cost = recomputed_cost as i32;
-        let start_time = std::time::Instant::now();
-        loop {
-            // allow to optimize during 10s
-            if std::time::Instant::now()
-                .duration_since(start_time)
-                .as_secs()
-                > 30
-            {
-                break;
-            }
-
-            let i = rand::random::<usize>() % nb_nodes_in_graph;
-            let j = rand::random::<usize>() % nb_nodes_in_graph;
-
-            // skip if distance is wrong
-            if i == j || (i == j + 1) || (j == i + 1) {
-                continue;
-            }
-            // properly order
-            let (i, j) = (i.min(j), i.max(j));
-
-            // compute the cost of the new solution
-            let gain = self.swap_gain(i, j);
-            // replace it if needed
-            let update = if gain > 0 { false } else { true };
-
-            if update {
-                // exchange i and j et revert between them
-                for d in 0..=(j - i) {
-                    if i + d >= j - d {
-                        break;
-                    }
-                    self.solution.swap(i + d, j - d);
-                }
-                previous_cost += gain;
-            }
-        }
-
-        let recomputed_cost2 = self.cost();
-        eprintln!("\nOptimized from {recomputed_cost} to {previous_cost}/{recomputed_cost2}");
     }
 
     pub fn final_path(&self, shrink: Shrink) -> PicGraphPath {
@@ -618,44 +575,111 @@ pub enum Shrink {
     Both,
     None,
 }
+
+#[derive(PartialEq, Copy, Clone)]
+pub enum Command {
+    Up, Down, 
+    Left, Right,
+    UpLeft, UpRight,
+    DownLeft, DownRight
+}
+
+
+impl std::fmt::Display for Command {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        let code = match self {
+            Command::Up => "U",
+            Command::Down => "D",
+            Command::Left => "L",
+            Command::Right => "R",
+            Command::UpLeft => "UL",
+            Command::UpRight => "UR",
+            Command::DownLeft => "DL",
+            Command::DownRight => "DR",
+        };
+        write!(f, "{code}")
+    }
+}
+
+impl Command {
+    pub fn add_command(other: &mut Option<Self>, extra: Command) {
+        let res = other.map(|previous| {
+            match (previous, extra) {
+                (Command::Up, Command::Left) => Command::UpLeft,
+                (Command::Up, Command::Right) => Command::UpRight,
+                (Command::Down, Command::Left) => Command::DownLeft,
+                (Command::Down, Command::Right) => Command::DownRight,
+                _ => unimplemented!()
+            }
+        })
+            .or_else(move || Some(extra));
+
+        *other = res;
+    }
+}
+
+pub struct FromCommand {
+    coord: (usize, usize),
+    cmd: Command
+}
+
+
 // Generate the asm code
 fn generate_code(ofname: &str, path: &PicGraphPath) {
+
+    let start_coord = *path.first().unwrap();
+
+
+    // build the list of commands
+    let mut commands = Vec::new();
+    let mut previous_coord = start_coord;
+
+    for current_coord in &path[1..] {
+        let mut current_cmd = None;
+        if previous_coord.1 == current_coord.1 + 1 {
+            current_cmd = Some(Command::Up);
+        } else if current_coord.1 == previous_coord.1 + 1 {
+            current_cmd = Some(Command::Down);
+        }
+
+        if previous_coord.0 == current_coord.0 + 1 {
+            Command::add_command(&mut current_cmd, Command::Left);
+        } else if current_coord.0 == previous_coord.0 + 1 {
+            Command::add_command(&mut current_cmd, Command::Right);
+        }
+
+        previous_coord = *current_coord;
+        commands.push(current_cmd.unwrap());
+    }
+
+    // XXX filter the  commands to remove noise
+
+    // aggregate the commands
+    let mut aggregated_commands = Vec::new();
+    for current_command in commands.into_iter() {
+        if aggregated_commands.is_empty() {
+            aggregated_commands.push((current_command, 1));
+        } else {
+            let (previous_command, previous_count) = aggregated_commands.last_mut().unwrap();
+            if *previous_command == current_command {
+                *previous_count += 1;
+            } else {
+                aggregated_commands.push((current_command, 1));
+            }
+        }
+    }
+
+    // generate the code from the list of commands
     use std::io::Write;
     let f = File::create(ofname).expect("Unable to create output file");
     let mut w = BufWriter::new(f);
 
-    let mut previous_coord = *path.first().unwrap();
-    let mut previous_code = "".to_owned();
-    let mut previous_count = 0;
-    writeln!(w, "\tSTART {}, {}", previous_coord.0, previous_coord.1);
-    for current in &path[1..] {
-        let mut code = "".to_owned();
-        if previous_coord.1 == current.1 + 1 {
-            code += "U";
-        } else if current.1 == previous_coord.1 + 1 {
-            code += "D";
-        }
+    writeln!(w, "\tSTART {}, {}", start_coord.0, start_coord.1);
+    for (cmd, count) in aggregated_commands.into_iter() {
+        writeln!(w, "\t\t{cmd} {count}");
 
-        if previous_coord.0 == current.0 + 1 {
-            code += "L";
-        } else if current.0 == previous_coord.0 + 1 {
-            code += "R";
-        }
+    }
 
-        if code == previous_code {
-            previous_count += 1;
-        } else {
-            if !previous_code.is_empty() {
-                writeln!(w, "\t\t{previous_code} {previous_count}");
-            }
-            previous_count = 1;
-            previous_code = code;
-        }
-        previous_coord = *current;
-    }
-    if previous_count == 1 {
-        writeln!(w, "\t\t{previous_code} {previous_count}");
-    }
     writeln!(w, "\tSTOP (void)");
 }
 

@@ -605,7 +605,7 @@ pub fn convert<P: AsRef<Path>>(ifname: &[P], ofname: &str, _exact: bool) {
         generate_code(
             ofname,
             &PicGraphPath {
-                solution: full_path,
+                solution: full_path.into_iter().dedup().collect_vec(),
             },
         );
     }
@@ -800,7 +800,7 @@ fn build_graph(grid: [[bool; CPC_WIDTH]; CPC_HEIGHT]) -> PicGraph {
 // Read the image and return it as a matrix of booleans
 fn get_grid(fname: &Path) -> [[bool; 320]; 200] {
     // read data
-    let img = image::open(fname)
+    let mut img = image::open(fname)
         .expect("Unable to read image")
         .grayscale()
         .into_rgb8();
@@ -808,6 +808,15 @@ fn get_grid(fname: &Path) -> [[bool; 320]; 200] {
     // assert data validity
     assert_eq!(img.width() as usize, CPC_WIDTH, "Wrong image dimension");
     assert_eq!(img.height() as usize, CPC_HEIGHT, "Wrong image dimension");
+    img.pixels_mut().for_each(|p| {
+        *p = if p.0[0] > 127 || p.0[1] > 127 || p.0[2] > 127 {
+            Rgb([255, 255, 255])
+        } else {
+            Rgb([0, 0, 0])
+        };
+    }); // convert in 2 colors
+
+    let img = img;
     let colors = img.pixels().collect::<std::collections::HashSet<_>>();
     assert_eq!(colors.len(), 2, "Only black and white are expected");
 

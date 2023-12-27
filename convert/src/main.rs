@@ -576,7 +576,7 @@ pub enum Shrink {
     None,
 }
 
-#[derive(PartialEq, Copy, Clone)]
+#[derive(PartialEq, Copy, Clone, Debug)]
 pub enum Command {
     Up, Down, 
     Left, Right,
@@ -616,6 +616,20 @@ impl Command {
 
         *other = res;
     }
+
+
+    pub fn rev(&self) -> Self {
+        match self {
+            Command::Up => Command::Down,
+            Command::Down => Command::Up,
+            Command::Left => Command::Right,
+            Command::Right => Command::Left,
+            Command::UpLeft => Command::DownRight,
+            Command::UpRight => Command::DownLeft,
+            Command::DownLeft => Command::UpRight,
+            Command::DownRight => Command::UpLeft,
+        }
+    }
 }
 
 pub struct FromCommand {
@@ -626,6 +640,10 @@ pub struct FromCommand {
 
 // Generate the asm code
 fn generate_code(ofname: &str, path: &PicGraphPath) {
+
+
+
+
 
     let start_coord = *path.first().unwrap();
 
@@ -653,6 +671,22 @@ fn generate_code(ofname: &str, path: &PicGraphPath) {
     }
 
     // XXX filter the  commands to remove noise
+    loop {
+        let pattern = [Command::Left, Command::Right, Command::Left, Command::Right];
+
+        // L L R L
+        for idx in 0..(commands.len()-pattern.len()) {
+            if  commands[idx+0] == commands[idx+1] &&
+                commands[idx+0] == commands[idx+3] &&
+                commands[idx+0] == commands[idx+2].rev() {
+                    panic!("Need to handle this case {:?}", &commands[idx..(idx+4)]);
+                }
+        }
+
+
+        eprintln!("Nothing to optiize");
+        break
+    }
 
     // aggregate the commands
     let mut aggregated_commands = Vec::new();

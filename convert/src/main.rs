@@ -1,6 +1,7 @@
 use graphalgs::shortest_path::seidel;
 use indicatif::ParallelProgressIterator;
 use itertools::Itertools;
+use ordered_float::OrderedFloat;
 use rayon::iter::{ParallelBridge, ParallelIterator, IntoParallelRefIterator};
 use std::{
     collections::{HashMap, HashSet, VecDeque},
@@ -11,7 +12,7 @@ use std::{
     path::Path,
     rc::Rc,
 };
-use walky::datastructures::AdjacencyMatrix;
+use walky::{datastructures::AdjacencyMatrix, solvers::approximate::{christofides::christofides, nearest_neighbour::nearest_neighbour}, computation_mode::PAR_COMPUTATION};
 
 use clap::ArgAction;
 use image::{self, GenericImageView, Rgb, RgbImage};
@@ -99,7 +100,7 @@ impl PicGraph {
 
         // XXX modify the distances to make long distances even worst
         distances.iter_mut().par_bridge()
-            .for_each(|row| row.iter_mut().for_each(|val| *val = val.pow(2) ));
+            .for_each(|row| row.iter_mut().for_each(|val| *val = val.pow(2)*10 ));
 
         // 2nd step compute TSP on the complete graph where all nodes are connected to all others wieghted by the appropriate distance
         dbg!("Start to compute TSP");
@@ -111,9 +112,20 @@ impl PicGraph {
             }
         }
 
-        let (tsp_cost, tsp_solution) = walky::solvers::approximate::christofides::christofides::<
-            { walky::computation_mode::PAR_COMPUTATION },
-        >(&adj);
+        // try christfies and nearest neighbourgs and keep the best
+        let (tsp_cost, tsp_solution) = (0..2).par_bridge()
+        .map(|i| {
+            let (tsp_cost, tsp_solution) = 
+            
+            if i==0 {
+                christofides::<{PAR_COMPUTATION }>(&adj)
+            }
+            else {
+                nearest_neighbour::<{PAR_COMPUTATION}>(&adj)
+            };
+
+            (OrderedFloat::from(tsp_cost), tsp_solution)
+        }).min().unwrap();
 
         dbg!("TSP cost", tsp_cost);
         let tsp_solution = tsp_solution;
@@ -268,12 +280,6 @@ impl<'g> PicCompleteGraphPath<'g> {
         // optimize the path by always keeping the last node fixed
         // the optimisation is done 4 times to try to overcome a low quality
         // due to the various constraints
-        self.optimize_between(1, (self.len() - 2) / 2);
-        self.optimize_between((self.len() - 2) / 2, self.len() - 2);
-        self.optimize_between(
-            (self.len() - 2) / 2 - (self.len() - 2) / 4,
-            self.len() - 2 - (self.len() - 2) / 4,
-        );
         self.optimize_between(1, self.len() - 2);
         assert_eq!(
             Some(ne),
@@ -311,12 +317,8 @@ impl<'g> PicCompleteGraphPath<'g> {
                 .as_secs()
                 > OPTIMISATION_DURATION
             {
-                //break;
+                break;
             }
-
-            let rand_start = start;
-            let rand_stop = (self.solution.len() - stop);
-
 
             let (min_gain, i, j) = indexes.par_iter().progress()
                 .map(|(i, j)| (self.swap_gain(*i, *j), *i, *j))

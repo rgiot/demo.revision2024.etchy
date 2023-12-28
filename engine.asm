@@ -82,12 +82,13 @@ state_wait
 ; Hande the clearing of the picture
 state_shake
 
+	; slow down the shaking
 	ld a, 1 : inc a : and 0b11 : ld (state_shake+1), a : ret nz
 
 	ld hl, unaligned_data.shake_table
 .table_address equ $-2
 	ld a, (hl)
-	or a : jr z, .finished
+	or a : jr z, .restart
 .continue 
 
 	ld (start.horizontal_position_value_address), a
@@ -109,7 +110,7 @@ state_shake
 
 
 	ret
-.finished
+.restart
 	ld hl, unaligned_data.shake_table
 	ld (.table_address), hl
 	ret
@@ -214,16 +215,28 @@ store_current_point_in_trace
 ; Input: 
 ;  -HL: address
 prepare_new_picture
-	ld (compute_next_point.picture_address), hl
+	ld (compute_next_point.picture_address), hl ; save the address of the picture
+
+	; retore various flags
 	ld a, 1
 	ld (compute_next_point.first_flag), a
 	ld (compute_next_point.current_repetition_counter), a
+
+
 	ld bc, VIEWING_DURATION + 1 : dec bc : ld (state_wait.wait_count), bc ; XXX extra opcodes for better  crunch !!!
-	ld hl, unaligned_data.shake_table : ld (state_shake.table_address), hl
+
+	;ld hl, unaligned_data.shake_table : ld (state_shake.table_address), hl
 	ld hl, state_drawing : ld (start.state_routine_address), hl
-	ld hl, aligned_data.trace_buffer : ld de, aligned_data.trace_buffer + 1 : ld bc, 256-1 : ld (hl), 0xff : ldir
-	ld hl, 0xc000 : ld (state_shake.start_clean_address), hl
+	ld hl, aligned_data.trace_buffer : ld (cover_previous_trace.buffer_pointer), hl : ld (store_current_point_in_trace.buffer_pointer), hl
+
+	ld hl, aligned_data.trace_buffer : ld de, hl : inc de : ld bc, 256 : ld (hl), 0xff : ldir
+
+	; allow to draw the trace
 	xor a : ld (state_drawing.state_drawing_draw_trace_ret_opcode_address), a
+
+	; restore shaker stuff
+	ld a, 0x2e : ld (start.horizontal_position_value_address), a
+	ld hl, 0xc000 : ld (state_shake.start_clean_address), hl
 	ret
 
 
@@ -423,7 +436,7 @@ init
 
 	; TODO remove if already done by system
 .clear_screen
-	ld hl, SCREEN_MEMORY_ADDRESS : ld de, SCREEN_MEMORY_ADDRESS+1
+	ld hl, SCREEN_MEMORY_ADDRESS : ld de, hl : inc de
 	ld bc, 0x4000-1
 	ld (hl), 0
 	ldir

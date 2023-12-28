@@ -8,17 +8,14 @@
 BINARY_START
 
 	di
-		ld hl, 0xc9fb
-		ld (0x38), hl
-		defs 10
+		ld hl, 0xc9fb : ld (0x38), hl
+		call engine.init
 	ei
 	ld sp, $
 
-	call engine.init
-	ld hl, test_picture : call engine.prepare_new_picture
-	call engine.start
-	jp $
-
+	
+	call engine.select_new_picture
+	jp engine.start
 
 	include "commands.asm"
 	include "engine.asm"
@@ -26,15 +23,17 @@ BINARY_START
 test_picture
 test_picture_start
 ;	include "test_picture.asm"
-	include "convert/small_connex.asm"
-;	include "convert/multiple.asm"
+;	include "convert/small_connex.asm"
+;	include "convert/title.asm"
+	include "convert/multiple.asm"
 test_picture_stop
 
+/*
 	print "Memory dump of picture"
 	repeat (test_picture_stop-test_picture_start), i, 0
 		print {hex2}memory(test_picture + {i}), "/", {bin8}memory(test_picture + {i})
 	rend
-
+*/
 
 
 toalign_data
@@ -72,13 +71,13 @@ aligned_data equ ($+2+2+256) & 0xff00
 .pixel_lut_pen3 equ aligned_data + 2*256
 .screen_addresses equ aligned_data + 3*256
 .trace_buffer equ aligned_data + 5*256
-
+VERY_LASTE_BYTE equ aligned_data + 6*256
 
 
 	print "UNCRUNHED VERSION FROM ", {hex}BINARY_START, " TO ", {hex}BINARY_END, " FOR ", (BINARY_END-BINARY_START)/1024, " Kbi"
 
 
-	assert $< 0x8000, "0x8000 area is supposed to contains uncrunched data"
+	assert VERY_LASTE_BYTE< 0x8000, "0x8000 area is supposed to contains uncrunched data"
 
 
 

@@ -7,8 +7,6 @@
 	org 0x1000
 	RUN $
 
-	BREAKPOINT
-
 BINARY_START
 ADDRESS equ 0x4000
 
@@ -24,7 +22,7 @@ crunched_data
 	incbin "etch.shrink"
 	include "./Shrinkler4.6NoParityContext/Z80/deshrink_np.asm"
 
-	assert $<ADDRESS
+	assert $+0x400<ADDRESS ; Remember there is a buffer there
 
 BINARY_END
 

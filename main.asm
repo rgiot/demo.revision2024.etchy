@@ -35,48 +35,44 @@ test_picture_stop
 		print {hex2}memory(test_picture + {i}), "/", {bin8}memory(test_picture + {i})
 	rend
 
-unaligned_data
-.shake_table
-	repeat 5
-	db 0x2f, 0x2d, 0x2e, 0x2c, 0x30
-	endr
-	db 0x2e, 0 ; this last line must not change
-.y db 0 : assert SCREEN_VERTICAL_RESOLUTION < 256
-	db high(aligned_data.screen_addresses)
-.x_pixel_pos db 0
-	db 0
-.x_byte_delta db 0
-	db 0
 
-aligned_data
-	align 256
+
+toalign_data
 .mask
 	db 0b01110111
 	db 0b10111011
 	db 0b11011101
 	db 0b11101110
-	align 256
-	; mask / value
 .pixel_lut_pen1
 .pixel0_pen1 db 0b10000000
 .pixel1_pen1 db 0b01000000
 .pixel2_pen1 db 0b00100000
 .pixel3_pen1 db 0b00010000
-	align 256
 .pixel_lut_pen3
 .pixel0_pen3 db 0b10001000
 .pixel1_pen3 db 0b01000100
 .pixel2_pen3 db 0b00100010
 .pixel3_pen3 db 0b00010001
-; Read a 16bits number here provides the address in the table for this vertical position
 
-	; 256 bytes for low byte of address followed by 256 bytes for hight byte of address
-	align 256
-.screen_addresses defs 256 + 256 ; TODO do not allocate when assembling
-	align 256
-.trace_buffer
-	defs 256
+unaligned_data
+.shake_table
+	db 0x2f, 0x2d, 0x2e, 0x2c, 0x30
+	db 0x2e, 0 ; this last line must not change
+.y db 0 : assert SCREEN_VERTICAL_RESOLUTION < 256
+	db high(aligned_data.screen_addresses)
+.x_pixel_pos equ $ 
+.x_byte_delta equ $ +2
 BINARY_END
+
+
+
+aligned_data equ ($+2+2+256) & 0xff00
+.mask equ aligned_data + 0*256
+.pixel_lut_pen1 equ aligned_data + 1*256
+.pixel_lut_pen3 equ aligned_data + 2*256
+.screen_addresses equ aligned_data + 3*256
+.trace_buffer equ aligned_data + 5*256
+
 
 
 	print "UNCRUNHED VERSION FROM ", {hex}BINARY_START, " TO ", {hex}BINARY_END, " FOR ", (BINARY_END-BINARY_START)/1024, " Kbi"

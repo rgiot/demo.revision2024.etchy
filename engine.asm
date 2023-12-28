@@ -404,6 +404,12 @@ plot_current_point
 ;;
 ; Initialize the various tables and variables needed for the project
 init
+	ld hl, toalign_data
+	ld de, aligned_data.mask : ld bc, 4 : ldir
+	ld de, aligned_data.pixel_lut_pen1 : ld bc, 4 : ldir
+	ld de, aligned_data.pixel_lut_pen3 : ld bc, 4 : ldir
+	
+	
 .init_screen_table
 	ld de, SCREEN_MEMORY_ADDRESS
 	ld hl, aligned_data.screen_addresses

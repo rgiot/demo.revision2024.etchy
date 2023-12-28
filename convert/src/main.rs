@@ -1,4 +1,4 @@
-use graphalgs::shortest_path::seidel;
+use graphalgs::{shortest_path::seidel, connect::articulation_points};
 use indicatif::ParallelProgressIterator;
 use itertools::Itertools;
 use ordered_float::OrderedFloat;
@@ -20,15 +20,17 @@ use petgraph::{
     self,
     data::Build,
     stable_graph::{IndexType, NodeIndex},
-    Graph, Undirected,
+    Graph, Undirected, algo::connected_components,
 };
 
 const CPC_WIDTH: usize = 320;
 const CPC_HEIGHT: usize = 200;
-const OPTIMISATION_DURATION: u64 = 15;
+const OPTIMISATION_DURATION: u64 = 60*60;
 
 type Coord = (usize, usize);
 
+
+#[derive(Clone)]
 pub struct PicGraph {
     g: Graph<Coord, (), Undirected>,
     grid: [[bool; 320]; 200],
@@ -510,8 +512,10 @@ pub fn convert<P: AsRef<Path>>(ifname: &[P], ofname: &str, _exact: bool) {
 
         let mut already_drawned = HashSet::<Coord>::new();
         let mut next_start = None;
-        for (i, current_g) in parts.iter().enumerate() {
-            let mut c_path = current_g.compute_path();
+        for i in 0..parts.len() {
+            let current_g = & parts[i];
+
+
 
             let selected_end_intersection = if i != parts.len() - 1 {
                 let selected_intersections: HashSet<Coord> = intersections[i]
@@ -531,6 +535,57 @@ pub fn convert<P: AsRef<Path>>(ifname: &[P], ofname: &str, _exact: bool) {
             } else {
                 None
             };
+
+
+            let current_g = &mut parts[i];
+
+
+            // reduce the graph if possible
+            if i != 0 {
+                // search the pixels that could be removed
+                let articulations : HashSet<Coord> = articulation_points(&current_g.g)
+                    .into_iter()
+                    .map(|idx| *current_g.node2coord.get(&idx).unwrap())
+                    .collect();
+                let coords = current_g.coords();
+                let removable : HashSet::<Coord> = already_drawned.intersection(&coords).cloned().collect();
+                let removable : HashSet<_> = removable.difference(&articulations).cloned().collect();
+
+                let removable = if let Some(selected) = &selected_end_intersection {
+                    removable.difference(selected).cloned().collect()
+                } else {
+                    removable
+                };
+
+                eprintln!("At maximum {}-1 could be removed from the graph", removable.len());
+
+
+                let mut removed = Vec::new();
+                for coord in removable.into_iter() {
+                    let idx = *current_g.coord2node.get(&coord).unwrap();
+                    let new_articulation = articulation_points(&current_g.g);
+
+                    if ! new_articulation.iter().any(|c| *c == idx) {
+                        removed.push(idx);
+                        current_g.g.remove_node(idx);
+                        current_g.node2coord.remove(&idx);
+                        current_g.coord2node.remove(&coord);
+                        
+                    }
+                }
+                eprintln!("{} nodes have been removed", removed.len());
+                assert_eq!(
+                    connected_components(&current_g.g),
+                    1
+                );
+
+            }
+
+            let current_g  = &parts[i];
+            let mut c_path = current_g.compute_path();
+
+
+
 
             let mut f_path = if i == 0 {
                 // select one end  and optimize
@@ -557,6 +612,8 @@ pub fn convert<P: AsRef<Path>>(ifname: &[P], ofname: &str, _exact: bool) {
                 .map(|i| *current_g.node_weight(*i).unwrap());
 
             full_path.append(&mut f_path.solution);
+
+            already_drawned.extend(current_g.coords()); // Add to the lsit of drawned pixels those dranwed now
         }
 
         generate_code(

@@ -728,7 +728,7 @@ fn generate_code(ofname: &str, path: &PicGraphPath) {
     }
 
     // XXX filter the  commands to remove noise
-    loop {
+    'l: loop {
         let pattern = [Command::Left, Command::Right, Command::Left, Command::Right];
 
         // L L R L
@@ -736,8 +736,14 @@ fn generate_code(ofname: &str, path: &PicGraphPath) {
             if  commands[idx+0] == commands[idx+1] &&
                 commands[idx+0] == commands[idx+3] &&
                 commands[idx+0] == commands[idx+2].rev() {
-                    panic!("Need to handle this case {:?}", &commands[idx..(idx+4)]);
-                }
+                    eprintln!("Handle this case {:?} by removing 2 steps", &commands[idx..(idx+4)]);
+
+                    commands.remove(idx + 1);
+                    commands.remove(idx + 1);
+                    continue 'l;
+            }
+
+
         }
 
 

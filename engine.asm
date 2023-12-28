@@ -84,7 +84,7 @@ state_shake
 
 	ld a, 1 : inc a : and 0b11 : ld (state_shake+1), a : ret nz
 
-	ld hl, data.shake_table
+	ld hl, unaligned_data.shake_table
 .table_address equ $-2
 	ld a, (hl)
 	or a : jr z, .finished
@@ -110,7 +110,7 @@ state_shake
 
 	ret
 .finished
-	ld hl, data.shake_table
+	ld hl, unaligned_data.shake_table
 	ld (.table_address), hl
 	ret
 
@@ -125,7 +125,7 @@ select_new_picture
 ; Handle the drawing of the picture
 state_drawing
 .state_drawing_recover_trace
-	ld a, high(data.pixel_lut_pen3) : ld (plot_current_point.lut_for_pen), a
+	ld a, high(aligned_data.pixel_lut_pen3) : ld (plot_current_point.lut_for_pen), a
 	call cover_previous_trace
 
 
@@ -146,7 +146,7 @@ state_drawing
 	nop
 .state_drawing_draw_trace_ret_opcode_address equ $-1
 
-	ld a, high(data.pixel_lut_pen1) : ld (plot_current_point.lut_for_pen), a
+	ld a, high(aligned_data.pixel_lut_pen1) : ld (plot_current_point.lut_for_pen), a
 	;ld b, TRACE_SIZE
 	repeat TRACE_SIZE
 ;.pixels_loop2
@@ -162,11 +162,11 @@ state_drawing
 
 cover_previous_trace
 .save_point_variables
-       ld a, (data.y) : push af
-       ld a, (data.x_byte_delta) : push af
-       ld a, (data.x_pixel_pos) : push af
+       ld a, (unaligned_data.y) : push af
+       ld a, (unaligned_data.x_byte_delta) : push af
+       ld a, (unaligned_data.x_pixel_pos) : push af
 
-       ld hl, data.trace_buffer
+       ld hl, aligned_data.trace_buffer
 .buffer_pointer equ $-2
 
        ld b, TRACE_SIZE
@@ -174,9 +174,9 @@ cover_previous_trace
        ld a, (hl) : cp 0xff : jr z, .finished
 
 .erase_points_variables
-		ld a, (hl) : ld (data.y), a : inc l
-		ld a, (hl) : ld (data.x_byte_delta), a : inc l
-		ld a, (hl) : ld (data.x_pixel_pos), a : inc l
+		ld a, (hl) : ld (unaligned_data.y), a : inc l
+		ld a, (hl) : ld (unaligned_data.x_byte_delta), a : inc l
+		ld a, (hl) : ld (unaligned_data.x_pixel_pos), a : inc l
 
 		push hl
 			call plot_current_point
@@ -188,21 +188,21 @@ cover_previous_trace
 	ld (.buffer_pointer), hl
 
 .restore_point_variables
-       pop af : ld (data.x_pixel_pos), a
-       pop af : ld (data.x_byte_delta), a
-       pop af : ld (data.y), a
+       pop af : ld (unaligned_data.x_pixel_pos), a
+       pop af : ld (unaligned_data.x_byte_delta), a
+       pop af : ld (unaligned_data.y), a
 
        ret
 
 ;;
 ; Store the current point information in the trace buffer
 store_current_point_in_trace
-		ld hl, data.trace_buffer
+		ld hl, aligned_data.trace_buffer
 .buffer_pointer equ $-2
 
-       ld a, (data.y) : ld (hl), a : inc l
-       ld a, (data.x_byte_delta) : ld (hl), a : inc l
-       ld a, (data.x_pixel_pos) : ld (hl), a : inc l
+       ld a, (unaligned_data.y) : ld (hl), a : inc l
+       ld a, (unaligned_data.x_byte_delta) : ld (hl), a : inc l
+       ld a, (unaligned_data.x_pixel_pos) : ld (hl), a : inc l
 
        ld (.buffer_pointer), hl
 
@@ -219,9 +219,9 @@ prepare_new_picture
 	ld (compute_next_point.first_flag), a
 	ld (compute_next_point.current_repetition_counter), a
 	ld bc, VIEWING_DURATION + 1 : dec bc : ld (state_wait.wait_count), bc ; XXX extra opcodes for better  crunch !!!
-	ld hl, data.shake_table : ld (state_shake.table_address), hl
+	ld hl, unaligned_data.shake_table : ld (state_shake.table_address), hl
 	ld hl, state_drawing : ld (start.state_routine_address), hl
-	ld hl, data.trace_buffer : ld de, data.trace_buffer + 1 : ld bc, 256-1 : ld (hl), 0xff : ldir
+	ld hl, aligned_data.trace_buffer : ld de, aligned_data.trace_buffer + 1 : ld bc, 256-1 : ld (hl), 0xff : ldir
 	ld hl, 0xc000 : ld (state_shake.start_clean_address), hl
 	xor a : ld (state_drawing.state_drawing_draw_trace_ret_opcode_address), a
 	ret
@@ -243,14 +243,14 @@ compute_next_point
 	xor a : ld (.first_flag), a 
 
 	; get pixel horizontal position
-	ld a, (hl) : and 0b11 : ld (data.x_pixel_pos), a
+	ld a, (hl) : and 0b11 : ld (unaligned_data.x_pixel_pos), a
 
 	; get screen horizontal byte delta
-	ld a, (hl) : srl a : srl a : ld (data.x_byte_delta), a
+	ld a, (hl) : srl a : srl a : ld (unaligned_data.x_byte_delta), a
 
 	; get vertical position
 	inc hl 
-	ld a, (hl) : ld (data.y), a
+	ld a, (hl) : ld (unaligned_data.y), a
 
 	; save buffer pointer
 	inc hl
@@ -333,48 +333,48 @@ compute_next_point
 
 .handle_up
 	exa
-		ld a, (data.y) ; get y position
+		ld a, (unaligned_data.y) ; get y position
 		or a : jr z, .handle_exit_common ; leave if impossible to decrease
-		dec a : ld (data.y), a ; store updated position
+		dec a : ld (unaligned_data.y), a ; store updated position
 .handle_exit_common
 	exa
 	ret
 
 .handle_down
 	exa
-		ld a, (data.y) ; get y position
+		ld a, (unaligned_data.y) ; get y position
 		cp MAX_POS_Y : jr z, .handle_exit_common
-		inc a : ld (data.y), a
+		inc a : ld (unaligned_data.y), a
 		jr .handle_exit_common
 
 .handle_left
 	exa
-		ld a, (data.x_pixel_pos)
+		ld a, (unaligned_data.x_pixel_pos)
 		or a : jr z, .handle_left_previous_byte
 .handle_left_previous_pixel
-		dec a : ld (data.x_pixel_pos), a
+		dec a : ld (unaligned_data.x_pixel_pos), a
 		jr .handle_exit_common
 .handle_left_previous_byte
-		ld a, (data.x_byte_delta)
+		ld a, (unaligned_data.x_byte_delta)
 		or a : jr z, .handle_exit_common ; no change can be done
 .handle_left_previous_byte_possible
-		dec a : ld (data.x_byte_delta), a
-		ld a, 3 : ld (data.x_pixel_pos), a
+		dec a : ld (unaligned_data.x_byte_delta), a
+		ld a, 3 : ld (unaligned_data.x_pixel_pos), a
 		jr .handle_exit_common
 
 .handle_right
 	exa
-		ld a, (data.x_pixel_pos)
+		ld a, (unaligned_data.x_pixel_pos)
 		cp 3 : jr z, .handle_right_next_byte
 .handle_right_next_pixel
-		inc a : ld (data.x_pixel_pos), a
+		inc a : ld (unaligned_data.x_pixel_pos), a
 		jr .handle_exit_common
 .handle_right_next_byte
-		ld a, (data.x_byte_delta)
+		ld a, (unaligned_data.x_byte_delta)
 		CP MAX_POS_X_BYTE_RESOLUTION : jr z, .handle_exit_common ; no change can be done
 .handle_right_next_byte_possible
-		inc a : ld (data.x_byte_delta), a
-		xor a : ld (data.x_pixel_pos), a
+		inc a : ld (unaligned_data.x_byte_delta), a
+		xor a : ld (unaligned_data.x_pixel_pos), a
 		jr .handle_exit_common
 
 ;;
@@ -382,19 +382,19 @@ compute_next_point
 ; Modified : HL, DE, B
 plot_current_point
 ; get line address
-	ld hl, (data.y)
+	ld hl, (unaligned_data.y)
 	ld e, (hl) : inc h : ld d, (hl)
 ; get column delta
-	ld hl, (data.x_byte_delta)
+	ld hl, (unaligned_data.x_byte_delta)
 	add hl, de ; <= HL = screen address at the right byte
 ; get pixel position
-	ld a, (data.x_pixel_pos)
+	ld a, (unaligned_data.x_pixel_pos)
 ; mask the current byte to keep only the other pielx
-	ld d, high(data.mask) 
+	ld d, high(aligned_data.mask) 
 	ld e, a
 	ld a, (de) : and (hl) : ld (hl), a
 ; inject the new pixel
-	ld d, high(data.pixel_lut_pen1)
+	ld d, high(aligned_data.pixel_lut_pen1)
 .lut_for_pen equ $-1
 	ld a, (de) ; get pixel value
 	or (hl) : ld (hl), a ; merge it
@@ -406,7 +406,7 @@ plot_current_point
 init
 .init_screen_table
 	ld de, SCREEN_MEMORY_ADDRESS
-	ld hl, data.screen_addresses
+	ld hl, aligned_data.screen_addresses
 	ld b, 256
 .init_screen_table_loop
 		push bc

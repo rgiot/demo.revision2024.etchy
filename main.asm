@@ -35,12 +35,20 @@ test_picture_stop
 		print {hex2}memory(test_picture + {i}), "/", {bin8}memory(test_picture + {i})
 	rend
 
-data
+unaligned_data
 .shake_table
 	repeat 5
 	db 0x2f, 0x2d, 0x2e, 0x2c, 0x30
 	endr
 	db 0x2e, 0 ; this last line must not change
+.y db 0 : assert SCREEN_VERTICAL_RESOLUTION < 256
+	db high(aligned_data.screen_addresses)
+.x_pixel_pos db 0
+	db 0
+.x_byte_delta db 0
+	db 0
+
+aligned_data
 	align 256
 .mask
 	db 0b01110111
@@ -61,12 +69,7 @@ data
 .pixel2_pen3 db 0b00100010
 .pixel3_pen3 db 0b00010001
 ; Read a 16bits number here provides the address in the table for this vertical position
-.y db 0 : assert SCREEN_VERTICAL_RESOLUTION < 256
-	db high(.screen_addresses)
-.x_pixel_pos db 0
-	db 0
-.x_byte_delta db 0
-	db 0
+
 	; 256 bytes for low byte of address followed by 256 bytes for hight byte of address
 	align 256
 .screen_addresses defs 256 + 256 ; TODO do not allocate when assembling

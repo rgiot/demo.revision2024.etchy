@@ -15,10 +15,11 @@ SCREEN_CRTC_ADDRESS equ 0x3000
 
 NB_DRAWN_PER_FRAME equ 6
 TRACE_SIZE equ 3
+VIEWING_DURATION equ 5 ; 50*5
 
 PEN0 equ 0x40
 PEN1 equ 0x4b
-PEN2 equ 0x45
+PEN2 equ 0x4c
 PEN3 equ 0x54
 
        assert TRACE_SIZE <= NB_DRAWN_PER_FRAME
@@ -35,6 +36,14 @@ start
 	in a, (c)
 	rra : jr nc, .vsync_loop
 
+
+;; no compensation because we are in the vbl
+.set_horizontal_position
+	ld bc, 0xbc00 + CRTC_REG_HORIZONTAL_SYNC_POSITION
+	ld a,  0x2e
+.horizontal_position_value_address equ $-1
+	out (c), c : inc b : out (c), a
+
 .set_color
 	ld bc, 0x7f00 : ld hl, PEN0*256 + PEN1 : ld de, PEN2*256+PEN3
 	out (c), c: out (c), h : inc c
@@ -43,13 +52,78 @@ start
 	out (c), c: out (c), e
 
 
-	call .state_drawing
+	halt : halt
+;	ld bc, 0x7f10 : out (c), c : ld bc, 0x7f4b : out (c), c
+	call state_drawing
+.state_routine_address equ $-2
+;	ld bc, 0x7f10 : out (c), c : ld bc, 0x7f00 + PEN2 : out (c), c
+
 
 	jp .frame_loop
 
 
 
-.state_drawing
+;;
+; Does nothing during a while
+state_wait
+	ld bc, VIEWING_DURATION + 1
+.wait_count equ $-2
+	dec bc
+	ld (.wait_count), bc
+	
+	ld a, b : cp c
+	ret nz
+
+	ld hl, state_shake
+	ld (start.state_routine_address), hl
+	ret
+
+;;
+; Hande the clearing of the picture
+state_shake
+
+	ld a, 1 : inc a : and 0b11 : ld (state_shake+1), a : ret nz
+
+	ld hl, data.shake_table
+.table_address equ $-2
+	ld a, (hl)
+	or a : jr z, .finished
+.continue 
+
+	ld (start.horizontal_position_value_address), a
+	inc hl : ld (.table_address), hl
+
+
+	ld hl, 0xc000
+.start_clean_address equ $-2
+	ld de, hl : inc de
+	ld (hl), 0
+	ld bc, 0x800-1
+	ldir
+	inc hl
+	ld (.start_clean_address), hl
+
+	ld a, h : or l : ret nz
+
+	call select_new_picture
+
+
+	ret
+.finished
+	ld hl, data.shake_table
+	ld (.table_address), hl
+	ret
+
+
+select_new_picture
+	ld hl, test_picture
+	call prepare_new_picture
+	ret
+
+
+;;
+; Handle the drawing of the picture
+state_drawing
 .state_drawing_recover_trace
 	ld a, high(data.pixel_lut_pen3) : ld (plot_current_point.lut_for_pen), a
 	call cover_previous_trace
@@ -144,6 +218,12 @@ prepare_new_picture
 	ld a, 1
 	ld (compute_next_point.first_flag), a
 	ld (compute_next_point.current_repetition_counter), a
+	ld bc, VIEWING_DURATION + 1 : dec bc : ld (state_wait.wait_count), bc ; XXX extra opcodes for better  crunch !!!
+	ld hl, data.shake_table : ld (state_shake.table_address), hl
+	ld hl, state_drawing : ld (start.state_routine_address), hl
+	ld hl, data.trace_buffer : ld de, data.trace_buffer + 1 : ld bc, 256-1 : ld (hl), 0xff : ldir
+	ld hl, 0xc000 : ld (state_shake.start_clean_address), hl
+	xor a : ld (state_drawing.state_drawing_draw_trace_ret_opcode_address), a
 	ret
 
 
@@ -243,9 +323,12 @@ compute_next_point
 	endif
 	ret
 .finished
-	; deactivate trace drawing
+	; deactivate trace drawing (state wait does a bit of drawing)
 	ld a, opcode(ret)
-	ld (start.state_drawing_draw_trace_ret_opcode_address), a
+	ld (state_drawing.state_drawing_draw_trace_ret_opcode_address), a
+
+	ld hl, state_wait
+	ld (start.state_routine_address), hl
 	ret
 
 .handle_up

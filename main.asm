@@ -1,6 +1,10 @@
 	org 0x4000
 	run $
 
+
+
+	include "inner://crtc.asm"
+
 BINARY_START
 
 	di
@@ -32,6 +36,11 @@ test_picture_stop
 	rend
 
 data
+.shake_table
+	repeat 5
+	db 0x2f, 0x2d, 0x2e, 0x2c, 0x30
+	endr
+	db 0x2e, 0 ; this last line must not change
 	align 256
 .mask
 	db 0b01110111
@@ -63,7 +72,7 @@ data
 .screen_addresses defs 256 + 256 ; TODO do not allocate when assembling
 	align 256
 .trace_buffer
-	defs 256, 0xff
+	defs 256
 BINARY_END
 
 

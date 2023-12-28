@@ -117,7 +117,17 @@ state_shake
 
 
 select_new_picture
-	ld hl, test_picture
+	ld hl, unaligned_data.pictures
+.restart
+	ld e, (hl) : inc hl : ld d, (hl) : inc hl
+	ld (select_new_picture+1), hl
+
+	ld a, d : or e : jr nz, .continue
+	ld hl, unaligned_data.pictures
+	jr .restart
+.continue
+
+	ex de, hl
 	call prepare_new_picture
 	ret
 
@@ -170,6 +180,7 @@ cover_previous_trace
        ld hl, aligned_data.trace_buffer
 .buffer_pointer equ $-2
 
+	
        ld b, TRACE_SIZE
 .loop
        ld a, (hl) : cp 0xff : jr z, .finished
@@ -200,11 +211,15 @@ cover_previous_trace
 store_current_point_in_trace
 		ld hl, aligned_data.trace_buffer
 .buffer_pointer equ $-2
-
+/*
+		ld de, unaligned_data.y
+		ld a, (de) : ld (hl), a : inc l : inc de : inc de
+		ld a, (de) : ld (hl), a : inc l : inc de
+		ld a, (de) : ld (hl), a : inc l : inc de
+*/
        ld a, (unaligned_data.y) : ld (hl), a : inc l
        ld a, (unaligned_data.x_byte_delta) : ld (hl), a : inc l
        ld a, (unaligned_data.x_pixel_pos) : ld (hl), a : inc l
-
        ld (.buffer_pointer), hl
 
        ret
@@ -417,6 +432,7 @@ plot_current_point
 ;;
 ; Initialize the various tables and variables needed for the project
 init
+.copy_data_in_aligned_area
 	ld hl, toalign_data
 	ld de, aligned_data.mask : ld bc, 4 : ldir
 	ld de, aligned_data.pixel_lut_pen1 : ld bc, 4 : ldir
@@ -430,7 +446,18 @@ init
 .init_screen_table_loop
 		push bc
 			ld (hl), e : inc h : ld (hl), d : dec h : inc l
-			ex de, hl : call bc26 : ex de, hl
+			ex de, hl 
+
+				ld a,8 
+				add h 
+				ld h,a 
+				jr nc, .endbc26
+				push bc
+				ld bc,#c050
+				add hl,bc 
+				pop bc
+.endbc26			
+			 ex de, hl
 		pop bc
 	djnz .init_screen_table_loop
 
@@ -450,18 +477,6 @@ init
 	ret
 
 
-;;
-; BC26 for a standard screen.
-; TOBE adapted when using a fullscreen stuff
-; https://www.cpcwiki.eu/index.php/Programming:Next_/_previous_line_calculation
-bc26
-	ld a,8 
-	add h 
-	ld h,a 
-	ret nc
-	ld bc,#c050
-	add hl,bc 
-	ret
 
 endmodule
 

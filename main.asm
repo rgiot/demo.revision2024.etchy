@@ -20,13 +20,13 @@ BINARY_START
 	include "commands.asm"
 	include "engine.asm"
 
-test_picture
-test_picture_start
 ;	include "test_picture.asm"
-;	include "convert/small_connex.asm"
-;	include "convert/title.asm"
+picture1
+	include "convert/small_connex.asm"
+picture2
+	include "convert/title.asm"
+picture3
 	include "convert/multiple.asm"
-test_picture_stop
 
 /*
 	print "Memory dump of picture"
@@ -54,18 +54,24 @@ toalign_data
 .pixel3_pen3 db 0b00010001
 
 unaligned_data
+.pictures
+	dw picture1
+	dw picture2
+	dw picture3
+	dw 00
+.backup_area defs 4
 .shake_table
 	db 0x2f, 0x2d, 0x2e, 0x2c, 0x30
 	db 0x2e, 0 ; this last line must not change
 .y db 0 : assert SCREEN_VERTICAL_RESOLUTION < 256
 	db high(aligned_data.screen_addresses)
-.x_pixel_pos equ $ 
-.x_byte_delta equ $ +2
+.x_pixel_pos equ $  ;1
+.x_byte_delta equ $ + 1 ;1
 BINARY_END
 
 
 
-aligned_data equ ($+2+2+256) & 0xff00
+aligned_data equ ($+4+1+1+2+256) & 0xff00
 .mask equ aligned_data + 0*256
 .pixel_lut_pen1 equ aligned_data + 1*256
 .pixel_lut_pen3 equ aligned_data + 2*256

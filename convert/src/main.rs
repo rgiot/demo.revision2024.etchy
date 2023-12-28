@@ -25,7 +25,7 @@ use petgraph::{
 
 const CPC_WIDTH: usize = 320;
 const CPC_HEIGHT: usize = 200;
-const OPTIMISATION_DURATION: u64 = 60*60;
+const OPTIMISATION_DURATION: u64 = 50; //60*60;
 
 type Coord = (usize, usize);
 

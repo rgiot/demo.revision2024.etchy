@@ -42,9 +42,20 @@ start
 	out (c), c: out (c), d : inc c
 	out (c), c: out (c), e
 
+
+	call .state_drawing
+
+	jp .frame_loop
+
+
+
+.state_drawing
+.state_drawing_recover_trace
 	ld a, high(data.pixel_lut_pen3) : ld (plot_current_point.lut_for_pen), a
 	call cover_previous_trace
 
+
+.state_drawing_draw_before_trace
 	; using repeat reduce binary of 40 bytes !
 
 	;ld b, NB_DRAWN_PER_FRAME - TRACE_SIZE
@@ -57,6 +68,10 @@ start
 ;	djnz .pixels_loop1
 	endr
 
+.state_drawing_draw_trace
+	nop
+.state_drawing_draw_trace_ret_opcode_address equ $-1
+
 	ld a, high(data.pixel_lut_pen1) : ld (plot_current_point.lut_for_pen), a
 	;ld b, TRACE_SIZE
 	repeat TRACE_SIZE
@@ -68,8 +83,7 @@ start
 ;	pop bc
 ;	djnz .pixels_loop2
 	endr
-
-	jp .frame_loop
+	ret
 
 
 cover_previous_trace
@@ -227,7 +241,11 @@ compute_next_point
 	else
 		fail "unhandled case"
 	endif
+	ret
 .finished
+	; deactivate trace drawing
+	ld a, opcode(ret)
+	ld (start.state_drawing_draw_trace_ret_opcode_address), a
 	ret
 
 .handle_up

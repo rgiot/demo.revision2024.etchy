@@ -3,7 +3,7 @@
 
 - tgt: m4
   dep: sna
-  cmd: xfer 192.168.1.27 -y etch_a_sketch.sna
+  cmd: xfer 192.168.1.26 -y etch_a_sketch.sna
 
 - tgt: etch_a_sketch.sna etch.o
   dep: "*.asm"

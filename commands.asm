@@ -108,20 +108,20 @@ macro EXPECT_COMMAND cmd
 
 	if STATE_POS_Y < 0
 		STATE_POS_Y = 0
-		PRINT "[WARNING] Pen Y is out of field and cap to 0"
+		print "[WARNING] Pen Y is out of field and cap to 0"
 	endif
 	if STATE_POS_X < 0
 		STATE_POS_X = 0
-		PRINT "[WARNING] Pen X is out of field and cap to 0"
+		print "[WARNING] Pen X is out of field and cap to 0"
 	endif
 
 	if STATE_POS_Y > MAX_POS_Y
 		STATE_POS_Y = MAX_POS_Y
-		PRINT "[WARNING] Pen Y is out of field and cap to ", MAX_POS_Y
+		print "[WARNING] Pen Y is out of field and cap to ", MAX_POS_Y
 	endif
 	if STATE_POS_X > MAX_POS_X_PIXEL_RESOLUTION
 		STATE_POS_X = MAX_POS_X_PIXEL_RESOLUTION
-		PRINT "[WARNING] Pen X is out of field and cap to ", MAX_POS_X_PIXEL_RESOLUTION
+		print "[WARNING] Pen X is out of field and cap to ", MAX_POS_X_PIXEL_RESOLUTION
 	endif
 
 	print CMD_REPR, " => (", STATE_POS_X, ", ", STATE_POS_Y, ")"
@@ -221,7 +221,7 @@ endm
 ; Setup the start position of the beam
 macro START x, y
 
-	PRINT "START at ({x}, {y})"
+	print "START at ({x}, {y})"
 	STATE_POS_X = {x}
 	STATE_POS_Y = {y}
 	STATE_START_ADDRESS = $

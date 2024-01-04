@@ -20,13 +20,14 @@ BINARY_START
 	include "commands.asm"
 	include "engine.asm"
 
-;	include "test_picture.asm"
+;	ASMCONTROLENV SET_MAX_NB_OF_PASSES=1 // :( sadly it make the system crash ...)
 picture1
 	include "convert/small_connex.asm"
 picture2
 	include "convert/title.asm"
 picture3
 	include "convert/multiple.asm"
+;	ENDASMCONTROLENV
 
 /*
 	print "Memory dump of picture"

@@ -53,10 +53,10 @@ start
 
 
 	halt : halt
-;	ld bc, 0x7f10 : out (c), c : ld bc, 0x7f4b : out (c), c
+	ld bc, 0x7f10 : out (c), c : ld bc, 0x7f4b : out (c), c
 	call state_drawing
 .state_routine_address equ $-2
-;	ld bc, 0x7f10 : out (c), c : ld bc, 0x7f00 + PEN2 : out (c), c
+	ld bc, 0x7f10 : out (c), c : ld bc, 0x7f00 + PEN2 : out (c), c
 
 
 	jp .frame_loop

@@ -1,5 +1,5 @@
 
-	if 0
+	if 0 ; RASM mandatory CODE
 		buildsna
 		bankset 0
 	endif
@@ -28,3 +28,6 @@ BINARY_END
 
 	print "CRUNHED VERSION FROM ", {hex}BINARY_START, " TO ", {hex}BINARY_END, " FOR ", (BINARY_END-BINARY_START)/1024, " Kbi"
 
+
+	save "etch4k", BINARY_START, BINARY_END-BINARY_START, AMSDOS
+	save "etch4k", BINARY_START, BINARY_END-BINARY_START, DSK, "etch4k.dsk"

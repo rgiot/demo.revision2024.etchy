@@ -21,7 +21,7 @@
   constraint: Os(Windows)
 
 
-- tgt: etch4k.sna
+- tgt: etch4k.sna etch4k.dsk
   dep: etch4k.asm etch.shrink etch.o
   cmd: basm --sna etch4k.asm -o etch4k.sna
 

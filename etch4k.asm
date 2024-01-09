@@ -19,8 +19,8 @@ ADDRESS equ 0x4000
 	jp ADDRESS
 
 crunched_data
-	incbin "etch.shrink"
-	include "./Shrinkler4.6NoParityContext/Z80/deshrink_np.asm"
+	incshrinkler "etch.o"
+	include "inner://deshrink.asm"
 
 	assert $+0x400<ADDRESS ; Remember there is a buffer there
 

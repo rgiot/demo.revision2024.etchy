@@ -9,20 +9,8 @@
   dep: "*.asm"
   cmd: basm --sna main.asm -o etch_a_sketch.sna --lst etch_a_sketch.lst --sym etch_a_sketch.sym
 
-- tgt: etch.shrink
-  dep: etch.o
-  cmd: "extern ./Shrinkler4.6NoParityContext/linux64/Shrinkler -d -9 ./etch.o etch.shrink"
-  constraint: Os(Linux)
-
-
-- tgt: etch.shrink
-  dep: etch.o
-  cmd: "extern ./Shrinkler4.6NoParityContext/win64/Shrinkler.exe -d -9 ./etch.o etch.shrink"
-  constraint: Os(Windows)
-
-
 - tgt: etch4k.sna etch4k.dsk
-  dep: etch4k.asm etch.shrink etch.o
+  dep: etch4k.asm etch.o
   cmd: basm --sna etch4k.asm -o etch4k.sna
 
 - tgt: clean

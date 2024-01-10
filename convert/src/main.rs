@@ -1,26 +1,31 @@
-use graphalgs::{shortest_path::seidel, connect::articulation_points};
+use graphalgs::{connect::articulation_points, shortest_path::seidel};
 use indicatif::ParallelProgressIterator;
 use itertools::Itertools;
 use ordered_float::OrderedFloat;
-use rayon::iter::{ParallelBridge, ParallelIterator, IntoParallelRefIterator};
+use rayon::iter::{IntoParallelRefIterator, ParallelBridge, ParallelIterator};
 use std::{
     collections::{HashMap, HashSet, VecDeque},
     env::current_exe,
     fs::File,
     io::BufWriter,
     ops::{Deref, DerefMut},
-    path::{Path, Display},
+    path::{Display, Path},
     rc::Rc,
 };
-use walky::{datastructures::AdjacencyMatrix, solvers::approximate::{christofides::christofides, nearest_neighbour::nearest_neighbour}, computation_mode::PAR_COMPUTATION};
+use walky::{
+    computation_mode::PAR_COMPUTATION,
+    datastructures::AdjacencyMatrix,
+    solvers::approximate::{christofides::christofides, nearest_neighbour::nearest_neighbour},
+};
 
 use clap::ArgAction;
 use image::{self, GenericImageView, Rgb, RgbImage};
 use petgraph::{
     self,
+    algo::connected_components,
     data::Build,
     stable_graph::{IndexType, NodeIndex},
-    Graph, Undirected, algo::connected_components,
+    Graph, Undirected,
 };
 
 const CPC_WIDTH: usize = 320;
@@ -28,7 +33,6 @@ const CPC_HEIGHT: usize = 200;
 const OPTIMISATION_DURATION: u64 = 50; //60*60;
 
 type Coord = (usize, usize);
-
 
 #[derive(Clone)]
 pub struct PicGraph {
@@ -99,10 +103,11 @@ impl PicGraph {
         let mut distances = seidel(&self.g);
         let nodes: Vec<NodeIndex> = self.g.node_indices().collect();
 
-
         // XXX modify the distances to make long distances even worst
-        distances.iter_mut().par_bridge()
-            .for_each(|row| row.iter_mut().for_each(|val| *val = val.pow(2)*10 ));
+        distances
+            .iter_mut()
+            .par_bridge()
+            .for_each(|row| row.iter_mut().for_each(|val| *val = val.pow(2) * 10));
 
         // 2nd step compute TSP on the complete graph where all nodes are connected to all others wieghted by the appropriate distance
         dbg!("Start to compute TSP");
@@ -115,19 +120,19 @@ impl PicGraph {
         }
 
         // try christfies and nearest neighbourgs and keep the best
-        let (tsp_cost, tsp_solution) = (0..2).par_bridge()
-        .map(|i| {
-            let (tsp_cost, tsp_solution) = 
-            
-            if i==0 {
-                christofides::<{PAR_COMPUTATION }>(&adj)
-            }
-            else {
-                nearest_neighbour::<{PAR_COMPUTATION}>(&adj)
-            };
+        let (tsp_cost, tsp_solution) = (0..2)
+            .par_bridge()
+            .map(|i| {
+                let (tsp_cost, tsp_solution) = if i == 0 {
+                    christofides::<{ PAR_COMPUTATION }>(&adj)
+                } else {
+                    nearest_neighbour::<{ PAR_COMPUTATION }>(&adj)
+                };
 
-            (OrderedFloat::from(tsp_cost), tsp_solution)
-        }).min().unwrap();
+                (OrderedFloat::from(tsp_cost), tsp_solution)
+            })
+            .min()
+            .unwrap();
 
         dbg!("TSP cost", tsp_cost);
         let tsp_solution = tsp_solution;
@@ -310,10 +315,10 @@ impl<'g> PicCompleteGraphPath<'g> {
         let start_time = std::time::Instant::now();
 
         let indexes = (start..stop)
-        .into_iter()
-        .map(|i| (i + 1..stop).into_iter().map(move |j| (i, j)))
-        .flatten()
-        .collect_vec();
+            .into_iter()
+            .map(|i| (i + 1..stop).into_iter().map(move |j| (i, j)))
+            .flatten()
+            .collect_vec();
 
         loop {
             // allow to optimize during 10s
@@ -325,14 +330,16 @@ impl<'g> PicCompleteGraphPath<'g> {
                 break;
             }
 
-            let (min_gain, i, j) = indexes.par_iter().progress()
+            let (min_gain, i, j) = indexes
+                .par_iter()
+                .progress()
                 .map(|(i, j)| (self.swap_gain(*i, *j), *i, *j))
                 .min()
                 .unwrap();
 
             if min_gain <= 0 {
                 self.swap_path(i, j);
-            }else {
+            } else {
                 break;
             }
             /*
@@ -375,10 +382,7 @@ impl<'g> PicCompleteGraphPath<'g> {
 
     /// Try to optimize the path
     pub fn optimize(&mut self) {
-
         return self.optimize_between(0, self.solution.len());
-
-
     }
 
     pub fn final_path(&self, shrink: Shrink) -> PicGraphPath {
@@ -513,9 +517,7 @@ pub fn convert<P: AsRef<Path>>(ifname: &[P], ofname: &str, _exact: bool) {
         let mut already_drawned = HashSet::<Coord>::new();
         let mut next_start = None;
         for i in 0..parts.len() {
-            let current_g = & parts[i];
-
-
+            let current_g = &parts[i];
 
             let selected_end_intersection = if i != parts.len() - 1 {
                 let selected_intersections: HashSet<Coord> = intersections[i]
@@ -536,20 +538,19 @@ pub fn convert<P: AsRef<Path>>(ifname: &[P], ofname: &str, _exact: bool) {
                 None
             };
 
-
             let current_g = &mut parts[i];
-
 
             // reduce the graph if possible
             if i != 0 {
                 // search the pixels that could be removed
-                let articulations : HashSet<Coord> = articulation_points(&current_g.g)
+                let articulations: HashSet<Coord> = articulation_points(&current_g.g)
                     .into_iter()
                     .map(|idx| *current_g.node2coord.get(&idx).unwrap())
                     .collect();
                 let coords = current_g.coords();
-                let removable : HashSet::<Coord> = already_drawned.intersection(&coords).cloned().collect();
-                let removable : HashSet<_> = removable.difference(&articulations).cloned().collect();
+                let removable: HashSet<Coord> =
+                    already_drawned.intersection(&coords).cloned().collect();
+                let removable: HashSet<_> = removable.difference(&articulations).cloned().collect();
 
                 let removable = if let Some(selected) = &selected_end_intersection {
                     removable.difference(selected).cloned().collect()
@@ -557,35 +558,29 @@ pub fn convert<P: AsRef<Path>>(ifname: &[P], ofname: &str, _exact: bool) {
                     removable
                 };
 
-                eprintln!("At maximum {}-1 could be removed from the graph", removable.len());
-
+                eprintln!(
+                    "At maximum {}-1 could be removed from the graph",
+                    removable.len()
+                );
 
                 let mut removed = Vec::new();
                 for coord in removable.into_iter() {
                     let idx = *current_g.coord2node.get(&coord).unwrap();
                     let new_articulation = articulation_points(&current_g.g);
 
-                    if ! new_articulation.iter().any(|c| *c == idx) {
+                    if !new_articulation.iter().any(|c| *c == idx) {
                         removed.push(idx);
                         current_g.g.remove_node(idx);
                         current_g.node2coord.remove(&idx);
                         current_g.coord2node.remove(&coord);
-                        
                     }
                 }
                 eprintln!("{} nodes have been removed", removed.len());
-                assert_eq!(
-                    connected_components(&current_g.g),
-                    1
-                );
-
+                assert_eq!(connected_components(&current_g.g), 1);
             }
 
-            let current_g  = &parts[i];
+            let current_g = &parts[i];
             let mut c_path = current_g.compute_path();
-
-
-
 
             let mut f_path = if i == 0 {
                 // select one end  and optimize
@@ -635,12 +630,15 @@ pub enum Shrink {
 
 #[derive(PartialEq, Copy, Clone, Debug)]
 pub enum Command {
-    Up, Down, 
-    Left, Right,
-    UpLeft, UpRight,
-    DownLeft, DownRight
+    Up,
+    Down,
+    Left,
+    Right,
+    UpLeft,
+    UpRight,
+    DownLeft,
+    DownRight,
 }
-
 
 impl std::fmt::Display for Command {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
@@ -660,20 +658,18 @@ impl std::fmt::Display for Command {
 
 impl Command {
     pub fn add_command(other: &mut Option<Self>, extra: Command) {
-        let res = other.map(|previous| {
-            match (previous, extra) {
+        let res = other
+            .map(|previous| match (previous, extra) {
                 (Command::Up, Command::Left) => Command::UpLeft,
                 (Command::Up, Command::Right) => Command::UpRight,
                 (Command::Down, Command::Left) => Command::DownLeft,
                 (Command::Down, Command::Right) => Command::DownRight,
-                _ => unimplemented!()
-            }
-        })
+                _ => unimplemented!(),
+            })
             .or_else(move || Some(extra));
 
         *other = res;
     }
-
 
     pub fn rev(&self) -> Self {
         match self {
@@ -691,19 +687,12 @@ impl Command {
 
 pub struct FromCommand {
     coord: (usize, usize),
-    cmd: Command
+    cmd: Command,
 }
-
 
 // Generate the asm code
 fn generate_code(ofname: &str, path: &PicGraphPath) {
-
-
-
-
-
     let start_coord = *path.first().unwrap();
-
 
     // build the list of commands
     let mut commands = Vec::new();
@@ -732,23 +721,24 @@ fn generate_code(ofname: &str, path: &PicGraphPath) {
         let pattern = [Command::Left, Command::Right, Command::Left, Command::Right];
 
         // L L R L
-        for idx in 0..(commands.len()-pattern.len()) {
-            if  commands[idx+0] == commands[idx+1] &&
-                commands[idx+0] == commands[idx+3] &&
-                commands[idx+0] == commands[idx+2].rev() {
-                    eprintln!("Handle this case {:?} by removing 2 steps", &commands[idx..(idx+4)]);
+        for idx in 0..(commands.len() - pattern.len()) {
+            if commands[idx + 0] == commands[idx + 1]
+                && commands[idx + 0] == commands[idx + 3]
+                && commands[idx + 0] == commands[idx + 2].rev()
+            {
+                eprintln!(
+                    "Handle this case {:?} by removing 2 steps",
+                    &commands[idx..(idx + 4)]
+                );
 
-                    commands.remove(idx + 1);
-                    commands.remove(idx + 1);
-                    continue 'l;
+                commands.remove(idx + 1);
+                commands.remove(idx + 1);
+                continue 'l;
             }
-
-
         }
 
-
         eprintln!("Nothing to optiize");
-        break
+        break;
     }
 
     // aggregate the commands
@@ -774,7 +764,6 @@ fn generate_code(ofname: &str, path: &PicGraphPath) {
     writeln!(w, "\tSTART {}, {}", start_coord.0, start_coord.1);
     for (cmd, count) in aggregated_commands.into_iter() {
         writeln!(w, "\t\t{cmd} {count}");
-
     }
 
     writeln!(w, "\tSTOP (void)");

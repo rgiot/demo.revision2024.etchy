@@ -221,11 +221,21 @@ endm
 ; Setup the start position of the beam
 macro START x, y
 
-	print "START at ({x}, {y})"
 	STATE_POS_X = {x}
 	STATE_POS_Y = {y}
 	STATE_START_ADDRESS = $
-	db STATE_POS_X, STATE_POS_Y
+
+	// We have 4 pixels per byte.
+	// To avoid 16bits real time computation, the covnersion is alrady done (same data space/let code space)
+@POSX_BYTE = STATE_POS_X >> 2
+@POSX_PIXEL = STATE_POS_X & 0b11
+
+	db @POSX_PIXEL
+	db @POSX_BYTE : assert @POSX_BYTE < 256
+	db STATE_POS_Y : assert STATE_POS_Y < 256
+
+	print "START at ({x}, {y}) => {@POSX_BYTE} ", @POSX_BYTE, "{@POSX_PIXEL} ", @POSX_PIXEL
+
 endm
 
 ;;

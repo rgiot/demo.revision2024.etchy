@@ -6,12 +6,12 @@
   cmd: xfer 192.168.1.26 -y etch_a_sketch.sna
 
 - tgt: etch_a_sketch.sna etch.o
-  dep: "*.asm"
+  dep: commands.asm  engine.asm  main.asm convert/*.asm
   cmd: basm --sna main.asm -o etch_a_sketch.sna --lst etch_a_sketch.lst --sym etch_a_sketch.sym
 
-- tgt: etch4k.sna etch4k.dsk
+- tgt: etch4k.sna etch4k.dsk etch4k
   dep: etch4k.asm etch.o
-  cmd: basm --sna etch4k.asm -o etch4k.sna
+  cmd: basm --sna etch4k.asm -o etch4k.sna --override
 
 - tgt: clean
   cmd: -rm *.sym *.lst

@@ -271,17 +271,17 @@ compute_next_point
 	xor a : ld (.first_flag), a 
 
 	; get pixel horizontal position
-	ld a, (hl) : and 0b11 : ld (unaligned_data.x_pixel_pos), a
+	ld a, (hl) : ld (unaligned_data.x_pixel_pos), a
+	inc hl
 
 	; get screen horizontal byte delta
-	ld a, (hl) : srl a : srl a : ld (unaligned_data.x_byte_delta), a
+	ld a, (hl) : ld (unaligned_data.x_byte_delta), a
+	inc hl
 
 	; get vertical position
-	inc hl 
 	ld a, (hl) : ld (unaligned_data.y), a
-
-	; save buffer pointer
 	inc hl
+
 	ld (.picture_address), hl
 	ret
 

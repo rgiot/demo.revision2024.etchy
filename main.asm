@@ -73,11 +73,11 @@ BINARY_END
 
 
 aligned_data equ ($+4+1+1+2+256) & 0xff00
-.mask equ aligned_data + 0*256
-.pixel_lut_pen1 equ aligned_data + 1*256
-.pixel_lut_pen3 equ aligned_data + 2*256
-.screen_addresses equ aligned_data + 3*256
-.trace_buffer equ aligned_data + 5*256
+aligned_data.mask equ aligned_data + 0*256
+aligned_data.pixel_lut_pen1 equ aligned_data + 1*256
+aligned_data.pixel_lut_pen3 equ aligned_data + 2*256
+aligned_data.screen_addresses equ aligned_data + 3*256
+aligned_data.trace_buffer equ aligned_data + 5*256
 VERY_LASTE_BYTE equ aligned_data + 6*256
 
 
@@ -90,3 +90,4 @@ VERY_LASTE_BYTE equ aligned_data + 6*256
 
 
 	SAVE "etch.o", BINARY_START, BINARY_END-BINARY_START
+	SAVE "ETCH.BIN", BINARY_START, BINARY_END-BINARY_START, AMSDOS

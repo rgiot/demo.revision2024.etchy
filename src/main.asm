@@ -28,9 +28,9 @@ BINARY_START
 picture1
 	incbin "small_connex.o"
 picture2
-	include "title.o"
+	incbin "title.o"
 picture3
-	include "convert/multiple.asm"
+	incbin "multiple.o"
 ;	ENDASMCONTROLENV
 
 /*

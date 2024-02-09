@@ -44,6 +44,9 @@ My assembler is fucking slow on the macro interpretation side and everything rel
 I am not sure to be able to improve that during the project.
 This is the reason why I individually assemble each image.
 
+
+From scratch it takes 52min on my powerfull Linux machine.
+
 ### To cleanup the folder
 
 ```

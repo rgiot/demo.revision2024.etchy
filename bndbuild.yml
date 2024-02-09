@@ -6,7 +6,7 @@
   cmd: xfer 192.168.1.26 -y etch_a_sketch.sna
 
 - tgt: etch_a_sketch.sna etch.o
-  dep: src/commands.asm  src/engine.asm  src/main.asm convert/*.asm small_connex.o title.o
+  dep: src/commands.asm  src/engine.asm  src/main.asm convert/*.asm small_connex.o title.o multiple.o
   cmd: basm --sna -I src main.asm -o etch_a_sketch.sna --lst etch_a_sketch.lst --sym etch_a_sketch.sym
 
 - tgt: etch4k.sna etch4k.dsk etch4k
@@ -15,8 +15,10 @@
 
 - tgt: clean
   cmd:
-    -  -rm *.sym *.lst etch.o etch.shrink etch4k
-    - -rm small_connex.asm
+    - -rm *.sym *.lst etch.o etch.shrink etch4k
+    - -rm small_connex.asm small_connex.o
+    - -rm title.asm title.o
+    - -rm multiple.asm multiple.o
 
 - tgt: distclean
   dep: clean
@@ -37,3 +39,11 @@
 - tgt: title.o
   dep: title.asm
   cmd: basm -I src title.asm -o title.o
+
+
+- tgt: multiple.asm
+  dep: convert/puzzle1.png convert/puzzle2.png convert/puzzle3.png
+  cmd: extern ./tools/convert --euclidean convert/puzzle1.png convert/puzzle2.png convert/puzzle3.png multiple.asm
+- tgt: multiple.o
+  dep: multiple.asm
+  cmd: basm -I src multiple.asm -o multiple.o

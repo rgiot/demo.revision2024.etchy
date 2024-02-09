@@ -54,11 +54,59 @@ if there is no path computation but all code to assemble it takes <1min.
 .\tools\bndbuild.exe distclean
 ```
 
-## How to convert an image
+## How to add  an image
 
+Take inspiration to these rules in `bndbuild.yml` to understand how to add an image to convert.
+
+These lines generate `small_connex.asm` from one PNG file
+
+```yaml
+- tgt: small_connex.asm
+  dep: convert/small_connex.png
+  cmd: extern ./tools/convert --euclidean convert/small_connex.png small_connex.asm
+- tgt: small_connex.o
+  dep: small_connex.asm
+  cmd: basm -I src small_connex.asm -o small_connex.o
 ```
-./tools/convert IMG1.PNG IMG2.PNG data.asm
+
+
+These lines generate  multiple.asm` from several png file
+
+```yaml
+
+- tgt: multiple.asm
+  dep: convert/puzzle1.png convert/puzzle2.png convert/puzzle3.png
+  cmd: extern ./tools/convert --euclidean convert/puzzle1.png convert/puzzle2.png convert/puzzle3.png multiple.asm
+- tgt: multiple.o
+  dep: multiple.asm
+  cmd: basm -I src multiple.asm -o multiple.o
 ```
+
+
+In `src\main.asm` the list of pictures to draw is set up this way
+
+```z80
+picture1
+	incbin "small_connex.o"
+picture2
+	incbin "title.o"
+picture3
+	incbin "multiple.o"
+```
+so just give a label and use `incbin "file.o` to include the picture stored in file.o
+
+The display order is also set up in  `src\main.asm` 
+
+```z80
+unaligned_data
+.pictures
+	dw picture1
+	dw picture2
+	dw picture3
+	dw 00
+```
+
+just add ` dw new_label` to include a new image in the list
 
 ## How to test
 

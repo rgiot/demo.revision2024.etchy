@@ -6,16 +6,34 @@
   cmd: xfer 192.168.1.26 -y etch_a_sketch.sna
 
 - tgt: etch_a_sketch.sna etch.o
-  dep: commands.asm  engine.asm  main.asm convert/*.asm
-  cmd: basm --sna main.asm -o etch_a_sketch.sna --lst etch_a_sketch.lst --sym etch_a_sketch.sym
+  dep: src/commands.asm  src/engine.asm  src/main.asm convert/*.asm small_connex.o title.o
+  cmd: basm --sna -I src main.asm -o etch_a_sketch.sna --lst etch_a_sketch.lst --sym etch_a_sketch.sym
 
 - tgt: etch4k.sna etch4k.dsk etch4k
-  dep: etch4k.asm etch.o
-  cmd: basm --sna etch4k.asm -o etch4k.sna --override
+  dep: src/etch4k.asm etch.o
+  cmd: basm --sna -I src etch4k.asm -o etch4k.sna --override
 
 - tgt: clean
-  cmd: -rm *.sym *.lst
+  cmd:
+    -  -rm *.sym *.lst etch.o etch.shrink etch4k
+    - -rm small_connex.asm
 
 - tgt: distclean
   dep: clean
-  cmd: -rm etch_a_sketch.sna etch4k.sna
+  cmd: -rm etch_a_sketch.sna etch4k.sna etch4k.dsk
+
+
+- tgt: small_connex.asm
+  dep: convert/small_connex.png
+  cmd: extern ./tools/convert --euclidean convert/small_connex.png small_connex.asm
+- tgt: small_connex.o
+  dep: small_connex.asm
+  cmd: basm -I src small_connex.asm -o small_connex.o
+
+
+- tgt: title.asm
+  dep: convert/title.png
+  cmd: extern ./tools/convert --euclidean convert/title.png title.asm
+- tgt: title.o
+  dep: title.asm
+  cmd: basm -I src title.asm -o title.o

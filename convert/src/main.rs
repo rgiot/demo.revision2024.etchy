@@ -734,6 +734,7 @@ pub struct FromCommand {
 fn generate_code(ofname: &str, path: &PicGraphPath) {
     let start_coord = *path.first().unwrap();
 
+
     // build the list of commands
     let mut commands = Vec::new();
     let mut previous_coord = start_coord;
@@ -802,6 +803,8 @@ fn generate_code(ofname: &str, path: &PicGraphPath) {
     use std::io::Write;
     let f = File::create(ofname).expect("Unable to create output file");
     let mut w = BufWriter::new(f);
+
+    writeln!(w, " include once \"commands.asm\" ");
 
     writeln!(w, "\tSTART {}, {}", start_coord.0, start_coord.1).unwrap();
     for (cmd, count) in aggregated_commands.into_iter() {

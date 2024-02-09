@@ -29,7 +29,7 @@ Commands are provided by macros
 
 `bndbuild.yml` is the configuration file that describes how to construct the demo. See <https://cpcsdk.github.io/rust.cpclib/bndbuild/> for more documentation.
 
-- `sna` is a target to make a quick build that test if everything workds properly. It generates a snapshot but also update the etch4k.dsk file
+- `sna` is a target to make a quick build that test if everything workds properly. It generates a snapshot
 - `etch4k` is a target to make a slower build that compresses the demo and checks if it fits in 4k. It generates a snapshot but also update the etch4k.dsk file
 
 
@@ -46,6 +46,7 @@ This is the reason why I individually assemble each image.
 
 
 From scratch it takes 52min on my powerfull Linux machine.
+if there is no path computation but all code to assemble it takes <1min.
 
 ### To cleanup the folder
 

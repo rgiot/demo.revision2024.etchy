@@ -44,13 +44,13 @@ start
 .horizontal_position_value_address equ $-1
 	out (c), c : inc b : out (c), a
 
-.set_color
-	ld bc, 0x7f00 : ld hl, PEN0*256 + PEN1 : ld de, PEN2*256+PEN3
-	out (c), c: out (c), h : inc c
-	out (c), c: out (c), l : inc c
-	out (c), c: out (c), d : inc c
-	out (c), c: out (c), e
 
+.set_color
+		ld bc, 0x7f00 : ld hl, PEN0*256 + PEN1 : ld de, PEN2*256+PEN3
+		out (c), c: out (c), h : inc c
+		out (c), c: out (c), l : inc c
+		out (c), c: out (c), d : inc c
+		out (c), c: out (c), e
 
 	halt : halt
 	ld bc, 0x7f10 : out (c), c : ld bc, 0x7f4b : out (c), c

@@ -11,6 +11,11 @@
 ; - https://www.cpcwiki.eu/index.php?title=AMSDOS_Header
 ; - https://www.pouet.net/prod.php?which=96142
 
+PEN0 equ 0x40
+PEN1 equ 0x4b
+PEN2 equ 0x4c
+PEN3 equ 0x54
+
 	org 0x0000
 BINARY_START
 
@@ -18,7 +23,7 @@ AMSDOS_HEADER
 ; Standard expected content
 	org 0x00 : .user 	: db 0
 	org 0x01 : .fname 	: db "ETCH4K  "
-	org 0x09 : .ext 	: db "BND"
+	org 0x09 : .ext 	: db "   "
 	org 0x12 : .ftype 	: db 2
 	org 0x13 : .buffer	: dw 0x4000  ; Am I really supposed to do that ?
 	org 0x15 : .load 	: dw LOAD_ADDRESS
@@ -37,9 +42,11 @@ AMSDOS_HEADER
 	ld hl, 0xc9fb : ld (0x38), hl
 
 	; Do some init
-	ld bc, 0x7f8d
-	ld hl, 0x01
-	out (c), c
+	ld bc, 0x7f10 : ld hl, PEN0*256 + PEN2
+	xor a
+	out (c), c : out (c), l
+	out (c), a : out (c), h
+
 
 	; Install the demo code
 	ld ix, crunched_data 	; the real content of the file, outside of the header

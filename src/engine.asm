@@ -451,10 +451,8 @@ init
 				add h 
 				ld h,a 
 				jr nc, .endbc26
-				push bc
 				ld bc,#c050
 				add hl,bc 
-				pop bc
 .endbc26			
 			 ex de, hl
 		pop bc

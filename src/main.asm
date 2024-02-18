@@ -37,6 +37,7 @@ BINARY_START
 
 	include "commands.asm"
 	include "engine.asm"
+;	include "music.asm"
 
 ;	ASMCONTROLENV SET_MAX_NB_OF_PASSES=1 // :( sadly it make the system crash ...)
 ;picture1

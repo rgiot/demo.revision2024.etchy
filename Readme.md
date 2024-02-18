@@ -54,6 +54,8 @@ if there is no path computation but all code to assemble it takes <1min.
 .\tools\bndbuild.exe distclean
 ```
 
+BUT be prepared to WAIT A LOT after to rebuild everything
+
 ## How to add  an image
 
 Take inspiration to these rules in `bndbuild.yml` to understand how to add an image to convert.

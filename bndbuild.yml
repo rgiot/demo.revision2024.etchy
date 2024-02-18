@@ -19,8 +19,7 @@
   dep:  src/etch4k.asm bootstrap.o etch_header.o etch_a_sketch.sym
   cmd: 
     - basm  -I src etch4k.asm -o etch4k --lst eth4k.lst
-    - extern dskmanager etch4k.dsk format --format data
-    - extern dskmanager etch4k.dsk add etch4k
+    - extern dskmanager etch.dsk add etch4k
 
 - tgt: clean
   cmd:

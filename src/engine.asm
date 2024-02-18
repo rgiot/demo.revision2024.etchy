@@ -440,7 +440,9 @@ init
 	
 .init_screen_table
 	ld de, SCREEN_MEMORY_ADDRESS
-	push de ; <============================== save
+	if !LINKED_VERSION
+		push de ; <============================== save
+	endif
 	ld hl, aligned_data.screen_addresses
 	; ld b, 256 XXX b is already 0 = 256
 .init_screen_table_loop
@@ -462,17 +464,21 @@ init
 	; TODO remove if already done by system
 .clear_screen
 	;ld hl, SCREEN_MEMORY_ADDRESS : 
-	pop hl ; ==============================> restore
-	ld de, hl : inc de
-	ld bc, 0x4000-1
-	ld (hl), 0
-	ldir
+	if !LINKED_VERSION
+		pop hl ; ==============================> restore
+		ld de, hl : inc de
+		ld bc, 0x4000-1
+		ld (hl), 0
+		ldir
+	endif
 
 .select_screen
-	ld hl, SCREEN_CRTC_ADDRESS
-	ld bc, 0xbc00 + 12
-	out (c), c : inc b: out (c), h : dec b : inc c
-	out (c), c : inc b: out (c), l
+	if !LINKED_VERSION
+		ld hl, SCREEN_CRTC_ADDRESS
+		ld bc, 0xbc00 + 12
+		out (c), c : inc b: out (c), h : dec b : inc c
+		out (c), c : inc b: out (c), l
+	endif
 
 	ret
 

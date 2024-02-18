@@ -28,8 +28,8 @@ BINARY_START
 			ld hl, 0xc9fb : ld (0x38), hl
 			call engine.init
 		ei
+		ld sp, $
 	endif
-	ld sp, $
 
 	
 	call engine.select_new_picture

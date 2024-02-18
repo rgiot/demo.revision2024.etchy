@@ -33,6 +33,7 @@ AMSDOS_HEADER
 	; XXX here we have no idea of PC value
 	; Kill the system
 	di
+	ld sp, 0x4000
 	ld hl, 0xc9fb : ld (0x38), hl
 
 	; Do some init

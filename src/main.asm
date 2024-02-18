@@ -9,7 +9,7 @@
 	EXPORT DATA_MOVED_IN_HEADER_START
 
 ; Set to true when not generated alone
-LINKED_VERSION=true
+
 
 	org 0x4000
 	run $
@@ -113,7 +113,10 @@ VERY_LASTE_BYTE equ aligned_data + 6*256
 
 
 
-	SAVE "etch.o", BINARY_START, BINARY_END-BINARY_START ; Here data are missing, they will be included within the header
-	SAVE "etch_header.o", DATA_MOVED_IN_HEADER_START, DATA_END-DATA_MOVED_IN_HEADER_START ; Data that are included within the header
-	SAVE "ETCH.BIN", BINARY_START, DATA_END-BINARY_START, AMSDOS ; Here we save a file that contains everything and works properly
-	SAVE "ETCH.BIN", BINARY_START, DATA_END-BINARY_START, DSK, "etch.dsk" ; Here we save a file that contains everything and works properly
+	if LINKED_VERSION
+		SAVE "etch.o", BINARY_START, BINARY_END-BINARY_START ; Here data are missing, they will be included within the header
+		SAVE "etch_header.o", DATA_MOVED_IN_HEADER_START, DATA_END-DATA_MOVED_IN_HEADER_START ; Data that are included within the header
+	else
+		SAVE "ETCH.BIN", BINARY_START, DATA_END-BINARY_START, AMSDOS ; Here we save a file that contains everything and works properly
+		SAVE "ETCH.BIN", BINARY_START, DATA_END-BINARY_START, DSK, "etch.dsk" ; Here we save a file that contains everything and works properly
+	endif

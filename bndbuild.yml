@@ -5,7 +5,7 @@
   dep: sna
   cmd: xfer 192.168.1.26 -y etch_a_sketch.sna
 
-- tgt: etch_a_sketch.sna etch.o etch_header.o etch_a_sketch.sym
+- tgt: etch_a_sketch.sna etch.o etch_header.o etch_a_sketch.sym etch.dsk
   dep: src/commands.asm  src/engine.asm  src/main.asm convert/*.asm small_connex.o title.o multiple.o
   cmd: 
     - basm -I src main.asm --sna -o etch_a_sketch.sna --override -DLINKED_VERSION=0
@@ -16,10 +16,10 @@
   cmd: basm -I src bootstrap.asm --sym bootstrap.sym
 
 - tgt: etch4k etch4k.dsk 
-  dep:  src/etch4k.asm bootstrap.o etch_header.o etch_a_sketch.sym
+  dep:  src/etch4k.asm bootstrap.o etch_header.o etch_a_sketch.sym etch.dsk
   cmd: 
     - basm  -I src etch4k.asm -o etch4k --lst eth4k.lst
-    - extern dskmanager etch.dsk add etch4k
+    - disc etch.dsk add etch4k
 
 - tgt: clean
   cmd:

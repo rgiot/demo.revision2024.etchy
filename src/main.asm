@@ -4,8 +4,12 @@
 	
 
 
+
 	NOEXPORT
 	EXPORT DATA_MOVED_IN_HEADER_START
+
+; Set to true when not generated alone
+LINKED_VERSION=true
 
 	org 0x4000
 	run $
@@ -16,10 +20,15 @@
 
 BINARY_START
 
-	di
-		ld hl, 0xc9fb : ld (0x38), hl
+	if LINKED_VERSION
 		call engine.init
-	ei
+		ei
+	else
+		di
+			ld hl, 0xc9fb : ld (0x38), hl
+			call engine.init
+		ei
+	endif
 	ld sp, $
 
 	

@@ -35,13 +35,15 @@ AMSDOS_HEADER
 	di
 	ld hl, 0xc9fb : ld (0x38), hl
 
+	; Do some init
+	ld bc, 0x7f8d
+	out (c), c
+
 	; Install the demo code
 	ld ix, crunched_data 	; the real content of the file, outside of the header
 	ld de, ADDRESS 			; the address where the demo is loaded
-	call shrinkler_decrunch ; the uncruncher is in the real content of the file
-
-	; launch the demo
-	jp ADDRESS ; TODO replace by a ret in case two bytes are needed
+	push de ; put ADDRESS on the stack; it will be used as a return of shrinkler decrunch
+	jp shrinkler_decrunch ; the uncruncher is in the real content of the file
 
 	assert $<=0x40
 .remaining1 = 0x40-$
@@ -84,3 +86,8 @@ AMSDOS_HEADER
 AMSDOS_FILE_CONTENT
 	incbin "bootstrap.o"
 BINARY_END
+
+
+
+	PRINT "FINAL SIZE", $
+	PRINT "REMAINING BYTES: ", 4*1024-$

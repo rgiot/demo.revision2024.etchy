@@ -5,17 +5,25 @@
   dep: sna
   cmd: xfer 192.168.1.26 -y etch_a_sketch.sna
 
-- tgt: etch_a_sketch.sna etch.o
+- tgt: etch_a_sketch.sna etch.o etch_header.o
   dep: src/commands.asm  src/engine.asm  src/main.asm convert/*.asm small_connex.o title.o multiple.o
-  cmd: basm --sna -I src main.asm -o etch_a_sketch.sna --lst etch_a_sketch.lst --sym etch_a_sketch.sym
+  cmd: basm --sna -I src main.asm -o etch_a_sketch.sna --lst etch_a_sketch.lst --override --sym etch_a_sketch.sym
 
-- tgt: etch4k.sna etch4k.dsk etch4k
-  dep: src/etch4k.asm etch.o
-  cmd: basm --sna -I src etch4k.asm -o etch4k.sna --override
+- tgt: bootstrap.o bootstrap.sym
+  dep: src/bootstrap.asm etch.o
+  cmd: basm -I src bootstrap.asm --sym bootstrap.sym
+
+- tgt: ETCH4K etch4k.dsk 
+  dep:  src/etch4k.asm bootstrap.o etch_header.o etch_a_sketch.sym
+  cmd: 
+    - basm  -I src etch4k.asm -o ETCH4K --lst eth4k.lst
+    - extern dskmanager etch4k.dsk format --format data
+    - extern dskmanager etch4k.dsk add ETCH4K
 
 - tgt: clean
   cmd:
     - -rm *.sym *.lst etch.o etch.shrink etch4k
+    - -rm bootstrap.o
     - -rm small_connex.asm small_connex.o
     - -rm title.asm title.o
     - -rm multiple.asm multiple.o

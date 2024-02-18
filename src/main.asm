@@ -2,6 +2,11 @@
 ; Krusty / Exocet / 2024	
 	
 	
+
+
+	NOEXPORT
+	EXPORT DATA_MOVED_IN_HEADER_START
+
 	org 0x4000
 	run $
 
@@ -25,10 +30,10 @@ BINARY_START
 	include "engine.asm"
 
 ;	ASMCONTROLENV SET_MAX_NB_OF_PASSES=1 // :( sadly it make the system crash ...)
-picture1
-	incbin "small_connex.o"
-picture2
-	incbin "title.o"
+;picture1
+;	incbin "small_connex.o"
+;picture2
+;	incbin "title.o"
 picture3
 	incbin "multiple.o"
 ;	ENDASMCONTROLENV
@@ -39,7 +44,10 @@ picture3
 		print {hex2}memory(test_picture + {i}), "/", {bin8}memory(test_picture + {i})
 	rend
 */
+BINARY_END
 
+
+DATA_MOVED_IN_HEADER_START
 
 toalign_data
 .mask
@@ -60,8 +68,8 @@ toalign_data
 
 unaligned_data
 .pictures
-	dw picture1
-	dw picture2
+;	dw picture1 ; XXX removed to be in the 4k limit
+;	dw picture2
 	dw picture3
 	dw 00
 .backup_area defs 4
@@ -72,8 +80,10 @@ unaligned_data
 	db high(aligned_data.screen_addresses)
 .x_pixel_pos equ $  ;1
 .x_byte_delta equ $ + 1 ;1
-BINARY_END
+DATA_END
 
+
+	assert DATA_END-DATA_MOVED_IN_HEADER_START < 90, "Too many data to fit in the AMSDOS header"
 
 
 aligned_data equ ($+4+1+1+2+256) & 0xff00
@@ -87,11 +97,14 @@ VERY_LASTE_BYTE equ aligned_data + 6*256
 
 	print "UNCRUNHED VERSION FROM ", {hex}BINARY_START, " TO ", {hex}BINARY_END, " FOR ", (BINARY_END-BINARY_START)/1024, " Kbi"
 
+	print "HEADER DATA LENGTH ", DATA_END-DATA_MOVED_IN_HEADER_START
 
 	assert VERY_LASTE_BYTE< 0x8000, "0x8000 area is supposed to contains uncrunched data"
 
 
 
 
-	SAVE "etch.o", BINARY_START, BINARY_END-BINARY_START
-	SAVE "ETCH.BIN", BINARY_START, BINARY_END-BINARY_START, AMSDOS
+	SAVE "etch.o", BINARY_START, BINARY_END-BINARY_START ; Here data are missing, they will be included within the header
+	SAVE "etch_header.o", DATA_MOVED_IN_HEADER_START, DATA_END-DATA_MOVED_IN_HEADER_START ; Data that are included within the header
+	SAVE "ETCH.BIN", BINARY_START, DATA_END-BINARY_START, AMSDOS ; Here we save a file that contains everything and works properly
+	SAVE "ETCH.BIN", BINARY_START, DATA_END-BINARY_START, DSK, "etch.dsk" ; Here we save a file that contains everything and works properly

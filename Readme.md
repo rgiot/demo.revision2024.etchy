@@ -110,11 +110,12 @@ just add ` dw new_label` to include a new image in the list
 
 ## How to test
 
-From a snapshot: use winape emulator http://www.winape.net/
-From a dsk: 
+You can test with :
+- http://www.winape.net/ : use gui to select files
+- http://www.roudoudou.com/ACE-DL/ (version after Valentine day, previous are buggy with SNA generated for this project) : use drag'n drop to select files
 
- - use winape emulator or Ace-DL http://www.roudoudou.com/ACE-DL/
- - type `RUN"ETCH4K` and wait a while during uncrunch of the demo
+For the compressed version type `RUN"ETCH4K` and wait a while during uncrunch of the demo.
+uncompressed version is way faster to start
 
 
 ## Current Limitations

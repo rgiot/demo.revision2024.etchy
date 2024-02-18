@@ -438,11 +438,10 @@ init
 	ld de, aligned_data.pixel_lut_pen1 : ld bc, 4 : ldir
 	ld de, aligned_data.pixel_lut_pen3 : ld bc, 4 : ldir
 	
-	
 .init_screen_table
 	ld de, SCREEN_MEMORY_ADDRESS
 	ld hl, aligned_data.screen_addresses
-	ld b, 256
+	; ld b, 256 XXX b is already 0 = 256
 .init_screen_table_loop
 		push bc
 			ld (hl), e : inc h : ld (hl), d : dec h : inc l

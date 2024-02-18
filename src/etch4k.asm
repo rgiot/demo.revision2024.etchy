@@ -38,6 +38,7 @@ AMSDOS_HEADER
 
 	; Do some init
 	ld bc, 0x7f8d
+	ld hl, 0x01
 	out (c), c
 
 	; Install the demo code

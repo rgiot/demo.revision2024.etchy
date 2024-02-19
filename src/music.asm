@@ -9,3 +9,5 @@ music_player
 
 	assert PLY_AKM_USE_HOOKS == 0
 	assert PLY_AKM_STOP_SOUNDS == 0
+
+	;FAIL "Need to try various players and select the best one after compression"

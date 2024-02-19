@@ -1,3 +1,11 @@
+PLY_AKM_HARDWARE_CPC = 1
+;PLY_AKM_MANAGE_SOUND_EFFECTS = 1
+
 	include "./music/krocket2_akm_playerconfig.asm"
+music_data
 	include "./music/krocket2_akm.asm"
+music_player
 	include "./music/PlayerAkm.asm"
+
+	assert PLY_AKM_USE_HOOKS == 0
+	assert PLY_AKM_STOP_SOUNDS == 0

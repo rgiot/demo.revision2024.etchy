@@ -56,6 +56,8 @@ start
 	ld bc, 0x7f10 : out (c), c : ld bc, 0x7f4b : out (c), c
 	call state_drawing
 .state_routine_address equ $-2
+	ld bc, 0x7f10 : out (c), c : ld bc, 0x7f40 : out (c), c
+	call PLY_AKM_Play ; XXX no interrupt must happens
 	ld bc, 0x7f10 : out (c), c : ld bc, 0x7f00 + PEN2 : out (c), c
 
 
@@ -480,7 +482,11 @@ init
 		out (c), c : inc b: out (c), l
 	endif
 
-	ret
+.init_music
+	xor a
+	ld hl, music_data
+	jp PLY_AKM_Init
+;	ret
 
 
 

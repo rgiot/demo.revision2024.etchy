@@ -73,20 +73,21 @@ AMSDOS_HEADER
 	print 'CHECKSUM value: ', {hex}.CHECKSUM
 
 
-/*
-  :( sadly this seems to not be available
+;  :( sadly this seems to not be available
 
 ; Extra available data
 	org 0x46 : .free2
 	; include compressed data (here we only earn 1 byte ...)
-	incshrinkler "etch_header.o"
+;	incshrinkler "etch_header.o"
+
+	defb "LOST DATA - LOST DATA - LOST DATA - "
+	defb "LOST DATA - LOST DATA"
 
 	print {hex}$
 	assert $<=128
 
 .remaining2 = 128-$
 	PRINT "THERE ARE ", .remaining1, " + ", .remaining2, " REMAINING BYTES in header"
-*/
 
 	defs 128-$ ; Ensure 128 bytes are taken
 

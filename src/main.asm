@@ -4,9 +4,10 @@
 	
 
 
-
-	NOEXPORT
-	EXPORT DATA_MOVED_IN_HEADER_START
+	if LINKED_VERSION
+		NOEXPORT
+		EXPORT DATA_MOVED_IN_HEADER_START
+	endif
 
 ; Set to true when not generated alone
 
@@ -37,7 +38,7 @@ BINARY_START
 
 	include "commands.asm"
 	include "engine.asm"
-;	include "music.asm"
+	include "music.asm"
 
 ;	ASMCONTROLENV SET_MAX_NB_OF_PASSES=1 // :( sadly it make the system crash ...)
 ;picture1

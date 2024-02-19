@@ -35,10 +35,10 @@ BINARY_START
 	
 	call engine.select_new_picture
 	jp engine.start
-
+	
+	include "music.asm"
 	include "commands.asm"
 	include "engine.asm"
-	include "music.asm"
 
 ;	ASMCONTROLENV SET_MAX_NB_OF_PASSES=1 // :( sadly it make the system crash ...)
 ;picture1

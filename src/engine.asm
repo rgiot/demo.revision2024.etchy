@@ -57,7 +57,9 @@ start
 	call state_drawing
 .state_routine_address equ $-2
 	ld bc, 0x7f10 : out (c), c : ld bc, 0x7f40 : out (c), c
+	di
 	call PLY_AKM_Play ; XXX no interrupt must happens
+	ei
 	ld bc, 0x7f10 : out (c), c : ld bc, 0x7f00 + PEN2 : out (c), c
 
 

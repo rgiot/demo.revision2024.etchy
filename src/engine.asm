@@ -52,15 +52,17 @@ start
 		out (c), c: out (c), d : inc c
 		out (c), c: out (c), e
 
-	halt : halt
-	ld bc, 0x7f10 : out (c), c : ld bc, 0x7f4b : out (c), c
+	;halt : halt
+	;ld bc, 0x7f10 : out (c), c : ld bc, 0x7f4b : out (c), c
 	call state_drawing
 .state_routine_address equ $-2
-	ld bc, 0x7f10 : out (c), c : ld bc, 0x7f40 : out (c), c
+	;ld bc, 0x7f10 : out (c), c : ld bc, 0x7f40 : out (c), c
 	di
 	call PLY_AKM_Play ; XXX no interrupt must happens
 	ei
-	ld bc, 0x7f10 : out (c), c : ld bc, 0x7f00 + PEN2 : out (c), c
+	;ld bc, 0x7f10 : out (c), c : ld bc, 0x7f00 + PEN2 : out (c), c
+
+
 
 
 	jp .frame_loop
@@ -436,6 +438,14 @@ plot_current_point
 ;;
 ; Initialize the various tables and variables needed for the project
 init
+	if !LINKED_VERSION
+			ld bc, 0x7f10 : ld hl, PEN0*256 + PEN2
+			xor a
+			out (c), c : out (c), l
+			out (c), a : out (c), h
+	endif
+
+
 .copy_data_in_aligned_area
 	ld hl, toalign_data
 	ld de, aligned_data.mask : ld bc, 4 : ldir

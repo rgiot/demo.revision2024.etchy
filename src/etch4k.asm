@@ -11,10 +11,6 @@
 ; - https://www.cpcwiki.eu/index.php?title=AMSDOS_Header
 ; - https://www.pouet.net/prod.php?which=96142
 
-PEN0 equ 0x40
-PEN1 equ 0x4b
-PEN2 equ 0x4c
-PEN3 equ 0x54
 
 	org 0x0000
 BINARY_START

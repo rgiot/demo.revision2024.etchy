@@ -7,6 +7,7 @@
 	if LINKED_VERSION
 		NOEXPORT
 		EXPORT DATA_MOVED_IN_HEADER_START
+		EXPORT PEN0, PEN1, PEN2, PEN3
 	endif
 
 ; Set to true when not generated alone
@@ -35,7 +36,7 @@ BINARY_START
 	
 	call engine.select_new_picture
 	jp engine.start
-	
+
 	include "music.asm"
 	include "commands.asm"
 	include "engine.asm"

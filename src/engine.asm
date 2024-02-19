@@ -19,7 +19,7 @@ VIEWING_DURATION equ 5 ; 50*5
 
 PEN0 equ 0x40
 PEN1 equ 0x4b
-PEN2 equ 0x4c
+PEN2 equ 0x5c ;0x4c
 PEN3 equ 0x54
 
        assert TRACE_SIZE <= NB_DRAWN_PER_FRAME

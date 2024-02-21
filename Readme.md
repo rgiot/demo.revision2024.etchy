@@ -36,7 +36,7 @@ Commands are provided by macros
 ### To build the compressed version
 
 ```
-.\tools
+.\tools\bndbuild etch4k
 ```
 
 This is veeeerrrrryyy loooong to assemble, even on a beast.

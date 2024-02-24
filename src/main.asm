@@ -46,10 +46,11 @@ BINARY_START
 ;	incbin "small_connex.o"
 ;picture2
 ;	incbin "title.o"
-picture3
+;picture3
 ;	incbin "multiple.o"
 
-	incbin "croco1.o"
+croco:
+	incbin "croco_multiple.o"
 ;	ENDASMCONTROLENV
 
 /*

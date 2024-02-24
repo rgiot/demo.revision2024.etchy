@@ -6,7 +6,7 @@
   cmd: xfer 192.168.1.26 -y etch_a_sketch.sna
 
 - tgt: etch_a_sketch.sna etch.o etch_header.o etch_a_sketch.sym etch.dsk 
-  dep: src/commands.asm  src/engine.asm  src/main.asm convert/*.asm small_connex.o title.o multiple.o src/music.asm music/*.asm croco1.o
+  dep: src/commands.asm  src/engine.asm  src/main.asm convert/*.asm small_connex.o title.o multiple.o src/music.asm music/*.asm croco1.o croco1_multiple.o
   cmd: 
     - basm -I src main.asm --sna -o etch_a_sketch.sna --override -DLINKED_VERSION=0
     - basm -I src main.asm --lst etch_a_sketch.lst --sym etch_a_sketch.sym -DLINKED_VERSION=1
@@ -55,6 +55,16 @@
 - tgt: stonks1.o
   dep: pictures/stonks1.asm
   cmd: basm -I src pictures/stonks1.asm -o stonks1.o
+
+
+
+- tgt: pictures/croco1_multiple.asm
+  dep: pictures/croco1a.png pictures/croco1b.png pictures/croco1c.png
+  cmd: extern ./tools/convert --euclidean pictures/croco1a.png pictures/croco1b.png pictures/croco1c.png pictures/croco1_multiple.asm
+- tgt: croco1_multiple.o
+  dep: pictures/croco1_multiple.asm
+  cmd: basm -I src pictures/croco1_multiple.asm -o croco1_multiple.o
+
 
 
 - tgt: pictures/croco1.asm

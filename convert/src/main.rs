@@ -311,6 +311,7 @@ impl<'g> PicCompleteGraphPath<'g> {
             .filter(|&&c| c != start)
             .map(|coord| {
                 let n = self.g.get_node_index(coord).unwrap(); // get the node at the given end coordinate
+                dbg!(&self.solution, &n, &coord);
                 let idx = self.solution.iter().position(|n2| n == *n2).unwrap(); // get its position in the current solution
 
                 // 1st rotation to move the end node to the end
@@ -583,11 +584,13 @@ pub fn convert<P: AsRef<Path>>(ifname: &[P], ofname: &str, weighted: bool) {
             let current_g = &parts[i];
 
             let selected_end_intersection = if i != parts.len() - 1 {
+                assert!(!intersections_coords[i].is_empty());
+
                 let selected_intersections: HashSet<Coord> = intersections_coords[i]
                     .iter()
-                    .filter(|idx| {
-                        let n = current_g.get_node_index(*idx).unwrap();
-                        current_g.g.neighbors(n).count() == 1
+                    .filter(|&coord| {
+                        let n = current_g.get_node_index(coord).unwrap();
+                        current_g.g.neighbors(n).count() == 1 // an intersection has only one neighbourg
                     })
                     .cloned()
                     .collect();
@@ -596,6 +599,13 @@ pub fn convert<P: AsRef<Path>>(ifname: &[P], ofname: &str, weighted: bool) {
                     selected_intersections.len(),
                     intersections_coords[i].len()
                 );
+
+                let selected_intersections =  if selected_intersections.is_empty() {
+                    intersections_coords[i].clone()
+                } else {
+                    selected_intersections
+                };
+                
                 Some(selected_intersections)
             } else {
                 None

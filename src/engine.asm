@@ -2,11 +2,17 @@
 ; Etch a sketch engine
 ;
 
+	include once "engine_macros.asm"
+
 SCREEN_VERTICAL_RESOLUTION equ 25*8
 SCREEN_HORIZONTAL_SOLUTION equ 40*4
 
 SCREEN_MEMORY_ADDRESS equ 0xc000
 SCREEN_CRTC_ADDRESS equ 0x3000
+
+
+ENGINE_HANDLE_VIEW_PORT equ 0 ; set to 0 to disable code that check if pen goes outside of screen
+
 
 	print "EFFECT RESOLUTION IS ",  SCREEN_HORIZONTAL_SOLUTION, "x", SCREEN_VERTICAL_RESOLUTION
 
@@ -14,7 +20,7 @@ SCREEN_CRTC_ADDRESS equ 0x3000
 	assert SCREEN_HORIZONTAL_SOLUTION < 256
 
 NB_DRAWN_PER_FRAME equ 3
-TRACE_SIZE equ 1
+TRACE_SIZE equ 2
 VIEWING_DURATION equ  50*5
 
 PEN0 equ 0x40
@@ -29,43 +35,6 @@ PEN3 equ 0x54
 
 module engine
 
-start
-.frame_loop
-	ld b, 0xf5
-.vsync_loop
-	in a, (c)
-	rra : jr nc, .vsync_loop
-
-
-;; no compensation because we are in the vbl
-.set_horizontal_position
-	ld bc, 0xbc00 + CRTC_REG_HORIZONTAL_SYNC_POSITION
-	ld a,  0x2e
-.horizontal_position_value_address equ $-1
-	out (c), c : inc b : out (c), a
-
-
-.set_color
-		ld bc, 0x7f00 : ld hl, PEN0*256 + PEN1 : ld de, PEN2*256+PEN3
-		out (c), c: out (c), h : inc c
-		out (c), c: out (c), l : inc c
-		out (c), c: out (c), d : inc c
-		out (c), c: out (c), e
-
-	;halt : halt
-	;ld bc, 0x7f10 : out (c), c : ld bc, 0x7f4b : out (c), c
-	call state_drawing
-.state_routine_address equ $-2
-	;ld bc, 0x7f10 : out (c), c : ld bc, 0x7f40 : out (c), c
-	di
-	call PLY_AKM_Play ; XXX no interrupt must happens
-	ei
-	;ld bc, 0x7f10 : out (c), c : ld bc, 0x7f00 + PEN2 : out (c), c
-
-
-
-
-	jp .frame_loop
 
 
 
@@ -112,10 +81,7 @@ state_shake
 
 	ld a, h : or l : ret nz
 
-	call select_new_picture
-
-
-	ret
+	jp select_new_picture
 .restart
 	ld hl, unaligned_data.shake_table
 	ld (.table_address), hl
@@ -134,8 +100,7 @@ select_new_picture
 .continue
 
 	ex de, hl
-	call prepare_new_picture
-	ret
+	jp  prepare_new_picture
 
 
 ;;
@@ -380,7 +345,9 @@ compute_next_point
 .handle_up
 	exa
 		ld a, (unaligned_data.y) ; get y position
-		or a : jr z, .handle_exit_common ; leave if impossible to decrease
+		if ENGINE_HANDLE_VIEW_PORT
+			or a : jr z, .handle_exit_common ; leave if impossible to decrease
+		endif
 		dec a : ld (unaligned_data.y), a ; store updated position
 .handle_exit_common
 	exa
@@ -389,7 +356,9 @@ compute_next_point
 .handle_down
 	exa
 		ld a, (unaligned_data.y) ; get y position
-		cp MAX_POS_Y : jr z, .handle_exit_common
+		if ENGINE_HANDLE_VIEW_PORT
+			cp MAX_POS_Y : jr z, .handle_exit_common
+		endif
 		inc a : ld (unaligned_data.y), a
 		jr .handle_exit_common
 
@@ -402,7 +371,9 @@ compute_next_point
 		jr .handle_exit_common
 .handle_left_previous_byte
 		ld a, (unaligned_data.x_byte_delta)
-		or a : jr z, .handle_exit_common ; no change can be done
+		if ENGINE_HANDLE_VIEW_PORT
+			or a : jr z, .handle_exit_common ; no change can be done
+		endif
 .handle_left_previous_byte_possible
 		dec a : ld (unaligned_data.x_byte_delta), a
 		ld a, 3 : ld (unaligned_data.x_pixel_pos), a
@@ -417,7 +388,9 @@ compute_next_point
 		jr .handle_exit_common
 .handle_right_next_byte
 		ld a, (unaligned_data.x_byte_delta)
-		CP MAX_POS_X_BYTE_RESOLUTION : jr z, .handle_exit_common ; no change can be done
+		if ENGINE_HANDLE_VIEW_PORT
+			CP MAX_POS_X_BYTE_RESOLUTION : jr z, .handle_exit_common ; no change can be done
+		endif
 .handle_right_next_byte_possible
 		inc a : ld (unaligned_data.x_byte_delta), a
 		xor a : ld (unaligned_data.x_pixel_pos), a
@@ -447,70 +420,6 @@ plot_current_point
 	ret
 
 
-;;
-; Initialize the various tables and variables needed for the project
-init
-	if !LINKED_VERSION
-			ld bc, 0x7f10 : ld hl, PEN0*256 + PEN2
-			xor a
-			out (c), c : out (c), l
-			out (c), a : out (c), h
-	endif
-
-
-.copy_data_in_aligned_area
-	ld hl, toalign_data
-	ld de, aligned_data.mask : ld bc, 4 : ldir
-	ld de, aligned_data.pixel_lut_pen1 : ld bc, 4 : ldir
-	ld de, aligned_data.pixel_lut_pen3 : ld bc, 4 : ldir
-	
-.init_screen_table
-	ld de, SCREEN_MEMORY_ADDRESS
-	if !LINKED_VERSION
-		push de ; <============================== save
-	endif
-	ld hl, aligned_data.screen_addresses
-	; ld b, 256 XXX b is already 0 = 256
-.init_screen_table_loop
-		push bc
-			ld (hl), e : inc h : ld (hl), d : dec h : inc l
-			ex de, hl 
-
-				ld a,8 
-				add h 
-				ld h,a 
-				jr nc, .endbc26
-				ld bc,#c050
-				add hl,bc 
-.endbc26			
-			 ex de, hl
-		pop bc
-	djnz .init_screen_table_loop
-
-	; TODO remove if already done by system
-.clear_screen
-	;ld hl, SCREEN_MEMORY_ADDRESS : 
-	if !LINKED_VERSION
-		pop hl ; ==============================> restore
-		ld de, hl : inc de
-		ld bc, 0x4000-1
-		ld (hl), 0
-		ldir
-	endif
-
-.select_screen
-	if !LINKED_VERSION
-		ld hl, SCREEN_CRTC_ADDRESS
-		ld bc, 0xbc00 + 12
-		out (c), c : inc b: out (c), h : dec b : inc c
-		out (c), c : inc b: out (c), l
-	endif
-
-.init_music
-	xor a
-	ld hl, music_data
-	jp PLY_AKM_Init
-;	ret
 
 
 

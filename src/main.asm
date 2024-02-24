@@ -19,23 +19,22 @@
 
 
 	include "inner://crtc.asm"
+	include once "engine_macros.asm"
 
 BINARY_START
 
 	if LINKED_VERSION
-		call engine.init
-		ei
+		ENGINE_INIT (void)
 	else
 		di
 			ld hl, 0xc9fb : ld (0x38), hl
-			call engine.init
-		ei
+			ENGINE_INIT (void)
 		ld sp, $
 	endif
 
 	
 	call engine.select_new_picture
-	jp engine.start
+	ENGINE_MAIN (void)
 
 	include "music.asm"
 	include "commands.asm"

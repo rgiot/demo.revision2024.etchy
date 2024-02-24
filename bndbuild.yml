@@ -5,8 +5,8 @@
   dep: sna
   cmd: xfer 192.168.1.26 -y etch_a_sketch.sna
 
-- tgt: etch_a_sketch.sna etch.o etch_header.o etch_a_sketch.sym etch.dsk
-  dep: src/commands.asm  src/engine.asm  src/main.asm convert/*.asm small_connex.o title.o multiple.o src/music.asm music/*.asm
+- tgt: etch_a_sketch.sna etch.o etch_header.o etch_a_sketch.sym etch.dsk 
+  dep: src/commands.asm  src/engine.asm  src/main.asm convert/*.asm small_connex.o title.o multiple.o src/music.asm music/*.asm croco1.o
   cmd: 
     - basm -I src main.asm --sna -o etch_a_sketch.sna --override -DLINKED_VERSION=0
     - basm -I src main.asm --lst etch_a_sketch.lst --sym etch_a_sketch.sym -DLINKED_VERSION=1
@@ -48,6 +48,53 @@
 - tgt: title.o
   dep: title.asm
   cmd: basm -I src title.asm -o title.o
+
+- tgt: pictures/stonks1.asm
+  dep: pictures/stonks1.png
+  cmd: extern ./tools/convert --euclidean pictures/stonks1.png pictures/stonks1.asm
+- tgt: stonks1.o
+  dep: pictures/stonks1.asm
+  cmd: basm -I src pictures/stonks1.asm -o stonks1.o
+
+
+- tgt: pictures/croco1.asm
+  dep: pictures/croco1.png
+  cmd: extern ./tools/convert --euclidean pictures/croco1.png pictures/croco1.asm
+- tgt: croco1.o
+  dep: pictures/croco1.asm
+  cmd: basm -I src pictures/croco1.asm -o croco1.o
+
+
+- tgt: pictures/croco2.asm
+  dep: pictures/croco2.png
+  cmd: extern ./tools/convert --euclidean pictures/croco2.png pictures/croco2.asm
+- tgt: croco2.o
+  dep: pictures/croco2.asm
+  cmd: basm -I src pictures/croco2.asm -o croco2.o
+
+
+- tgt: pictures/croco3.asm
+  dep: pictures/croco3.png
+  cmd: extern ./tools/convert --euclidean pictures/croco3.png pictures/croco3.asm
+- tgt: croco3.o
+  dep: pictures/croco3.asm
+  cmd: basm -I src pictures/croco3.asm -o croco3.o
+
+
+- tgt: pictures/croco4.asm
+  dep: pictures/croco4.png
+  cmd: extern ./tools/convert --euclidean pictures/croco4.png pictures/croco4.asm
+- tgt: croco4.o
+  dep: pictures/croco4.asm
+  cmd: basm -I src pictures/croco4.asm -o croco4.o
+
+
+- tgt: pictures/croco5.asm
+  dep: pictures/croco5.png
+  cmd: extern ./tools/convert --euclidean pictures/croco5.png pictures/croco5.asm
+- tgt: croco5.o
+  dep: pictures/croco5.asm
+  cmd: basm -I src pictures/croco5.asm -o croco5.o
 
 
 - tgt: multiple.asm

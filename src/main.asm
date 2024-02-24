@@ -47,7 +47,9 @@ BINARY_START
 ;picture2
 ;	incbin "title.o"
 picture3
-	incbin "multiple.o"
+;	incbin "multiple.o"
+
+	incbin "croco1.o"
 ;	ENDASMCONTROLENV
 
 /*

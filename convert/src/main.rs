@@ -27,6 +27,7 @@ use petgraph::{
     stable_graph::{IndexType, NodeIndex, self},
     Graph, Undirected, visit::IntoNodeIdentifiers,
 };
+use rayon::iter::IntoParallelIterator;
 
 const CPC_WIDTH: usize = 320;
 const CPC_HEIGHT: usize = 200;
@@ -51,8 +52,22 @@ pub struct PicCompleteGraphPath<'g> {
     g: &'g PicGraph,
 }
 
+#[derive(PartialEq, Eq)]
 pub struct PicGraphPath {
     solution: Vec<Coord>,
+}
+
+
+impl PartialOrd for PicGraphPath {
+    fn partial_cmp(&self, other: &Self) -> Option<std::cmp::Ordering> {
+        self.solution.partial_cmp(&other.solution)
+    }
+}
+
+impl Ord for PicGraphPath {
+    fn cmp(&self, other: &Self) -> std::cmp::Ordering {
+        self.len().cmp(&other.len())
+    }
 }
 
 impl Deref for PicGraph {
@@ -129,7 +144,7 @@ impl PicGraph {
         distances
             .iter_mut()
             .par_bridge()
-            .for_each(|row| row.iter_mut().for_each(|val| *val = *val/* .powf(50.0)*1000.*/));
+            .for_each(|row| row.iter_mut().for_each(|val| *val = val.powf(50.0)));
 
         // 2nd step compute TSP on the complete graph where all nodes are connected to all others wieghted by the appropriate distance
         dbg!("Start to compute TSP");
@@ -163,7 +178,6 @@ impl PicGraph {
             };
         
         
-;
 
         dbg!("TSP cost", tsp_cost);
         let tsp_solution = tsp_solution;
@@ -546,9 +560,19 @@ pub fn convert<P: AsRef<Path>>(ifname: &[P], ofname: &str, weighted: bool) {
     }
 
     if parts.len() == 1 {
-        let mut c_path = parts[0].compute_path(weighted);
-        c_path.optimize();
-        let f_path = c_path.final_path(Shrink::Both);
+
+
+        let f_path = (0..5).into_par_iter()
+            .map(|i|{
+                let mut c_path = parts[0].compute_path(weighted);
+                c_path.optimize();
+
+                let f_path = c_path.final_path(Shrink::Both);
+                println!("\n{} => {}", i, f_path.len());
+                f_path
+            })
+            .min().unwrap();
+        
         generate_code(ofname, &f_path);
     } else {
         let mut full_path = Vec::new();

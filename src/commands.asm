@@ -1,9 +1,11 @@
 DATA_ENCODING1 equ 1 ; 4 bits for the length and 4 bits for the directions (1 per directions)
-DATA_ENCODING2 equ 2 ; 5 bits for the length and 3 bits for the direction (u, d, l, r, ul, ur, dl, dr)
+DATA_ENCODING2 equ 2 ; 5 bits for the length and 3 bits for the direction (u, d, l, r, ul, ur, dl, dr) <= default one
+DATA_ENCODING3 equ 3 ; 4 bits lost; 4 bits for direction1
 
-SELECTED_DATA_ENCODING equ DATA_ENCODING2
 
-if SELECTED_DATA_ENCODING = DATA_ENCODING1
+SELECTED_DATA_ENCODING equ DATA_ENCODING3
+
+if SELECTED_DATA_ENCODING = DATA_ENCODING1 || SELECTED_DATA_ENCODING = DATA_ENCODING3
 	FLAG_UP 	equ 0b0001
 	FLAG_DOWN 	equ 0b0010
 	FLAG_LEFT	equ 0b0100
@@ -31,6 +33,8 @@ else if SELECTED_DATA_ENCODING == DATA_ENCODING2
 
 	IMPOSSIBLE_COMMANDS equ []
 	MAX_COUNT_COMMANDS equ 0b11111 // only 5 bits are used to store the amount
+else
+	FAIL SELECTED_DATA_ENCODING, " is  not taken into account"
 endif
 
 
@@ -138,6 +142,8 @@ macro EMIT_PREVIOUS_COMMAND
 		EMIT_PREVIOUS_COMMAND_ONE_BYTE_REPETITION_AND_COMMAND1 (void)
 	else if SELECTED_DATA_ENCODING == DATA_ENCODING2
 		EMIT_PREVIOUS_COMMAND_ONE_BYTE_REPETITION_AND_COMMAND2 (void)
+	else if SELECTED_DATA_ENCODING == DATA_ENCODING3
+		EMIT_PREVIOUS_COMMAND_ONE_BYTE_SEVERAL_TIMES (void)
 	else
 		fail "case not handled"
 	endif
@@ -156,6 +162,12 @@ macro EMIT_PREVIOUS_COMMAND_ONE_BYTE_REPETITION_AND_COMMAND1
 	db (STATE_PREVIOUS_COMMAND_COUNT << 4) + STATE_PREVIOUS_COMMAND
 endm
 
+
+macro EMIT_PREVIOUS_COMMAND_ONE_BYTE_SEVERAL_TIMES
+	repeat STATE_PREVIOUS_COMMAND_COUNT
+		db STATE_PREVIOUS_COMMAND
+	rend
+endm
 
 ;;
 ; aaaaabbb

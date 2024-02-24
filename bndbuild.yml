@@ -6,7 +6,7 @@
   cmd: xfer 192.168.1.26 -y etch_a_sketch.sna
 
 - tgt: etch_a_sketch.sna etch.o etch_header.o etch_a_sketch.sym etch.dsk 
-  dep: src/commands.asm  src/engine.asm  src/main.asm convert/*.asm small_connex.o title.o multiple.o src/music.asm music/*.asm croco1.o croco1_multiple.o
+  dep: src/commands.asm  src/engine.asm  src/main.asm convert/*.asm src/music.asm music/*.asm stonks1.o croco1.o revision.o
   cmd: 
     - basm -I src main.asm --sna -o etch_a_sketch.sna --override -DLINKED_VERSION=0
     - basm -I src main.asm --lst etch_a_sketch.lst --sym etch_a_sketch.sym -DLINKED_VERSION=1
@@ -53,8 +53,15 @@
   dep: pictures/stonks1.png
   cmd: extern ./tools/convert --euclidean pictures/stonks1.png pictures/stonks1.asm
 - tgt: stonks1.o
-  dep: pictures/stonks1.asm
+  dep: pictures/stonks1.asm src/commands.asm
   cmd: basm -I src pictures/stonks1.asm -o stonks1.o
+
+- tgt: pictures/revision.asm
+  dep: pictures/revision.png
+  cmd: extern ./tools/convert --euclidean pictures/revision.png pictures/revision.asm
+- tgt: revision.o
+  dep: pictures/revision.asm src/commands.asm
+  cmd: basm -I src pictures/revision.asm -o revision.o
 
 
 
@@ -62,7 +69,7 @@
   dep: pictures/croco1a.png pictures/croco1b.png pictures/croco1c.png
   cmd: extern ./tools/convert --euclidean pictures/croco1a.png pictures/croco1b.png pictures/croco1c.png pictures/croco1_multiple.asm
 - tgt: croco1_multiple.o
-  dep: pictures/croco1_multiple.asm
+  dep: pictures/croco1_multiple.asm src/commands.asm
   cmd: basm -I src pictures/croco1_multiple.asm -o croco1_multiple.o
 
 
@@ -71,7 +78,7 @@
   dep: pictures/croco1.png
   cmd: extern ./tools/convert --euclidean pictures/croco1.png pictures/croco1.asm
 - tgt: croco1.o
-  dep: pictures/croco1.asm
+  dep: pictures/croco1.asm src/commands.asm
   cmd: basm -I src pictures/croco1.asm -o croco1.o
 
 
@@ -79,7 +86,7 @@
   dep: pictures/croco2.png
   cmd: extern ./tools/convert --euclidean pictures/croco2.png pictures/croco2.asm
 - tgt: croco2.o
-  dep: pictures/croco2.asm
+  dep: pictures/croco2.asm src/commands.asm
   cmd: basm -I src pictures/croco2.asm -o croco2.o
 
 
@@ -87,7 +94,7 @@
   dep: pictures/croco3.png
   cmd: extern ./tools/convert --euclidean pictures/croco3.png pictures/croco3.asm
 - tgt: croco3.o
-  dep: pictures/croco3.asm
+  dep: pictures/croco3.asm src/commands.asm
   cmd: basm -I src pictures/croco3.asm -o croco3.o
 
 
@@ -95,7 +102,7 @@
   dep: pictures/croco4.png
   cmd: extern ./tools/convert --euclidean pictures/croco4.png pictures/croco4.asm
 - tgt: croco4.o
-  dep: pictures/croco4.asm
+  dep: pictures/croco4.asm src/commands.asm
   cmd: basm -I src pictures/croco4.asm -o croco4.o
 
 
@@ -103,7 +110,7 @@
   dep: pictures/croco5.png
   cmd: extern ./tools/convert --euclidean pictures/croco5.png pictures/croco5.asm
 - tgt: croco5.o
-  dep: pictures/croco5.asm
+  dep: pictures/croco5.asm src/commands.asm
   cmd: basm -I src pictures/croco5.asm -o croco5.o
 
 
@@ -111,5 +118,5 @@
   dep: convert/puzzle1.png convert/puzzle2.png convert/puzzle3.png
   cmd: extern ./tools/convert --euclidean convert/puzzle1.png convert/puzzle2.png convert/puzzle3.png multiple.asm
 - tgt: multiple.o
-  dep: multiple.asm
+  dep: multiple.asm src/commands.asm
   cmd: basm -I src multiple.asm -o multiple.o

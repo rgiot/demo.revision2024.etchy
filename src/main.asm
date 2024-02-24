@@ -50,7 +50,11 @@ BINARY_START
 ;	incbin "multiple.o"
 
 croco:
-	incbin "croco_multiple.o"
+	incbin "croco1.o"
+stonks:
+	incbin "stonks1.o"
+revision:
+	incbin "revision.o"
 ;	ENDASMCONTROLENV
 
 /*
@@ -83,9 +87,14 @@ toalign_data
 
 unaligned_data
 .pictures
+	dw revision
+	dw croco
+	dw revision
+	dw stonks
+
 ;	dw picture1 ; XXX removed to be in the 4k limit
 ;	dw picture2
-	dw picture3
+;	dw picture3
 	dw 00
 .backup_area defs 4
 .shake_table

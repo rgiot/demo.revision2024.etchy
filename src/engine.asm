@@ -241,7 +241,9 @@ prepare_new_picture
 	; retore various flags
 	ld a, 1
 	ld (compute_next_point.first_flag), a
-	ld (compute_next_point.current_repetition_counter), a
+	if SELECTED_DATA_ENCODING != DATA_ENCODING3
+		ld (compute_next_point.current_repetition_counter), a
+	endif
 
 
 	ld bc, VIEWING_DURATION + 1 : dec bc : ld (state_wait.wait_count), bc ; XXX extra opcodes for better  crunch !!!
@@ -295,10 +297,14 @@ compute_next_point
 	; This is not the first command, so either repreat the previous action, either read the next command
 .not_first
 
+	if SELECTED_DATA_ENCODING != DATA_ENCODING3
+
 	ld a, 1 ; we want to be 
 .current_repetition_counter equ $-1
 	dec a
 	or a : jr nz, .continue_same_movement
+
+	endif
 
 .read_next_movement
 	ld a, (hl)
@@ -313,6 +319,8 @@ compute_next_point
 		and 0b1111
 	else if SELECTED_DATA_ENCODING == DATA_ENCODING2
 		and 0b111
+	else if SELECTED_DATA_ENCODING == DATA_ENCODING3
+		; there is stricly nothing to do as only the movement is in the file !!
 	else
 		fail "unhandled case"
 	endif
@@ -324,17 +332,21 @@ compute_next_point
 		srl a : srl a : srl a : srl a
 	else if SELECTED_DATA_ENCODING == DATA_ENCODING2
 		srl a: srl a: srl a
+	else if SELECTED_DATA_ENCODING == DATA_ENCODING3
+		; no concept of repetition
 	else
 		fail "unhandled case"
 	endif
 	
+
+	if SELECTED_DATA_ENCODING != DATA_ENCODING3
 .continue_same_movement
 	ld (.current_repetition_counter), a ; store the counter (either after decrement or because it is a new one)
-
+	endif
 
 	ld a, 0
 .movement equ $-1
-	if SELECTED_DATA_ENCODING == DATA_ENCODING1
+	if SELECTED_DATA_ENCODING == DATA_ENCODING1 || SELECTED_DATA_ENCODING == DATA_ENCODING3
 		bit 0, a : call nz, .handle_up
 		bit 1, a : call nz, .handle_down
 		bit 2, a : call nz, .handle_left

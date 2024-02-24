@@ -1,0 +1,4 @@
+image 	       ; encoding1 (raw/shrink) ; encoding2 (raw/shrink) ; encoding3 (raw/shrink)
+croco1         ; 4179/3062              ; 4215/3046              ; 5279/2998
+stonks1        ; 4334/3030              ; 4368/3014              ; 5793/2962
+croco1+stonks1 ; 5663/3734              ; 5695/3710              ; 8230/3622

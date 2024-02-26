@@ -2,11 +2,10 @@
 	START 246, 109
 		L 1
 		DL 1
-		UL 1
-		R 1
+		U 1
 		DL 1
-		UL 1
-		L 8
+		U 1
+		L 9
 		UL 1
 		UR 1
 		R 13
@@ -56,16 +55,17 @@
 		L 5
 		DL 1
 		DR 1
-		R 5
-		D 1
+		R 4
+		DR 1
 		DL 1
 		L 10
 		DL 1
 		DR 1
-		R 11
+		R 10
+		DR 1
 		D 1
 		DL 1
-		D 2
+		D 1
 		DL 1
 		D 1
 		DL 1
@@ -151,35 +151,34 @@
 		R 1
 		L 1
 		DL 1
-		UL 1
-		R 1
+		U 1
 		DL 1
-		UL 1
-		L 8
+		U 1
+		L 9
 		UL 1
 		UR 1
 		R 14
 		U 1
 		UL 1
-		L 14
-		UL 1
+		L 15
+		U 1
 		UR 1
 		R 13
 		U 1
 		UL 1
-		L 12
-		U 1
-		UR 1
-		R 10
-		UL 2
-		L 1
+		L 11
 		UL 1
-		DL 1
-		L 2
-		R 1
+		UR 1
+		R 8
 		UR 1
 		DR 1
-		UL 2
+		L 1
+		U 1
+		UL 1
+		L 5
+		R 1
+		UR 1
+		UL 1
 		L 8
 		DL 1
 		L 1
@@ -195,48 +194,32 @@
 		UR 1
 		U 3
 		UR 2
-		U 3
-		D 2
-		DR 2
+		R 1
+		DR 1
 		R 1
 		U 1
 		UR 1
-		DR 1
+		DR 2
+		D 1
+		U 2
 		UR 1
+		DR 1
+		D 1
+		DR 2
+		D 1
+		U 1
+		UL 1
+		UR 2
+		DR 2
+		UR 1
+		DR 1
 		R 1
-		DR 1
-		D 1
-		DR 1
-		UR 2
-		UL 1
-		U 2
-		D 1
-		DR 1
-		DL 1
-		D 1
-		DL 1
-		DR 1
-		D 1
-		UL 1
 		UR 1
-		U 1
-		UR 1
+		DR 1
+		D 1
 		DR 2
-		D 2
-		U 2
 		UR 1
-		DR 2
-		D 2
-		U 1
-		UL 1
-		UR 2
-		DR 1
-		D 1
-		DR 1
-		UR 1
-		U 3
-		D 3
-		DR 6
+		DR 5
 		D 1
 		DR 1
 		D 1
@@ -265,10 +248,11 @@
 		DR 3
 		R 2
 		UR 1
-		R 1
+		DR 1
+		U 1
 		DL 1
-		R 1
-		UL 2
+		U 1
+		UL 1
 		UR 1
 		R 2
 		DR 2
@@ -297,46 +281,8 @@
 		D 2
 		DL 1
 		D 1
-		DL 3
-		UL 1
-		L 1
-		DL 1
-		L 1
-		DL 1
-		L 2
-		DL 1
-		L 1
-		DL 1
-		L 1
-		DL 1
-		L 1
-		DL 1
-		UL 1
-		DL 1
-		UL 1
-		DL 1
-		UL 1
-		L 2
-		R 1
-		DR 1
-		UR 1
-		DR 1
-		UR 1
-		DR 1
-		UR 1
-		R 2
-		UR 1
-		R 1
-		UR 1
-		R 1
-		UR 1
-		R 1
-		UR 1
-		R 1
-		UR 1
-		R 2
-		DR 1
-		R 1
+		DL 2
+		D 1
 		DR 1
 		R 1
 		UR 2
@@ -393,17 +339,18 @@
 		UR 1
 		R 1
 		UR 1
-		R 1
-		UR 1
-		R 1
-		UR 1
 		R 2
+		UR 1
+		R 1
+		UR 1
+		R 1
 		DR 1
 		UR 1
 		R 1
 		DL 1
-		UL 1
-		DR 2
+		L 1
+		R 1
+		DR 1
 		R 1
 		UR 2
 		R 8
@@ -425,22 +372,13 @@
 		DL 1
 		L 7
 		DL 1
-		UL 1
-		R 1
-		UL 1
-		UR 1
+		U 2
 		DL 1
+		U 1
+		L 4
 		UL 1
-		DL 1
-		UL 1
-		DL 1
-		UL 1
-		R 1
-		DR 1
-		UR 1
-		DR 1
-		UR 1
-		DR 1
+		L 1
+		R 9
 		UR 1
 		R 1
 		UR 1
@@ -450,14 +388,8 @@
 		UR 1
 		R 1
 		UR 1
-		DL 1
-		R 1
-		UR 1
-		R 1
-		UR 1
-		R 1
-		DR 1
-		UR 3
+		R 4
+		UR 2
 		U 1
 		UR 1
 		U 2
@@ -469,9 +401,7 @@
 		U 1
 		UR 1
 		U 2
-		D 1
-		UL 1
-		L 1
+		L 2
 		DL 1
 		D 1
 		DL 1
@@ -521,79 +451,79 @@
 		UL 5
 		DL 1
 		D 2
-		U 1
-		UL 1
-		UR 1
-		DL 1
-		R 1
+		U 2
 		UR 1
 		UL 1
+		U 3
+		D 4
 		DL 1
-		UL 1
 		U 1
 		UL 1
 		U 2
-		D 1
+		UL 1
+		U 1
+		D 2
+		DL 2
 		DR 1
 		D 1
-		UL 1
-		DL 2
-		R 1
-		UL 3
-		U 2
-		D 1
-		DR 1
-		DL 2
-		R 1
-		UR 1
-		UL 1
+		U 3
 		DL 1
-		UL 1
-		L 1
-		UR 1
-		UL 1
-		D 1
-		DR 1
-		DL 2
-		UL 1
 		U 1
 		UL 1
 		DL 1
 		D 2
-		UL 1
-		UR 2
-		UL 1
 		U 2
-		D 1
+		UR 1
+		U 1
+		UL 1
+		U 1
+		D 3
+		DL 1
+		U 1
+		UL 1
+		U 1
+		UL 1
+		U 1
+		D 5
+		DL 1
+		U 1
+		UL 1
+		U 1
+		UL 1
+		U 1
+		UL 1
+		U 1
+		D 4
+		DL 1
+		U 1
+		UL 2
+		U 1
+		UL 1
+		D 2
 		DR 1
-		DL 2
+		D 1
+		DL 1
 		UL 1
 		L 1
-		UL 1
+		U 3
+		D 2
+		DL 1
+		D 1
+		DL 1
+		D 3
+		DL 1
+		D 3
+		DL 1
+		D 1
+		DL 1
+		D 1
+		DL 1
+		D 1
+		DR 1
+		DL 3
+		U 1
 		UR 1
-		UL 1
-		D 1
-		DR 2
-		DL 2
-		UL 2
-		DL 1
-		R 1
-		DL 2
-		D 3
-		DL 1
-		D 3
-		DL 1
-		D 1
-		DL 1
-		D 1
-		DL 1
-		D 1
-		DL 1
-		D 1
-		DL 1
-		D 1
-		UR 2
-		UL 1
+		U 1
 		UR 1
 		DR 1
 		UR 4
@@ -601,32 +531,27 @@
 		UR 1
 		R 8
 		DR 1
-		DL 1
 		R 1
-		UR 1
 		DR 1
 		R 1
 		DR 1
 		DL 1
 		L 8
 		DL 1
+		D 1
+		U 1
 		DR 1
 		R 11
 		DR 1
 		DL 1
-		L 12
-		DL 1
+		L 13
 		D 1
-		U 2
-		R 1
-		DL 1
 		DR 1
 		R 14
 		DR 1
 		DL 1
 		L 14
-		R 1
-		DL 1
+		D 1
 		DR 1
 		R 7
 		DR 1
@@ -639,12 +564,10 @@
 		UL 1
 		L 1
 		UL 1
-		L 2
-		U 2
-		D 1
-		DR 1
-		DL 1
-		D 1
+		L 1
+		UL 1
+		U 1
+		D 4
 		DL 1
 		D 14
 		DR 1
@@ -704,8 +627,7 @@
 		DR 1
 		DL 1
 		L 9
-		R 1
-		DL 1
+		D 1
 		DR 1
 		R 9
 		UR 4
@@ -715,18 +637,15 @@
 		UR 1
 		U 1
 		UR 1
-		U 1
+		U 2
 		UR 1
-		DL 1
 		U 1
-		UR 1
-		UL 1
-		L 12
+		L 13
 		UR 2
 		R 10
 		UR 1
-		UL 1
-		L 6
+		U 1
+		L 7
 		UR 2
 		R 4
 		UR 1
@@ -765,8 +684,7 @@
 		U 3
 		UL 1
 		U 2
-		D 1
-		UL 1
+		L 1
 		DL 2
 		L 1
 		DL 1
@@ -776,8 +694,8 @@
 		UL 1
 		U 1
 		UR 1
-		L 16
-		UL 1
+		L 17
+		U 1
 		UR 1
 		R 15
 		UR 1
@@ -788,7 +706,9 @@
 		R 1
 		DR 1
 		UR 1
-		U 1
+		DR 1
+		L 1
+		U 2
 		UL 3
 		U 1
 		UL 2
@@ -796,28 +716,13 @@
 		UL 2
 		U 1
 		UL 4
-		L 3
-		UL 1
-		U 1
-		UR 1
-		U 1
-		DL 3
-		UR 1
-		DR 2
-		DL 2
+		L 2
+		DL 1
 		UL 1
 		DL 1
-		L 1
 		UL 1
-		U 1
-		UR 1
-		U 1
-		UL 1
-		UR 1
-		DL 1
-		R 1
 		DL 2
-		D 1
+		UL 2
 		DL 1
 		UL 2
 		UR 1
@@ -826,56 +731,16 @@
 		DR 1
 		D 1
 		DR 1
-		DL 1
-		D 1
 		UR 1
-		UL 1
-		DR 1
-		R 2
-		D 1
-		UL 1
-		DL 1
-		UL 1
-		DL 2
-		L 1
-		UL 1
-		D 1
-		DL 1
-		UR 2
-		UL 1
-		U 2
-		UL 1
-		UR 1
-		U 1
-		D 1
-		DL 1
 		R 1
-		DL 3
-		U 1
+		UR 1
+		U 3
+		DL 1
+		D 1
+		DL 1
 		DR 1
-		DL 1
-		D 2
-		R 1
-		UL 1
-		DL 2
-		L 1
-		UL 1
-		UR 1
-		U 1
-		UR 1
-		U 1
-		UR 2
-		U 1
-		DL 1
-		DR 2
-		UR 1
-		DR 2
-		UR 1
-		U 1
-		UR 1
-		DR 2
-		UR 1
-		DR 2
+		D 1
+		DR 1
 		UR 2
 		DR 1
 		UR 1
@@ -883,9 +748,8 @@
 		UR 1
 		R 1
 		UR 1
-		DR 1
+		R 1
 		UR 1
-		U 1
 		UL 1
 		U 1
 		UL 1
@@ -1067,6 +931,14 @@
 		D 1
 		DR 2
 		UR 1
+		DR 3
+		R 1
+		L 2
+		U 1
+		DL 1
+		UL 1
+		UR 1
+		UL 1
 		U 1
 		UL 1
 		U 1
@@ -1141,21 +1013,16 @@
 		UR 1
 		R 1
 		DL 1
+		U 1
+		DL 1
+		U 1
+		DL 1
+		U 1
 		UL 1
-		DL 1
-		UR 1
-		R 1
-		DL 1
-		UL 2
 		L 3
-		UL 2
-		DL 1
-		L 3
-		R 2
+		UL 1
 		UR 1
-		DR 1
-		UR 1
-		R 4
+		R 3
 		UR 1
 		R 6
 		DR 1
@@ -1242,7 +1109,11 @@
 		R 1
 		DR 1
 		UR 1
+		DR 2
+		L 1
 		U 1
+		L 1
+		U 2
 		UL 2
 		U 1
 		UL 1
@@ -1346,9 +1217,8 @@
 		DL 1
 		L 5
 		DL 1
-		L 4
+		L 3
 		UL 1
-		R 1
 		UR 1
 		R 1
 		UR 1
@@ -1443,8 +1313,11 @@
 		D 1
 		DR 1
 		D 1
-		DR 1
+		DR 3
+		U 1
+		L 1
 		UR 1
+		UL 1
 		U 3
 		UL 1
 		U 3
@@ -1657,44 +1530,17 @@
 		UL 1
 		U 2
 		UL 1
-		DL 2
-		DR 1
-		DL 1
-		DR 1
-		DL 1
-		DR 1
-		DL 1
-		D 1
-		U 1
-		UR 1
-		UL 1
-		UR 1
-		UL 1
-		UR 1
-		UL 1
-		UR 2
-		U 2
-		D 2
-		DL 2
-		DR 1
-		DL 1
-		DR 1
-		DL 1
-		D 1
-		UR 1
-		UL 1
-		UR 1
-		UL 1
-		UR 1
-		UL 1
-		U 3
-		UL 1
-		UR 1
 		U 2
 		D 2
 		DL 1
-		R 1
-		DL 2
+		D 6
+		DL 1
+		D 1
+		U 15
+		D 2
+		DL 1
+		D 1
+		DL 1
 		D 2
 		DL 1
 		D 2
@@ -1703,8 +1549,8 @@
 		DL 1
 		D 1
 		DL 1
-		L 13
-		U 1
+		L 12
+		UL 1
 		UR 1
 		U 3
 		UR 1
@@ -1712,12 +1558,10 @@
 		UR 1
 		U 6
 		UR 1
-		U 6
-		UL 1
-		UR 1
+		U 8
 		DL 1
-		R 1
-		DL 2
+		D 1
+		DL 1
 		D 3
 		DL 1
 		D 3
@@ -1743,13 +1587,10 @@
 		UR 1
 		U 3
 		UR 1
-		U 10
-		UL 1
-		UR 1
+		U 12
+		L 1
+		D 2
 		DL 1
-		U 1
-		DR 1
-		DL 2
 		D 2
 		DL 1
 		D 2
@@ -1839,7 +1680,44 @@
 		UR 1
 		U 1
 		UR 8
-		UL 1
+		R 1
+		UR 2
+		R 1
+		UR 1
+		R 1
+		UR 1
+		R 1
+		UR 1
+		R 1
+		UR 3
+		D 1
+		DL 1
+		U 1
+		DL 2
+		UR 1
+		U 1
+		L 1
+		DL 1
+		L 1
+		DR 1
+		DL 1
+		L 1
+		DL 1
+		UR 1
+		U 1
+		L 1
+		DL 1
+		L 1
+		DR 1
+		DL 1
+		L 1
+		DL 2
+		UR 2
+		U 1
+		L 1
+		DL 1
+		L 1
+		DL 1
 		L 1
 		UL 1
 		UR 5
@@ -1856,8 +1734,8 @@
 		R 1
 		UR 1
 		R 1
-		UR 1
-		U 1
+		UR 2
+		L 1
 		UL 1
 		L 3
 		DL 1
@@ -1910,13 +1788,13 @@
 		D 1
 		DL 2
 		D 1
-		DL 4
+		DL 3
 		D 1
-		DL 2
+		DL 3
 		DR 1
-		UL 1
-		R 1
-		UL 1
+		U 1
+		L 1
+		U 1
 		DL 2
 		UL 6
 		UR 2
@@ -1933,9 +1811,8 @@
 		DR 1
 		D 5
 		DR 1
-		UR 2
-		UL 1
-		U 10
+		UR 1
+		U 12
 		UL 1
 		U 2
 		UL 1
@@ -1950,8 +1827,8 @@
 		D 1
 		DL 1
 		D 1
-		DL 3
-		L 1
+		DL 4
+		U 1
 		UL 2
 		L 1
 		UL 2
@@ -1985,27 +1862,25 @@
 		D 2
 		DR 1
 		D 8
-		DL 6
+		DL 2
+		DR 1
+		R 1
+		DR 2
+		R 1
+		DR 1
+		R 1
+		DR 3
+		R 1
+		DR 2
 		D 1
-		R 5
-		DR 1
-		R 3
-		DR 1
-		R 1
-		DR 1
-		R 1
-		DR 1
-		R 1
-		DR 1
-		R 1
-		L 1
-		UR 1
-		UL 2
-		DR 1
+		U 1
 		DL 1
-		L 1
 		UL 1
+		L 1
+		R 1
 		UR 1
+		UL 1
+		L 1
 		UL 3
 		L 1
 		UL 1
@@ -2013,15 +1888,31 @@
 		UL 2
 		L 1
 		UL 1
+		DL 3
+		UR 3
+		DR 1
+		R 1
+		DR 2
+		R 1
+		DR 1
+		R 1
+		DR 3
+		DL 1
 		L 1
-		D 1
-		DL 4
+		UL 1
+		L 1
+		UL 1
+		L 3
+		UL 1
+		L 5
+		U 1
+		DL 1
 		UL 1
 		DL 2
 		D 2
 		DL 1
-		D 4
-		R 1
+		D 3
+		DR 1
 		UR 1
 		R 1
 		UR 1
@@ -2061,8 +1952,8 @@
 		UR 3
 		R 3
 		DR 1
-		D 3
-		R 1
+		D 2
+		DR 1
 		UR 1
 		R 4
 		UR 1
@@ -2090,10 +1981,7 @@
 		D 1
 		DL 2
 		D 1
-		DL 4
-		L 1
-		D 1
-		DL 1
+		DL 6
 		L 1
 		DL 2
 		L 1
@@ -2101,22 +1989,9 @@
 		L 1
 		DL 1
 		L 3
-		DL 2
-		UL 1
 		DL 1
-		UL 2
-		L 2
-		UL 1
-		L 1
-		R 1
 		DR 1
-		R 1
-		DR 1
-		UR 1
-		DR 2
-		UR 1
-		DR 1
-		R 7
+		R 6
 		UR 1
 		R 2
 		UR 1
@@ -2149,17 +2024,19 @@
 		DL 1
 		L 2
 		DL 1
-		L 7
+		L 10
 		UL 1
-		DL 1
-		UL 2
-		DL 1
+		L 1
 		UL 1
+		L 1
+		UL 1
+		L 1
 		R 1
-		DR 2
-		UR 1
 		DR 1
-		UR 2
+		R 3
+		DR 1
+		R 3
+		UR 1
 		R 3
 		UR 1
 		R 1
@@ -2167,7 +2044,10 @@
 		R 1
 		UR 2
 		R 1
-		UR 6
+		UR 1
+		U 1
+		R 1
+		UR 4
 		U 1
 		UR 2
 		U 1
@@ -2178,11 +2058,9 @@
 		UR 1
 		U 3
 		UR 1
-		U 3
-		UL 1
-		R 1
-		UL 1
-		U 7
+		U 4
+		L 1
+		U 8
 		UL 1
 		U 9
 		UL 1
@@ -2190,535 +2068,25 @@
 		UL 1
 		U 13
 		UR 1
-		UL 1
-		UR 1
-		U 1
-		D 1
-		DL 1
-		R 1
-		DL 3
-		D 2
-		DL 1
-		UL 1
-		DL 3
-		D 1
-		DL 2
-		L 1
-		DL 1
-		L 1
-		DL 1
-		L 1
-		DL 1
-		L 1
-		DL 1
-		UL 1
-		L 2
-		DL 1
-		L 11
-		UL 1
-		L 3
-		UL 1
-		L 2
-		UL 1
-		L 1
-		UL 1
-		L 1
-		UL 2
-		L 1
-		UL 7
-		DL 1
-		D 1
-		DR 9
-		D 1
-		DL 3
-		D 1
-		DL 2
-		D 1
-		DL 2
-		D 1
-		U 7
-		UL 1
-		U 1
-		UL 5
-		L 3
-		U 2
-		UL 1
-		U 1
-		UL 5
-		L 1
-		UL 1
-		L 1
-		UL 1
-		L 2
-		UL 1
-		L 3
-		UL 1
-		L 6
-		UL 1
-		L 10
-		UL 1
-		L 4
-		UL 1
-		L 4
-		UL 1
-		L 2
-		U 1
-		UL 1
-		U 2
-		DL 2
-		L 1
-		DL 2
-		U 2
-		UL 1
-		U 2
-		L 1
-		DL 1
-		L 2
-		DL 1
-		L 2
-		DL 1
-		L 2
-		U 2
-		UR 2
-		R 1
-		UR 1
-		R 3
-		UR 1
-		R 7
-		DR 1
-		R 2
-		DR 1
-		R 1
-		DR 1
-		R 1
-		DR 1
-		R 2
-		DR 1
-		R 1
-		DR 1
-		R 1
-		DR 1
-		R 2
-		DR 1
-		R 2
-		DR 1
-		R 7
-		UR 1
-		R 1
-		UR 4
-		U 1
-		UR 1
-		U 1
-		UR 1
-		U 2
-		UL 1
-		L 2
-		DL 1
-		L 5
-		DL 3
-		UL 4
-		DL 1
-		UL 1
-		DL 1
-		L 2
-		UL 10
-		DL 1
-		D 1
-		U 1
-		UR 1
-		DR 8
-		D 1
-		UL 1
-		L 2
-		UL 1
-		DL 1
-		UL 1
-		DL 1
-		UR 1
-		UL 1
-		R 1
-		DR 1
-		DL 3
-		L 1
-		R 1
-		UR 1
-		UL 1
-		L 1
-		DL 1
-		U 1
-		UR 2
-		UL 6
-		R 1
-		UL 1
-		U 2
-		DR 4
-		UR 1
-		U 1
-		DR 11
-		R 1
-		UR 1
-		DR 1
-		UR 1
-		DR 1
-		R 2
-		DR 1
-		R 1
-		DR 2
-		UR 1
-		DL 2
-		L 1
-		UL 1
-		R 1
-		DR 1
-		UR 1
-		U 1
-		UL 1
-		UR 1
-		R 6
-		UR 1
-		R 2
-		UR 1
-		UL 2
-		UR 1
 		U 3
-		UL 1
-		U 4
-		UL 1
-		U 2
-		UL 1
-		U 2
-		UL 1
-		U 2
-		UL 1
-		U 1
-		UL 1
-		U 1
-		UL 1
-		U 1
-		UL 2
-		U 1
-		UL 1
-		U 1
-		UL 3
-		U 1
-		UL 1
-		D 1
-		DL 1
-		D 2
-		DL 1
-		D 9
-		DR 2
-		R 1
-		L 1
-		UL 1
-		L 2
-		UL 1
-		L 2
-		UL 1
-		L 6
-		UL 1
-		L 2
-		R 1
-		UR 1
-		UL 15
-		DL 1
-		D 3
-		DL 1
-		D 3
-		DL 1
-		D 1
-		DL 1
-		D 1
-		DL 1
-		D 2
-		DL 1
-		D 1
-		DR 1
-		D 1
-		DL 2
 		D 1
 		DL 1
 		D 1
 		DL 2
-		D 1
-		DL 1
-		D 1
-		DL 1
-		D 1
-		DL 1
 		D 2
 		DL 1
-		D 2
-		DL 1
-		D 9
-		DR 1
-		D 1
-		DR 6
-		R 1
-		L 1
 		UL 1
-		L 6
-		DL 1
-		L 1
-		DL 1
-		L 1
+		DL 3
+		D 1
 		DL 2
 		L 1
-		DL 2
-		D 1
-		U 1
-		UR 2
-		R 1
-		UR 2
-		R 1
-		UR 1
-		R 1
-		UR 1
-		R 4
-		UR 1
-		UL 4
-		U 1
-		UL 1
-		U 9
-		UR 1
-		U 2
-		UR 1
-		U 2
-		UR 1
-		U 1
-		UR 1
-		U 1
-		UR 1
-		U 1
-		UR 2
-		U 1
-		UR 1
-		UL 1
-		UR 1
-		R 1
-		UR 1
-		DR 1
-		UR 6
-		U 1
-		UR 1
-		U 2
-		UR 1
-		U 1
-		UL 1
-		U 1
-		UL 1
-		DL 2
-		D 1
-		DL 1
-		D 1
-		DL 1
-		D 1
-		DL 1
-		D 2
-		DL 1
-		D 1
-		DL 1
-		D 1
-		DR 1
-		DL 2
-		UL 1
-		UR 1
-		UL 1
-		U 1
-		UR 1
-		U 1
-		UR 1
-		U 2
-		UR 1
-		U 1
-		UR 1
-		U 1
-		UR 1
-		U 3
-		UR 1
-		U 4
-		D 1
-		UR 1
-		DR 17
-		R 5
-		DR 1
-		R 2
-		DR 1
-		UR 1
-		U 9
-		UR 1
-		U 2
-		UR 1
-		DR 4
-		D 1
-		DR 1
-		D 1
-		DR 2
-		D 1
-		DR 1
-		D 1
-		DR 1
-		D 1
-		DR 1
-		D 2
-		DR 1
-		D 2
-		DR 1
-		D 2
-		DR 1
-		D 4
-		DR 1
-		D 3
-		DL 1
-		L 2
 		DL 1
 		L 1
 		DL 1
 		L 1
-		UR 2
-		UL 1
-		L 1
 		DL 1
 		L 1
 		DL 1
-		L 2
-		DL 1
-		L 1
-		DL 1
-		D 1
-		UL 1
-		DL 1
-		UL 1
-		DL 1
-		R 1
-		UR 1
-		DR 1
-		UR 1
-		DR 3
-		UR 1
-		DR 1
-		UR 2
-		R 5
-		UR 1
-		R 3
-		U 1
-		UR 1
-		U 1
-		UR 1
-		UL 1
-		DL 2
-		UR 1
-		UL 1
-		D 1
-		DL 1
-		DR 2
-		DL 1
-		DR 1
-		D 2
-		DL 1
-		D 1
-		DL 1
-		D 1
-		DL 4
-		L 1
-		DL 1
-		L 7
-		UL 1
-		L 2
-		UL 1
-		L 2
-		UL 1
-		L 1
-		UL 1
-		L 1
-		UL 1
-		L 2
-		UL 1
-		L 1
-		UL 1
-		L 1
-		UL 1
-		L 1
-		UL 1
-		D 1
-		UL 1
-		L 7
-		DL 1
-		L 3
-		DL 1
-		L 1
-		DL 2
-		D 1
-		DR 1
-		R 1
-		UR 1
-		R 2
-		UR 1
-		R 2
-		UR 1
-		DR 1
-		D 1
-		DR 2
-		UR 1
-		R 1
-		UR 1
-		DR 3
-		R 1
-		DR 1
-		R 4
-		DR 1
-		R 4
-		DR 1
-		R 10
-		DR 1
-		R 6
-		DR 1
-		R 3
-		DR 1
-		R 2
-		DR 1
-		R 1
-		DR 1
-		R 1
-		DR 5
-		D 1
-		DR 1
-		D 1
-		DR 1
-		R 2
-		DR 5
-		D 1
-		DR 1
-		D 4
-		DR 1
-		UR 1
-		U 1
-		UR 2
-		U 1
-		UR 3
-		U 1
-		UL 9
-		U 1
-		UL 2
-		U 1
-		UL 2
-		U 1
-		DR 12
-		R 1
-		DR 2
-		R 1
-		DR 1
-		R 1
-		DR 1
-		R 2
-		DR 1
-		R 3
-		DR 1
-		R 11
-		UR 1
-		R 1
-		DR 1
-		R 1
 		DR 6
 		D 1
 		DR 1
@@ -2728,9 +2096,8 @@
 		DR 1
 		D 4
 		DR 1
-		D 3
-		R 1
-		DR 2
+		D 2
+		DR 3
 		D 1
 		DR 1
 		D 1
@@ -2746,9 +2113,11 @@
 		U 1
 		UL 1
 		U 3
-		UL 1
+		UL 2
+		UR 1
+		D 1
 		DL 1
-		D 6
+		D 7
 		DL 1
 		D 2
 		DL 2
@@ -2802,9 +2171,8 @@
 		DL 1
 		D 1
 		DL 8
-		L 2
-		D 1
-		DL 1
+		L 1
+		DL 2
 		D 2
 		DL 1
 		D 2
@@ -2838,43 +2206,14 @@
 		DL 1
 		L 5
 		UL 1
-		L 1
-		UL 1
-		DL 1
-		R 1
-		UL 1
-		DL 1
-		UL 1
-		DL 1
-		UL 1
-		DL 1
-		UL 1
-		DL 1
-		UL 1
-		DL 1
-		UL 1
-		DL 1
-		UL 1
-		DL 1
-		UL 1
-		DL 1
 		L 3
+		U 1
+		DL 1
+		L 17
 		R 2
 		UR 1
-		DR 1
+		R 14
 		UR 1
-		DR 1
-		UR 1
-		DR 1
-		UR 1
-		DR 1
-		UR 1
-		DR 1
-		UR 1
-		DR 1
-		UR 1
-		DR 1
-		UR 2
 		UL 1
 		U 2
 		UR 2
@@ -2896,7 +2235,9 @@
 		UR 1
 		U 1
 		UR 1
-		U 2
+		U 1
+		UR 1
+		L 1
 		UL 1
 		L 1
 		UL 1
@@ -2932,9 +2273,8 @@
 		DR 1
 		D 1
 		DR 1
-		D 2
-		U 1
-		UR 3
+		R 1
+		UR 2
 		R 1
 		UR 7
 		R 1
@@ -2943,12 +2283,17 @@
 		UL 1
 		U 6
 		UR 1
-		U 1
 		UL 1
-		UR 2
+		UR 1
+		U 1
+		UR 1
 		DL 2
-		R 1
-		DL 3
+		D 1
+		DR 1
+		U 3
+		DL 1
+		D 1
+		DL 2
 		L 2
 		UL 1
 		DL 1
@@ -3103,9 +2448,7 @@
 		D 2
 		DL 4
 		L 11
-		R 1
-		DL 1
-		D 4
+		D 5
 		DR 1
 		UR 1
 		R 1
@@ -3127,44 +2470,30 @@
 		D 1
 		DR 2
 		D 1
-		L 1
-		UL 1
-		DL 1
-		R 1
-		UR 1
-		UL 1
-		DL 1
-		UL 1
-		DR 1
-		DL 1
-		L 1
-		UL 1
-		DL 1
-		R 1
-		UR 1
-		UL 1
-		DL 1
-		UL 1
-		DR 1
-		DL 1
 		L 2
 		UR 1
 		UL 1
+		D 1
 		DL 1
-		UL 1
+		U 1
 		DL 1
-		L 1
+		U 1
+		DL 1
+		U 1
+		DL 1
+		U 1
+		DL 1
+		U 1
+		DL 1
+		U 1
+		DL 1
+		U 1
+		DL 1
+		U 1
+		L 4
 		UR 1
-		DR 1
+		R 10
 		UR 1
-		DR 1
-		UR 1
-		DR 1
-		UR 1
-		DR 1
-		UR 1
-		DR 1
-		UR 2
 		DR 4
 		R 1
 		DR 1
@@ -3184,11 +2513,10 @@
 		UL 1
 		L 4
 		UL 1
-		L 2
-		UL 1
-		DL 1
+		L 4
+		UR 1
 		R 1
-		UR 5
+		UR 4
 		U 1
 		UR 1
 		U 2
@@ -3202,10 +2530,11 @@
 		L 2
 		UL 1
 		L 2
-		UL 2
-		DL 1
+		UL 1
+		L 2
+		UR 1
 		R 1
-		UR 2
+		UR 1
 		R 1
 		UR 11
 		U 1
@@ -3246,9 +2575,7 @@
 		DR 1
 		R 2
 		UR 1
-		DL 1
 		R 1
-		UR 1
 		DR 1
 		R 1
 		DR 1
@@ -3266,7 +2593,8 @@
 		DL 7
 		L 1
 		DL 3
-		U 1
+		D 1
+		U 2
 		UL 1
 		U 1
 		UL 1
@@ -3302,9 +2630,7 @@
 		DR 1
 		R 1
 		DR 1
-		R 1
-		DL 1
-		D 1
+		D 2
 		DL 1
 		D 1
 		DL 1
@@ -3351,21 +2677,19 @@
 		L 1
 		DL 1
 		L 1
-		DL 1
+		DL 3
 		L 1
-		DL 2
-		R 1
 		UR 2
-		UL 1
+		U 2
+		UR 1
+		U 2
+		UR 1
+		U 2
+		UR 1
+		U 2
+		UR 1
 		U 1
-		UR 1
-		U 2
-		UR 1
-		U 2
-		UR 1
-		U 2
-		UR 2
-		R 1
+		R 2
 		UR 8
 		U 1
 		UR 1
@@ -3378,9 +2702,7 @@
 		U 4
 		UR 1
 		U 4
-		D 1
-		UR 1
-		R 3
+		R 4
 		DR 1
 		R 1
 		DR 1
@@ -3420,10 +2742,7 @@
 		UR 2
 		U 2
 		UR 1
-		U 7
-		UR 1
-		U 1
-		DL 1
+		U 8
 		DR 2
 		D 3
 		DR 1
@@ -3440,8 +2759,9 @@
 		U 1
 		UL 1
 		U 1
-		UL 3
-		U 2
+		UL 2
+		L 1
+		U 3
 		UL 1
 		U 4
 		UL 1
@@ -3451,13 +2771,501 @@
 		UL 1
 		U 1
 		UL 6
+		L 1
+		UL 1
+		L 1
+		DL 1
+		L 11
+		UL 1
+		L 3
+		UL 1
+		L 2
+		UL 1
+		L 1
+		UL 1
+		L 1
+		UL 2
+		L 1
+		UL 7
+		DL 1
+		D 1
+		DR 9
+		D 1
+		DL 3
+		D 1
+		DL 2
+		D 1
+		DL 2
+		D 1
+		U 7
+		UL 1
 		U 1
+		UL 5
+		L 3
+		U 2
+		UL 1
+		U 1
+		UL 5
+		L 1
+		UL 1
+		L 1
+		UL 1
+		L 2
+		UL 1
+		L 3
+		UL 1
+		L 6
+		UL 1
+		L 10
+		UL 1
+		L 4
+		UL 1
+		L 4
+		UL 1
+		L 2
+		U 1
+		UL 1
+		U 2
+		DL 2
+		L 1
+		DL 2
+		U 2
+		UL 1
+		U 2
+		L 1
+		DL 1
+		L 2
+		DL 1
+		L 2
+		DL 1
+		L 2
+		U 2
+		UR 2
+		R 1
+		UR 1
+		R 3
+		UR 1
+		R 7
+		DR 1
+		R 2
+		DR 1
+		R 1
+		DR 1
+		R 1
+		DR 1
+		R 2
+		DR 1
+		R 1
+		DR 1
+		R 1
+		DR 1
+		R 2
+		DR 1
+		R 2
+		DR 1
+		R 7
+		UR 1
+		R 1
+		UR 4
+		U 1
+		UR 1
+		U 1
+		UR 1
+		U 2
+		UL 1
+		L 2
+		DL 1
+		L 5
+		DL 3
+		UL 4
 		DL 1
 		UL 1
+		DL 1
+		L 2
+		UL 10
+		DL 1
+		D 1
+		U 1
+		UR 1
+		DR 10
 		R 1
+		UR 1
 		DR 1
 		UR 1
 		R 1
+		DR 3
+		UR 1
+		DR 2
+		UR 1
+		L 1
+		D 1
+		DL 1
+		L 1
+		UL 1
+		U 1
+		UL 1
+		DR 2
+		UR 3
+		R 5
+		UR 1
+		R 2
+		UR 2
+		U 1
+		UL 1
+		UR 1
+		DR 1
+		DL 1
+		D 1
+		DL 1
+		D 1
+		U 1
+		UL 1
+		U 1
+		UR 1
+		UL 1
+		U 2
+		UL 1
+		U 4
+		UL 1
+		U 2
+		UL 1
+		U 2
+		UL 1
+		U 2
+		UL 1
+		U 1
+		UL 1
+		U 1
+		UL 1
+		U 1
+		UL 2
+		U 1
+		UL 1
+		U 1
+		UL 3
+		U 1
+		UL 1
+		D 1
+		DL 1
+		D 2
+		DL 1
+		D 9
+		DR 2
+		R 1
+		L 1
+		UL 1
+		L 2
+		UL 1
+		L 2
+		UL 1
+		L 6
+		UL 1
+		L 2
+		R 1
+		UR 1
+		UL 15
+		DL 1
+		D 3
+		DL 1
+		D 3
+		DL 1
+		D 1
+		DL 1
+		D 1
+		DL 1
+		D 2
+		DL 1
+		D 1
+		DR 1
+		D 1
+		DR 1
+		UR 6
+		U 1
+		UR 1
+		U 2
+		UR 1
+		U 1
+		UL 1
+		U 1
+		UL 1
+		DL 2
+		D 1
+		DL 1
+		D 1
+		DL 1
+		D 1
+		DL 1
+		D 2
+		DL 1
+		D 1
+		DL 1
+		D 1
+		DL 1
+		DR 1
+		DL 1
+		L 1
+		DL 1
+		D 1
+		DL 2
+		D 1
+		DL 1
+		D 1
+		DL 1
+		D 1
+		DL 1
+		D 2
+		DL 1
+		D 2
+		DL 1
+		D 9
+		DR 1
+		D 1
+		DR 6
+		R 1
+		L 1
+		UL 1
+		L 6
+		DL 1
+		L 1
+		DL 1
+		L 1
+		DL 2
+		L 1
+		DL 2
+		D 1
+		U 1
+		UR 2
+		R 1
+		UR 2
+		R 1
+		UR 1
+		R 1
+		UR 1
+		R 4
+		UR 1
+		UL 4
+		U 1
+		UL 1
+		U 9
+		UR 1
+		U 2
+		UR 1
+		U 2
+		UR 1
+		U 1
+		UR 1
+		U 1
+		UR 1
+		U 1
+		UR 2
+		U 1
+		UR 1
+		U 1
+		L 1
+		UR 1
+		U 2
+		UR 1
+		U 1
+		UR 1
+		U 2
+		UR 1
+		U 1
+		UR 1
+		U 1
+		UR 1
+		U 3
+		UR 1
+		U 4
+		R 1
+		DR 17
+		R 5
+		DR 1
+		R 2
+		DR 1
+		UR 1
+		U 9
+		UR 1
+		U 2
+		UR 1
+		DR 4
+		D 1
+		DR 1
+		D 1
+		DR 2
+		D 1
+		DR 1
+		D 1
+		DR 1
+		D 1
+		DR 1
+		D 2
+		DR 1
+		D 2
+		DR 1
+		D 2
+		DR 1
+		D 4
+		DR 1
+		D 3
+		DL 1
+		L 2
+		DL 1
+		L 1
+		DL 1
+		L 1
+		UR 2
+		UL 1
+		L 1
+		DL 1
+		L 1
+		DL 1
+		L 2
+		DL 1
+		L 1
+		DL 1
+		D 1
+		L 5
+		UL 1
+		L 1
+		UL 1
+		L 2
+		UL 1
+		DL 1
+		U 1
+		UL 1
+		L 1
+		DR 1
+		D 1
+		DL 2
+		L 1
+		R 1
+		UR 1
+		U 1
+		L 2
+		DL 1
+		U 1
+		UR 2
+		UL 5
+		U 1
+		L 1
+		U 3
+		DR 4
+		UR 1
+		U 1
+		DR 11
+		R 1
+		UR 1
+		R 3
+		DR 1
+		R 1
+		DR 1
+		R 2
+		UR 1
+		R 6
+		UR 1
+		R 2
+		DR 1
+		D 2
+		DL 1
+		D 1
+		DL 1
+		D 1
+		DL 4
+		L 1
+		DL 1
+		L 7
+		UL 1
+		L 2
+		UL 1
+		L 2
+		UL 1
+		L 1
+		UL 1
+		L 1
+		UL 1
+		L 2
+		UL 1
+		L 1
+		UL 1
+		L 1
+		UL 1
+		L 2
+		U 1
+		L 8
+		DL 1
+		L 3
+		DL 1
+		L 1
+		DL 2
+		D 1
+		DR 1
+		R 1
+		UR 1
+		R 2
+		UR 1
+		R 2
+		UR 1
+		DR 1
+		D 1
+		DR 2
+		UR 1
+		R 1
+		UR 1
+		DR 3
+		R 1
+		DR 1
+		R 4
+		DR 1
+		R 4
+		DR 1
+		R 10
+		DR 1
+		R 6
+		DR 1
+		R 3
+		DR 1
+		R 2
+		DR 1
+		R 1
+		DR 1
+		R 1
+		DR 5
+		D 1
+		DR 1
+		D 1
+		DR 1
+		R 2
+		DR 5
+		D 1
+		DR 1
+		D 4
+		DR 1
+		UR 1
+		U 1
+		UR 2
+		U 1
+		UR 3
+		U 1
+		UL 9
+		U 1
+		UL 2
+		U 1
+		UL 2
+		U 1
+		DR 12
+		R 1
+		DR 2
+		R 1
+		DR 1
+		R 1
+		DR 1
+		R 2
+		DR 1
+		R 3
+		DR 1
+		R 11
+		UR 1
+		R 5
 		UR 1
 		R 1
 		UR 1
@@ -3505,8 +3313,8 @@
 		DL 1
 		L 4
 		DL 1
-		UL 1
-		U 2
+		L 1
+		U 3
 		UL 1
 		L 3
 		DL 3
@@ -3546,13 +3354,13 @@
 		DL 1
 		L 1
 		DL 1
-		UL 1
-		U 3
+		L 1
+		U 4
 		UR 1
 		U 2
 		UR 6
-		DR 1
-		UR 3
+		R 2
+		UR 2
 		U 8
 		UL 1
 		U 2
@@ -3562,12 +3370,8 @@
 		U 1
 		UL 1
 		U 1
-		UL 1
-		U 1
-		L 1
-		DR 1
-		UR 1
-		R 5
+		UL 2
+		R 7
 		DR 1
 		R 2
 		DR 1
@@ -3589,8 +3393,8 @@
 		DR 2
 		R 1
 		DR 2
-		D 1
-		UR 4
+		R 1
+		UR 3
 		U 1
 		UR 1
 		U 1
@@ -3661,8 +3465,8 @@
 		UR 1
 		R 3
 		DR 1
-		R 1
-		DL 2
+		D 1
+		DL 1
 		L 1
 		DL 1
 		L 1
@@ -3685,47 +3489,6 @@
 		UR 7
 		DR 1
 		R 1
-		UR 1
-		R 1
-		UR 1
-		R 1
-		UR 1
-		R 1
-		UR 1
-		R 1
-		UR 1
-		R 1
-		UR 1
-		R 1
-		DR 1
-		UR 1
-		U 1
-		DL 3
-		UR 1
-		UL 1
-		DL 1
-		D 1
-		DL 1
-		UR 1
-		UL 1
-		DL 1
-		D 1
-		DL 1
-		UR 1
-		UL 1
-		DL 1
-		D 1
-		DL 1
-		UR 1
-		UL 1
-		DL 1
-		D 1
-		DL 2
-		UR 2
-		UL 1
-		DL 1
-		L 1
-		DL 1
 		DR 1
 		DL 8
 		D 1
@@ -3799,16 +3562,16 @@
 		D 1
 		DL 1
 		D 2
+		DR 1
 		DL 1
 		D 1
-		DR 1
 		DL 3
 		D 1
 		L 1
 		UR 2
 		U 1
-		UR 2
-		UL 1
+		UR 1
+		U 2
 		UR 1
 		DR 1
 		UR 1
@@ -3866,6 +3629,8 @@
 		DL 1
 		D 3
 		DL 1
+		D 1
+		U 1
 		DR 1
 		R 12
 		UR 1
@@ -3889,11 +3654,10 @@
 		UR 1
 		U 5
 		UR 1
+		U 1
 		UL 1
-		U 2
-		D 1
-		DR 1
-		DL 1
+		U 1
+		D 3
 		DR 2
 		D 3
 		DR 2
@@ -3998,35 +3762,26 @@
 		UL 1
 		L 2
 		UL 1
-		U 1
-		DL 1
-		L 1
-		UR 1
-		DR 1
-		UR 2
-		R 2
-		UR 1
-		U 1
-		UL 1
-		UR 1
-		R 2
-		UR 1
-		U 1
-		UL 1
-		U 1
-		L 1
-		DR 1
-		UR 1
-		R 2
-		UR 1
-		U 1
-		UL 1
 		L 2
+		UR 1
+		R 2
+		UR 1
+		R 2
+		UR 1
+		U 1
 		UL 1
-		L 1
-		DR 1
+		UR 1
+		R 2
+		UR 1
+		U 1
+		UL 2
+		R 4
+		UR 1
+		U 1
+		UL 1
+		L 3
+		UL 1
 		R 1
-		UL 1
 		UR 1
 		R 2
 		UR 1
@@ -4108,11 +3863,6 @@
 		D 3
 		DR 1
 		D 3
-		DR 1
-		D 2
-		UL 1
-		UR 1
-		UL 1
 		DL 1
 		UL 1
 		U 1
@@ -4209,6 +3959,9 @@
 		DL 1
 		L 1
 		DL 1
+		D 1
+		UL 1
+		R 1
 		DR 1
 		R 3
 		UR 1
@@ -4314,10 +4067,7 @@
 		DR 1
 		D 1
 		DR 2
-		D 2
-		DR 1
-		R 1
-		UL 2
+		D 1
 		DL 1
 		UL 1
 		L 1
@@ -4406,26 +4156,19 @@
 		DL 1
 		L 4
 		DL 1
-		UL 1
-		DL 1
-		R 1
+		L 4
+		R 2
 		UR 1
+		R 1
 		DR 2
 		R 3
 		DR 1
 		DL 1
 		L 2
 		DL 2
-		UL 1
-		DL 1
-		UL 1
-		DL 1
-		L 1
+		L 5
 		UR 1
-		DR 1
-		UR 1
-		DR 1
-		UR 1
+		R 4
 		DR 2
 		R 7
 		DR 1
@@ -4492,15 +4235,6 @@
 		D 1
 		DR 1
 		D 1
-		DR 3
-		R 1
-		L 2
-		R 1
-		UL 1
-		DL 1
-		UL 1
-		UR 1
-		UL 1
 		DL 1
 		UL 2
 		U 1
@@ -4515,14 +4249,11 @@
 		UL 1
 		U 5
 		UL 1
-		U 9
-		UL 1
-		UR 1
-		U 2
+		U 13
 		D 1
 		DL 1
-		DR 1
-		DL 2
+		D 2
+		DL 1
 		D 5
 		DL 1
 		D 4
@@ -4689,7 +4420,77 @@
 		DR 1
 		D 1
 		DR 1
+		D 1
+		DL 1
+		U 1
+		L 1
+		DL 1
+		L 2
+		UL 1
+		U 1
+		UR 1
+		U 1
+		DL 1
+		D 2
+		DR 1
+		D 1
+		UL 1
+		D 1
+		DL 1
+		U 1
+		L 1
+		DL 1
+		L 1
+		DL 1
+		U 1
+		L 1
+		DL 1
+		L 1
+		UR 1
+		UL 1
+		D 1
 		DL 2
+		L 1
+		U 1
+		DL 2
+		L 2
+		R 2
+		UR 1
+		U 7
+		D 1
+		DL 1
+		D 1
+		DL 1
+		UL 2
+		UR 1
+		D 1
+		DL 1
+		DR 2
+		UL 1
+		D 3
+		DL 2
+		L 1
+		UL 1
+		UR 1
+		U 1
+		UR 1
+		U 1
+		UR 1
+		U 1
+		DR 2
+		UR 1
+		DR 2
+		UR 1
+		U 1
+		UR 1
+		DR 2
+		UR 1
+		DR 2
+		UR 2
+		U 1
+		UR 1
+		DR 2
+		R 3
 		DR 4
 		D 1
 		DR 2
@@ -4697,9 +4498,7 @@
 		DR 2
 		D 1
 		DR 3
-		D 2
-		R 1
-		UL 1
+		D 1
 		DL 1
 		UL 1
 		L 1
@@ -4707,73 +4506,65 @@
 		L 1
 		DL 1
 		UR 1
-		UL 2
-		DL 1
-		R 1
-		UL 2
-		L 1
-		UL 1
-		DL 1
 		UL 1
 		L 1
+		U 1
+		DL 1
+		U 1
+		UL 1
+		L 11
+		R 5
+		UR 1
 		UL 1
 		L 7
 		DL 1
 		L 1
 		DL 1
 		L 1
-		DL 4
-		D 1
-		DL 1
-		D 1
-		DL 1
-		D 1
 		DL 2
+		UR 2
 		R 1
-		DR 1
-		R 2
+		UR 1
+		R 1
+		UR 1
+		R 7
 		DR 1
 		R 3
 		DR 1
-		R 12
-		UR 1
-		UL 1
-		L 7
-		UL 1
-		U 1
-		L 1
-		DR 1
-		UR 1
-		R 12
-		UR 1
-		UL 1
-		L 14
-		UL 1
-		U 1
-		D 2
 		R 1
-		UL 1
-		UR 1
+		DR 1
+		DL 1
+		L 13
+		DL 1
+		D 1
+		U 1
+		DR 1
 		R 15
-		UR 1
-		UL 1
-		L 16
-		R 1
-		UL 1
-		UR 1
-		R 13
-		UR 1
-		UL 1
-		L 1
-		UL 1
-		DL 1
-		L 1
-		UR 1
 		DR 1
-		R 1
-		UL 1
 		DL 1
-		UL 1
+		L 16
+		D 1
+		DR 1
+		R 14
+		DR 1
 		DL 1
-		L 6
+		L 14
+		DR 2
+		R 7
+		DR 1
+		DL 1
+		L 12
+		UL 1
+		L 3
+		UL 1
+		L 2
+		UL 1
+		L 1
+		UR 2
+		U 1
+		UR 1
+		U 1
+		UR 1
+		U 1
+		UR 1
 	STOP (void)

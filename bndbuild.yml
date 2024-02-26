@@ -6,7 +6,7 @@
   cmd: xfer 192.168.1.26 -y etch_a_sketch.sna
 
 - tgt: etch_a_sketch.sna etch.o etch_header.o etch_a_sketch.sym etch.dsk 
-  dep: src/commands.asm  src/engine.asm src/engine_macros.asm  src/main.asm convert/*.asm src/music.asm music/*.asm stonks1.o croco1.o revision.o unnamed.o
+  dep: src/commands.asm  src/engine.asm src/engine_macros.asm  src/main.asm convert/*.asm src/music.asm music/*.asm baston_multiple.o
   cmd: 
     - basm -I src main.asm --sna -o etch_a_sketch.sna --override -DLINKED_VERSION=0
     - basm -I src main.asm --lst etch_a_sketch.lst --sym etch_a_sketch.sym -DLINKED_VERSION=1
@@ -50,12 +50,21 @@
   cmd: basm -I src title.asm -o title.o
 
 
-- tgt: pictures/unnamed.asm
-  dep: pictures/unnamed.png
-  cmd: extern ./tools/convert --euclidean pictures/unnamed.png pictures/unnamed.asm
-- tgt: unnamed.o
-  dep: pictures/unnamed.asm src/commands.asm
-  cmd: basm -I src pictures/unnamed.asm -o unnamed.o
+- tgt: pictures/baston.asm
+  dep: pictures/baston.png
+  cmd: extern ./tools/convert pictures/baston.png pictures/baston.asm
+- tgt: baston.o
+  dep: pictures/baston.asm src/commands.asm
+  cmd: basm -I src pictures/baston.asm -o baston.o
+
+
+- tgt: pictures/baston_multiple.asm
+  dep: pictures/bastona.png pictures/bastonb.png pictures/bastonc.png
+  cmd: extern ./tools/convert --euclidean pictures/bastona.png pictures/bastonb.png pictures/bastonc.png pictures/baston_multiple.asm
+- tgt: baston_multiple.o
+  dep: pictures/baston_multiple.asm src/commands.asm
+  cmd: basm -I src pictures/baston_multiple.asm -o baston_multiple.o
+
 
 - tgt: pictures/stonks1.asm
   dep: pictures/stonks1.png

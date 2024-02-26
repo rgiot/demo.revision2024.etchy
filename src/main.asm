@@ -2,6 +2,7 @@
 ; Krusty / Exocet / 2024	
 	
 	
+ENABLE_MUSIC = 1
 
 
 	if LINKED_VERSION
@@ -55,8 +56,8 @@ stonks:
 revision:
 	;incbin "revision.o"
 
-unnamed:
-	incbin "unnamed.o"
+baston:
+	incbin "baston_multiple.o"
 ;	ENDASMCONTROLENV
 
 /*
@@ -93,7 +94,7 @@ unaligned_data
 	dw croco
 	dw revision
 	dw stonks
-	dw unnamed
+	dw baston
 
 ;	dw picture1 ; XXX removed to be in the 4k limit
 ;	dw picture2

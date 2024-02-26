@@ -725,10 +725,14 @@ pub fn convert<P: AsRef<Path>>(ifname: &[P], ofname: &str, weighted: bool) {
                     .intersection(&all_part_coords)
                     .cloned()
                     .collect();
-                let removable: HashSet<_> = removable_coords
+                let mut removable: HashSet<_> = removable_coords
                     .difference(&articulations_coord)
                     .cloned()
                     .collect();
+
+                if let Some(next_start) = & next_start {
+                    removable.remove(next_start)
+                }
 
                 let mut removable = if let Some(selected) = &selected_end_intersection {
                     removable.difference(selected).cloned().collect()
@@ -983,7 +987,7 @@ fn build_graph(grid: [[bool; CPC_WIDTH]; CPC_HEIGHT]) -> PicGraph {
     }
 
     let not_diag: f64 = 7.0;
-    let diag: f64 = (not_diag + not_diag).sqrt();
+    let diag: f64 = (not_diag*not_diag + not_diag*not_diag).sqrt();
 
     // connect nodes
     // TODO finally add ALL connections, it may help to have nicer paths

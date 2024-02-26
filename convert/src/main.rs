@@ -731,7 +731,7 @@ pub fn convert<P: AsRef<Path>>(ifname: &[P], ofname: &str, weighted: bool) {
                     .collect();
 
                 if let Some(next_start) = & next_start {
-                    removable.remove(next_start)
+                    removable.remove(next_start);
                 }
 
                 let mut removable = if let Some(selected) = &selected_end_intersection {

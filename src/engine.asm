@@ -91,13 +91,15 @@ state_shake
 select_new_picture
 	ld hl, unaligned_data.pictures
 .restart
-	ld e, (hl) : inc hl : ld d, (hl) : inc hl
-	ld (select_new_picture+1), hl
+	ld c, (hl) : inc hl : ld b, (hl) : inc hl
 
-	ld a, d : or e : jr nz, .continue
+	ld a, b : or c : jr nz, .continue
 	ld hl, unaligned_data.pictures
 	jr .restart
 .continue
+	ld (compute_next_point.next_state), bc
+	ld e, (hl) : inc hl : ld d, (hl) : inc hl
+	ld (select_new_picture+1), hl
 
 	ex de, hl
 	jp  prepare_new_picture
@@ -339,6 +341,7 @@ compute_next_point
 	ld (state_drawing.state_drawing_draw_trace_ret_opcode_address), a
 
 	ld hl, state_wait
+.next_state equ $-2
 	ld (start.state_routine_address), hl
 	ret
 

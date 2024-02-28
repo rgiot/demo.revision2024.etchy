@@ -91,18 +91,19 @@ toalign_data
 
 unaligned_data
 .pictures
-	;dw revision
-	;dw croco
-	;dw revision
-	;dw stonks
-	dw baston1
-	dw baston2
-	dw baston3
+	; routine to call after drawing : drawing data
 
-;	dw picture1 ; XXX removed to be in the 4k limit
-;	dw picture2
-;	dw picture3
+	; Individaully display the three parts
+	dw engine.state_wait : dw baston1
+	dw engine.state_wait : dw baston2
+	dw engine.state_wait : dw baston3
+
+	; Display in fill length
+	dw engine.select_new_picture : dw baston1
+	dw engine.select_new_picture : dw baston2
+	dw engine.state_wait : dw baston3	
 	dw 00
+
 .backup_area defs 4
 .shake_table
 	db 0x2f, 0x2d, 0x2e, 0x2c, 0x30

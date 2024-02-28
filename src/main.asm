@@ -49,12 +49,12 @@ BINARY_START
 ;picture3
 ;	incbin "multiple.o"
 
-croco:
+;croco:
 ;	incbin "croco1.o"
-stonks:
+;stonks:
 	;incbin "stonks1.o"
 revision:
-	;incbin "revision.o"
+	incbin "revision.o"
 
 baston1: incbin "baston_multiple_0.o"
 baston2: incbin "baston_multiple_1.o"
@@ -93,10 +93,15 @@ unaligned_data
 .pictures
 	; routine to call after drawing : drawing data
 
+	dw engine.state_wait : dw revision
+
+
 	; Individaully display the three parts
 	dw engine.state_wait : dw baston1
 	dw engine.state_wait : dw baston2
 	dw engine.state_wait : dw baston3
+
+	dw engine.state_wait : dw revision
 
 	; Display in fill length
 	dw engine.select_new_picture : dw baston1

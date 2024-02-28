@@ -617,7 +617,7 @@ impl<'g> PicGraphPath<'g> {
 
 /// Launch the conversion
 ///
-pub fn convert<P: AsRef<Path>>(ifname: &[P], ofname: &str, weighted: bool) {
+pub fn convert<P: AsRef<Path>>(ifname: &[P], ofname: &str, weighted: bool, individually: bool) {
     // open all images parts
     let mut parts: Vec<_> = ifname
         .into_iter()
@@ -649,6 +649,7 @@ pub fn convert<P: AsRef<Path>>(ifname: &[P], ofname: &str, weighted: bool) {
 
         // check if they are connected
         let mut intersections_coords = Vec::new();
+        let mut indiv_path = Vec::new();
         for i in 0..(parts.len() - 1) {
             let first = parts[i].coords();
             let second = parts[i + 1].coords();
@@ -798,18 +799,33 @@ pub fn convert<P: AsRef<Path>>(ifname: &[P], ofname: &str, weighted: bool) {
                 .last()
                 .map(|i| *current_g.node_weight(*i).unwrap());
 
+            indiv_path.push(f_path.solution.clone());
             full_path.append(&mut f_path.solution);
 
             already_drawned_coords.extend(current_g.coords()); // Add to the lsit of drawned pixels those dranwed now
         }
 
-        // generate the code from the full path
-        generate_code(
-            ofname,
-            &PicGraphPath {
-                solution: full_path.into_iter().dedup().collect_vec(),
-            },
-        );
+        if individually {
+            for (i, current_path) in indiv_path.iter().enumerate() {
+                let current_fname = ofname.replace(".asm", &format!("_{i}.asm"));
+                    generate_code(
+                        &current_fname,
+                        &PicGraphPath {
+                            solution: current_path.clone(),
+                        },
+                    );
+            }
+        }
+        else {
+            // generate the code from the full path
+            generate_code(
+                ofname,
+                &PicGraphPath {
+                    solution: full_path.into_iter().dedup().collect_vec(),
+                },
+            );
+        }
+        
     }
 }
 
@@ -1156,6 +1172,12 @@ fn main() {
                 .help("Use a euclidean  graph")
                 .action(ArgAction::SetTrue)
                 .long("euclidean"),
+        )
+        .arg(
+            clap::Arg::new("INDIVIDUALLY")
+                .help("Even if the path is global, it is saved individually")
+                .action(ArgAction::SetTrue)
+                .long("individually")
         );
     let args = app.get_matches();
 
@@ -1169,5 +1191,6 @@ fn main() {
         &ifname,
         args.get_one::<String>("OUTPUT").unwrap().as_str(),
         args.get_flag("WEIGHTED"),
+        args.get_flag("INDIVIDUALLY")
     );
 }

@@ -56,8 +56,9 @@ stonks:
 revision:
 	;incbin "revision.o"
 
-baston:
-	incbin "baston_multiple.o"
+baston1: incbin "baston_multiple_0.o"
+baston2: incbin "baston_multiple_1.o"
+baston3: incbin "baston_multiple_2.o"
 ;	ENDASMCONTROLENV
 
 /*
@@ -90,11 +91,13 @@ toalign_data
 
 unaligned_data
 .pictures
-	dw revision
-	dw croco
-	dw revision
-	dw stonks
-	dw baston
+	;dw revision
+	;dw croco
+	;dw revision
+	;dw stonks
+	dw baston1
+	dw baston2
+	dw baston3
 
 ;	dw picture1 ; XXX removed to be in the 4k limit
 ;	dw picture2

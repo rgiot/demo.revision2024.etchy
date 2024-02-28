@@ -37,6 +37,50 @@ module engine
 
 
 
+draw_shadows
+	; horizontal shadow
+	ld a, 0b00001010 + 0b01010101  ; red/black
+	ld hl, SCREEN_MEMORY_ADDRESS : ld de, hl : inc de
+	ld bc, 80-1
+	ld (hl), a
+	ldir
+
+	; vertical shadow
+	ld b, 25*8/2 - 1
+	ld de, SCREEN_MEMORY_ADDRESS + 80-1 + 0x800
+.init_screen_table_loop
+		push bc
+			 ld a, 0b00000001 : ld (de), a
+
+			ex de, hl 
+
+				ld a,8 
+				add h 
+				ld h,a 
+				jr nc, .endbc261
+				ld bc,#c050
+				add hl,bc 
+.endbc261			
+			 ex de, hl
+
+			 ld a, 0b00010001  : ld (de), a
+
+			 			ex de, hl 
+
+				ld a,8 
+				add h 
+				ld h,a 
+				jr nc, .endbc262
+				ld bc,#c050
+				add hl,bc 
+.endbc262			
+			 ex de, hl
+
+		pop bc
+	djnz .init_screen_table_loop
+			 ld a, 0b00000001 : ld (de), a
+
+	ret
 
 ;;
 ; Does nothing during a while
@@ -79,9 +123,13 @@ state_shake
 	inc hl
 	ld (.start_clean_address), hl
 
-	ld a, h : or l : ret nz
+	call draw_shadows
 
+	ld hl, (.start_clean_address)
+
+	ld a, h : or l : ret nz
 	jp select_new_picture
+
 .restart
 	ld hl, unaligned_data.shake_table
 	ld (.table_address), hl
@@ -89,6 +137,7 @@ state_shake
 
 
 select_new_picture
+
 	ld hl, unaligned_data.pictures
 .restart
 	ld c, (hl) : inc hl : ld b, (hl) : inc hl

@@ -61,6 +61,9 @@ macro ENGINE_INIT
 	xor a
 	ld hl, music_data
 	call PLY_AKM_Init
+
+	call engine.draw_shadows
+
 endm
 
 

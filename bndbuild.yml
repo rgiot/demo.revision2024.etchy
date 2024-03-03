@@ -40,7 +40,7 @@
 
 - tgt: pictures/baston_multiple.asm 
   dep: pictures/bastona2.png pictures/bastonb.png pictures/bastonc.png
-  cmd: extern ./tools/convert --euclidean pictures/bastona.png pictures/bastonb.png pictures/bastonc.png pictures/baston_multiple.asm 
+  cmd: extern ./tools/convert --euclidean pictures/bastona2.png pictures/bastonb.png pictures/bastonc.png pictures/baston_multiple.asm 
 - tgt: baston_multiple.o 
   dep: pictures/baston_multiple.asm 
   cmd: 

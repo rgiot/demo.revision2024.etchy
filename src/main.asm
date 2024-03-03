@@ -1,8 +1,8 @@
 ;;
-; Krusty / Exocet / 2024	
+; Krusty / Exocet / Targhan / 2024	
 	
-	
-ENABLE_MUSIC = 1
+
+	include once "config.asm"
 
 
 	if LINKED_VERSION
@@ -53,12 +53,11 @@ BINARY_START
 ;	incbin "croco1.o"
 ;stonks:
 	;incbin "stonks1.o"
-revision:
-	incbin "revision.o"
-
-baston1: incbin "baston_multiple_0.o"
-baston2: incbin "baston_multiple_1.o"
-baston3: incbin "baston_multiple_2.o"
+revision: incbin "revision.o"
+baston: incbin "baston_multiple.o"
+;baston1: incbin "baston_multiple_0.o"
+;baston2: incbin "baston_multiple_1.o"
+;baston3: incbin "baston_multiple_2.o"
 ;	ENDASMCONTROLENV
 
 /*
@@ -93,20 +92,25 @@ unaligned_data
 .pictures
 	; routine to call after drawing : drawing data
 
-	dw engine.state_wait : dw revision
+	if ENABLE_SPECIFIC_ACTION_AFTER_DRAWING
+		dw engine.state_wait : dw revision
 
 
-	; Individaully display the three parts
-	dw engine.state_wait : dw baston1
-	dw engine.state_wait : dw baston2
-	dw engine.state_wait : dw baston3
+		; Individaully display the three parts
+		dw engine.state_wait : dw baston1
+		dw engine.state_wait : dw baston2
+		dw engine.state_wait : dw baston3
 
-	dw engine.state_wait : dw revision
+		dw engine.state_wait : dw revision
 
-	; Display in fill length
-	dw engine.select_new_picture : dw baston1
-	dw engine.select_new_picture : dw baston2
-	dw engine.state_wait : dw baston3	
+		; Display in fill length
+		dw engine.select_new_picture : dw baston1
+		dw engine.select_new_picture : dw baston2
+		dw engine.state_wait : dw baston3	
+	else
+		dw revision
+		dw baston
+	endif
 	dw 00
 
 .backup_area defs 4

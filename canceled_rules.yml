@@ -1,0 +1,96 @@
+- tgt: title.asm
+  dep: convert/title.png
+  cmd: extern ./tools/convert --euclidean convert/title.png title.asm
+- tgt: title.o
+  dep: title.asm
+  cmd: basm -I src title.asm -o title.o
+
+- tgt: pictures/baston.asm
+  dep: pictures/baston.png
+  cmd: extern ./tools/convert pictures/baston.png pictures/baston.asm
+- tgt: baston.o
+  dep: pictures/baston.asm src/commands.asm
+  cmd: basm -I src pictures/baston.asm -o baston.o
+
+- tgt: small_connex.asm
+  dep: convert/small_connex.png
+  cmd: extern ./tools/convert --euclidean convert/small_connex.png small_connex.asm
+- tgt: small_connex.o
+  dep: small_connex.asm
+  cmd: basm -I src small_connex.asm -o small_connex.o
+
+
+- tgt: pictures/stonks1.asm
+  dep: pictures/stonks1.png
+  cmd: extern ./tools/convert --euclidean pictures/stonks1.png pictures/stonks1.asm
+- tgt: stonks1.o
+  dep: pictures/stonks1.asm src/commands.asm
+  cmd: basm -I src pictures/stonks1.asm -o stonks1.o
+
+
+- tgt: pictures/croco1_multiple.asm
+  dep: pictures/croco1a.png pictures/croco1b.png pictures/croco1c.png
+  cmd: extern ./tools/convert --euclidean pictures/croco1a.png pictures/croco1b.png pictures/croco1c.png pictures/croco1_multiple.asm
+- tgt: croco1_multiple.o
+  dep: pictures/croco1_multiple.asm src/commands.asm
+  cmd: basm -I src pictures/croco1_multiple.asm -o croco1_multiple.o
+
+
+
+- tgt: pictures/croco1.asm
+  dep: pictures/croco1.png
+  cmd: extern ./tools/convert --euclidean pictures/croco1.png pictures/croco1.asm
+- tgt: croco1.o
+  dep: pictures/croco1.asm src/commands.asm
+  cmd: basm -I src pictures/croco1.asm -o croco1.o
+
+
+- tgt: pictures/croco2.asm
+  dep: pictures/croco2.png
+  cmd: extern ./tools/convert --euclidean pictures/croco2.png pictures/croco2.asm
+- tgt: croco2.o
+  dep: pictures/croco2.asm src/commands.asm
+  cmd: basm -I src pictures/croco2.asm -o croco2.o
+
+
+- tgt: pictures/croco3.asm
+  dep: pictures/croco3.png
+  cmd: extern ./tools/convert --euclidean pictures/croco3.png pictures/croco3.asm
+- tgt: croco3.o
+  dep: pictures/croco3.asm src/commands.asm
+  cmd: basm -I src pictures/croco3.asm -o croco3.o
+
+
+- tgt: pictures/croco4.asm
+  dep: pictures/croco4.png
+  cmd: extern ./tools/convert --euclidean pictures/croco4.png pictures/croco4.asm
+- tgt: croco4.o
+  dep: pictures/croco4.asm src/commands.asm
+  cmd: basm -I src pictures/croco4.asm -o croco4.o
+
+
+- tgt: pictures/croco5.asm
+  dep: pictures/croco5.png
+  cmd: extern ./tools/convert --euclidean pictures/croco5.png pictures/croco5.asm
+- tgt: croco5.o
+  dep: pictures/croco5.asm src/commands.asm
+  cmd: basm -I src pictures/croco5.asm -o croco5.o
+
+
+- tgt: multiple.asm
+  dep: convert/puzzle1.png convert/puzzle2.png convert/puzzle3.png
+  cmd: extern ./tools/convert --euclidean convert/puzzle1.png convert/puzzle2.png convert/puzzle3.png multiple.asm
+- tgt: multiple.o
+  dep: multiple.asm src/commands.asm
+  cmd: basm -I src multiple.asm -o multiple.o
+
+
+- tgt: pictures/baston_multiple_0.asm pictures/baston_multiple_1.asm pictures/baston_multiple_2.asm
+  dep: pictures/bastona.png pictures/bastonb.png pictures/bastonc.png
+  cmd: extern ./tools/convert --euclidean pictures/bastona.png pictures/bastonb.png pictures/bastonc.png pictures/baston_multiple.asm  --euclidean --individual
+- tgt: baston_multiple_1.o baston_multiple_2.o baston_multiple_0.o
+  dep: pictures/baston_multiple_1.asm pictures/baston_multiple_2.asm pictures/baston_multiple_0.asm src/commands.asm
+  cmd: 
+    - basm -I src pictures/baston_multiple_0.asm -o baston_multiple_0.o
+    - basm -I src pictures/baston_multiple_1.asm -o baston_multiple_1.o
+    - basm -I src pictures/baston_multiple_2.asm -o baston_multiple_2.o

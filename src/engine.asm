@@ -1,17 +1,9 @@
 ;;
 ; Etch a sketch engine
 ;
-
+	include once "config.asm"	
 	include once "engine_macros.asm"
 
-SCREEN_VERTICAL_RESOLUTION equ 25*8
-SCREEN_HORIZONTAL_SOLUTION equ 40*4
-
-SCREEN_MEMORY_ADDRESS equ 0xc000
-SCREEN_CRTC_ADDRESS equ 0x3000
-
-
-ENGINE_HANDLE_VIEW_PORT equ 0 ; set to 0 to disable code that check if pen goes outside of screen
 
 
 	print "EFFECT RESOLUTION IS ",  SCREEN_HORIZONTAL_SOLUTION, "x", SCREEN_VERTICAL_RESOLUTION
@@ -140,14 +132,21 @@ select_new_picture
 
 	ld hl, unaligned_data.pictures
 .restart
-	ld c, (hl) : inc hl : ld b, (hl) : inc hl
+	if ENABLE_SPECIFIC_ACTION_AFTER_DRAWING
+		ld c, (hl) : inc hl : ld b, (hl) : inc hl
+		ld a, b : or c : jr nz, .continue
+	else
+		ld e, (hl) : inc hl : ld d, (hl) : inc hl
+		ld a, e : or d : jr nz, .continue
+	endif
 
-	ld a, b : or c : jr nz, .continue
 	ld hl, unaligned_data.pictures
 	jr .restart
 .continue
-	ld (compute_next_point.next_state), bc
-	ld e, (hl) : inc hl : ld d, (hl) : inc hl
+	if ENABLE_SPECIFIC_ACTION_AFTER_DRAWING
+		ld (compute_next_point.next_state), bc
+		ld e, (hl) : inc hl : ld d, (hl) : inc hl
+	endif
 	ld (select_new_picture+1), hl
 
 	ex de, hl
@@ -390,7 +389,9 @@ compute_next_point
 	ld (state_drawing.state_drawing_draw_trace_ret_opcode_address), a
 
 	ld hl, state_wait
+	if ENABLE_SPECIFIC_ACTION_AFTER_DRAWING
 .next_state equ $-2
+	endif
 	ld (start.state_routine_address), hl
 	ret
 

@@ -7,5 +7,7 @@ SCREEN_HORIZONTAL_SOLUTION equ 40*4
 SCREEN_MEMORY_ADDRESS equ 0xc000
 SCREEN_CRTC_ADDRESS equ 0x3000
 
+SIMPLE_CLEAN equ 0
+
 
 ENGINE_HANDLE_VIEW_PORT equ 0 ; set to 0 to disable code that check if pen goes outside of screen

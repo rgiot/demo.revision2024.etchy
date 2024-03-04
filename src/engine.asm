@@ -94,7 +94,13 @@ state_wait
 state_shake
 
 	; slow down the shaking
-	ld a, 1 : inc a : and 0b11 : ld (state_shake+1), a : ret nz
+	ld a, 1 : inc a : and 0b11 : ld (state_shake+1), a
+	
+	if SIMPLE_CLEAN
+		 ret nz
+	else
+		jr nz, .remove_pixels
+	endif
 
 	ld hl, unaligned_data.shake_table
 .table_address equ $-2
@@ -105,21 +111,44 @@ state_shake
 	ld (start.horizontal_position_value_address), a
 	inc hl : ld (.table_address), hl
 
+	if SIMPLE_CLEAN
 
-	ld hl, 0xc000
-.start_clean_address equ $-2
-	ld de, hl : inc de
-	ld (hl), 0
-	ld bc, 0x800-1
-	ldir
-	inc hl
-	ld (.start_clean_address), hl
+		ld hl, 0xc000
+	.start_clean_address equ $-2
+		ld de, hl : inc de
+		ld (hl), 0
+		ld bc, 0x800-1
+		ldir
+		inc hl
+		ld (.start_clean_address), hl
+
+	else
+
+.remove_pixels
+
+		ld hl, 0xc000
+	.start_clean_address equ $-2
+		ld c, 0b10101010
+	.clean_mask equ $-1
+		ld de, 0x200
+.loop_clean
+			ld a, c : and (hl) : ld (hl), a : inc hl
+			dec de
+			ld a, d : or e : jr nz, .loop_clean
+		ld (.start_clean_address), hl
+
+	endif
 
 	call draw_shadows
 
 	ld hl, (.start_clean_address)
+	ld a, h : or l : ret nz ; we have no yet browsed the whole image
 
-	ld a, h : or l : ret nz
+	ld a, 0xc0 : ld (.start_clean_address+1), a ; ensure we start at the appropriate place (0xc000)
+
+	ld a, (.clean_mask) : xor 255 : ld (.clean_mask), a ; change the clean mask
+	cp 0b10101010 : ret nz ; we have not yet done the second pass
+	
 	jp select_new_picture
 
 .restart

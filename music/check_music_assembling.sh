@@ -1,9 +1,10 @@
 #!/bin/bash
+set -e
 
 # Try to find why replay is broken
 
-basm PlayerAkm.asm -o player.basm
-rasm PlayerAkm.asm -o player.rasm && mv player.rasm.bin player.rasm
+basm PlayerAkm_basm.asm -o player.basm
+rasm PlayerAkm_original.asm -o player.rasm && mv player.rasm.bin player.rasm
 
 if diff player.basm player.rasm 
 then
@@ -24,6 +25,18 @@ else
 	echo "Too bad: rasm and basm assemble the music differently" >&2
 	exit -1
 fi
+
+basm lookool_akm.asm -o lookool_akm.basm
+rasm lookool_akm.asm -o lookool_akm.rasm && mv lookool_akm.rasm.bin lookool_akm.rasm
+
+if diff lookool_akm.basm lookool_akm.rasm 
+then
+	echo "Great rasm  and basm assemble the music the same way"
+else
+	echo "Too bad: rasm and basm assemble the music differently" >&2
+	exit -1
+fi
+
 
 
 # listen the two versions of the music. they seem good on both sides

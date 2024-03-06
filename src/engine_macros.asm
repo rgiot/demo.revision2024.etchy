@@ -62,11 +62,103 @@ macro ENGINE_INIT
 	ld hl, music_data
 	call PLY_AKM_Init
 
-	call engine.draw_shadows
+	;call engine.draw_shadows
 
 endm
 
+macro ENGINE_DRAW_SHADOW
 
+	if SHADOW_IN_GREY
+		SHADOW1 = 0b00001010; + 0b01010101
+		SHADOW2 = 0b00000101; + 0b10101010 
+	else
+		SHADOW1 = 0b00001010 + 0b01010101
+		SHADOW2 = 0b00000101 + 0b10101010 
+	endif
+
+	; horizontal shadow
+	ld a, SHADOW1  ; red/black
+	ld hl, SCREEN_MEMORY_ADDRESS + 24*80 + 6*0x800
+	ld de, hl : inc de
+	ld bc, 80-1
+	ld (hl), a
+	ldir
+	
+	if ENABLE_DOUBLE_SHADOW
+		if SHADOW_IN_GREY
+			ld a, SHADOW2  ; black/red rra failed :()
+		else
+			ld a, SHADOW2  ; black/red
+		endif
+		ld hl, SCREEN_MEMORY_ADDRESS	+ 0x800 + 24*80 + 6*0x800
+		ld de, hl : inc de
+		ld bc, 80-1
+		ld (hl), a
+		ldir
+	endif
+	
+
+
+	; vertical shadow
+	if ENABLE_DOUBLE_SHADOW
+		if SHADOW_IN_GREY
+			SHADOW1 = 0b00000010 + 0b00000000
+			SHADOW2 = 0b00000001 + 0b00000000
+		else
+			SHADOW1 = 0b00000010 + 0b00010001
+			SHADOW2 = 0b00000001 + 0b00100010
+		endif
+		ld b, 25*8/2 - 1 
+		ld hl, SCREEN_MEMORY_ADDRESS + 80-1 ;+ 0x800 ;+ 0x800
+	else
+		SHADOW1 = 0b00000001
+		SHADOW2 = 0b00010001
+		ld b, 25*8/2 - 1
+		ld hl, SCREEN_MEMORY_ADDRESS + 80-1 ;+ 0x800
+	endif
+
+
+	ld de, 0xc050
+.init_screen_table_loop
+			ld a, SHADOW1 : ld (hl), a
+			ld a,8 
+			add h 
+			ld h,a 
+			jr nc, .endbc261
+			add hl,de
+.endbc261			
+
+			ld a, SHADOW2  : ld (hl), a
+			ld a,8 
+			add h 
+			ld h,a 
+			jr nc, .endbc262
+			add hl,de
+.endbc262			
+	djnz .init_screen_table_loop
+
+	/*
+			 ld a, SHADOW1 : ld (de), a
+
+	if ENABLE_DOUBLE_SHADOW
+				 			ex de, hl 
+
+				ld a,8 
+				add h 
+				ld h,a 
+				jr nc, .endbc263
+				ld bc,#c050
+				add hl,bc 
+.endbc263			
+			 ex de, hl
+
+			 ld a, SHADOW2 : ld (de), a
+
+	endif
+*/
+
+
+endm
 
 macro ENGINE_MAIN
 
@@ -95,9 +187,13 @@ start
 		out (c), c: out (c), h : inc c
 		out (c), c: out (c), l
 
+
+	ENGINE_DRAW_SHADOW (void)
+
 	call engine.state_drawing
 .state_routine_address equ $-2
 	call PLY_AKM_Play ; XXX no interrupt must happens but the whole 4k disable interrupts
+
 
 
 

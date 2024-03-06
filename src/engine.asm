@@ -29,107 +29,6 @@ module engine
 
 
 
-draw_shadows
-
-	if SHADOW_IN_GREY
-		SHADOW1 = 0b00001010; + 0b01010101
-		SHADOW2 = 0b00000101; + 0b10101010 
-	else
-		SHADOW1 = 0b00001010 + 0b01010101
-		SHADOW2 = 0b00000101 + 0b10101010 
-	endif
-
-	; horizontal shadow
-	ld a, SHADOW1  ; red/black
-	ld hl, SCREEN_MEMORY_ADDRESS + 24*80 + 6*0x800
-	ld de, hl : inc de
-	ld bc, 80-1
-	ld (hl), a
-	ldir
-	
-	if ENABLE_DOUBLE_SHADOW
-		if SHADOW_IN_GREY
-			rra
-		else
-			ld a, SHADOW2  ; black/red
-		endif
-		ld hl, SCREEN_MEMORY_ADDRESS	+ 0x800 + 24*80 + 6*0x800
-		ld de, hl : inc de
-		ld bc, 80-1
-		ld (hl), a
-		ldir
-	endif
-	
-
-
-	; vertical shadow
-	if ENABLE_DOUBLE_SHADOW
-		if SHADOW_IN_GREY
-			SHADOW1 = 0b00000010 + 0b00000000
-			SHADOW2 = 0b00000001 + 0b00000000
-		else
-			SHADOW1 = 0b00000010 + 0b00010001
-			SHADOW2 = 0b00000001 + 0b00100010
-		endif
-		ld b, 25*8/2 - 1 
-		ld hl, SCREEN_MEMORY_ADDRESS + 80-1 ;+ 0x800 ;+ 0x800
-	else
-		SHADOW1 = 0b00000001
-		SHADOW2 = 0b00010001
-		ld b, 25*8/2 - 1
-		ld hl, SCREEN_MEMORY_ADDRESS + 80-1 ;+ 0x800
-	endif
-
-
-	breakpoint
-.init_screen_table_loop
-		push bc
-			 ld a, SHADOW1 : ld (hl), a
-
-
-				ld a,8 
-				add h 
-				ld h,a 
-				jr nc, .endbc261
-				ld bc,#c050
-				add hl,bc 
-.endbc261			
-
-			 ld a, SHADOW2  : ld (hl), a
-
-
-				ld a,8 
-				add h 
-				ld h,a 
-				jr nc, .endbc262
-				ld bc,#c050
-				add hl,bc 
-.endbc262			
-		pop bc
-	djnz .init_screen_table_loop
-
-	/*
-			 ld a, SHADOW1 : ld (de), a
-
-	if ENABLE_DOUBLE_SHADOW
-				 			ex de, hl 
-
-				ld a,8 
-				add h 
-				ld h,a 
-				jr nc, .endbc263
-				ld bc,#c050
-				add hl,bc 
-.endbc263			
-			 ex de, hl
-
-			 ld a, SHADOW2 : ld (de), a
-
-	endif
-*/
-
-
-	ret
 
 ;;
 ; Does nothing during a while
@@ -196,7 +95,7 @@ state_shake
 
 	endif
 
-	call draw_shadows
+;	call draw_shadows
 
 	ld hl, (.start_clean_address)
 	ld a, h : or l : ret nz ; we have no yet browsed the whole image

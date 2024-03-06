@@ -30,6 +30,7 @@ module engine
 
 
 draw_shadows
+
 	if SHADOW_IN_GREY
 		SHADOW1 = 0b00001010; + 0b01010101
 		SHADOW2 = 0b00000101; + 0b10101010 
@@ -40,30 +41,28 @@ draw_shadows
 
 	; horizontal shadow
 	ld a, SHADOW1  ; red/black
-	ld hl, SCREEN_MEMORY_ADDRESS
-	
-	if ENABLE_DOUBLE_SHADOW
-		push af, hl
-		ld a, SHADOW2  ; black/red
-		ld hl, SCREEN_MEMORY_ADDRESS	+ 0x800
-
-
-		ld de, hl : inc de
-		ld bc, 80-1
-		ld (hl), a
-		ldir
-
-		pop hl, af
-	endif
-	
+	ld hl, SCREEN_MEMORY_ADDRESS + 24*80 + 6*0x800
 	ld de, hl : inc de
 	ld bc, 80-1
 	ld (hl), a
 	ldir
+	
+	if ENABLE_DOUBLE_SHADOW
+		if SHADOW_IN_GREY
+			rra
+		else
+			ld a, SHADOW2  ; black/red
+		endif
+		ld hl, SCREEN_MEMORY_ADDRESS	+ 0x800 + 24*80 + 6*0x800
+		ld de, hl : inc de
+		ld bc, 80-1
+		ld (hl), a
+		ldir
+	endif
+	
+
 
 	; vertical shadow
-
-
 	if ENABLE_DOUBLE_SHADOW
 		if SHADOW_IN_GREY
 			SHADOW1 = 0b00000010 + 0b00000000
@@ -72,13 +71,13 @@ draw_shadows
 			SHADOW1 = 0b00000010 + 0b00010001
 			SHADOW2 = 0b00000001 + 0b00100010
 		endif
-		ld b, 25*8/2 - 1 - 1
-		ld de, SCREEN_MEMORY_ADDRESS + 80-1 + 0x800 + 0x800
+		ld b, 25*8/2 - 1 
+		ld de, SCREEN_MEMORY_ADDRESS + 80-1 ;+ 0x800 ;+ 0x800
 	else
 		SHADOW1 = 0b00000001
 		SHADOW2 = 0b00010001
 		ld b, 25*8/2 - 1
-		ld de, SCREEN_MEMORY_ADDRESS + 80-1 + 0x800
+		ld de, SCREEN_MEMORY_ADDRESS + 80-1 ;+ 0x800
 	endif
 
 .init_screen_table_loop
@@ -111,6 +110,8 @@ draw_shadows
 
 		pop bc
 	djnz .init_screen_table_loop
+
+	/*
 			 ld a, SHADOW1 : ld (de), a
 
 	if ENABLE_DOUBLE_SHADOW
@@ -128,6 +129,8 @@ draw_shadows
 			 ld a, SHADOW2 : ld (de), a
 
 	endif
+*/
+
 
 	ret
 

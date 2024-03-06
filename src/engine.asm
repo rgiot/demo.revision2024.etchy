@@ -72,19 +72,20 @@ draw_shadows
 			SHADOW2 = 0b00000001 + 0b00100010
 		endif
 		ld b, 25*8/2 - 1 
-		ld de, SCREEN_MEMORY_ADDRESS + 80-1 ;+ 0x800 ;+ 0x800
+		ld hl, SCREEN_MEMORY_ADDRESS + 80-1 ;+ 0x800 ;+ 0x800
 	else
 		SHADOW1 = 0b00000001
 		SHADOW2 = 0b00010001
 		ld b, 25*8/2 - 1
-		ld de, SCREEN_MEMORY_ADDRESS + 80-1 ;+ 0x800
+		ld hl, SCREEN_MEMORY_ADDRESS + 80-1 ;+ 0x800
 	endif
 
+
+	breakpoint
 .init_screen_table_loop
 		push bc
-			 ld a, SHADOW1 : ld (de), a
+			 ld a, SHADOW1 : ld (hl), a
 
-			ex de, hl 
 
 				ld a,8 
 				add h 
@@ -93,11 +94,9 @@ draw_shadows
 				ld bc,#c050
 				add hl,bc 
 .endbc261			
-			 ex de, hl
 
-			 ld a, SHADOW2  : ld (de), a
+			 ld a, SHADOW2  : ld (hl), a
 
-			 			ex de, hl 
 
 				ld a,8 
 				add h 
@@ -106,8 +105,6 @@ draw_shadows
 				ld bc,#c050
 				add hl,bc 
 .endbc262			
-			 ex de, hl
-
 		pop bc
 	djnz .init_screen_table_loop
 

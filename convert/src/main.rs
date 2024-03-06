@@ -396,7 +396,6 @@ impl<'g> PicCompleteGraphPath<'g> {
             .filter(|&&c| c != start)
             .map(|coord| {
                 let n = self.g.get_node_index(coord).unwrap(); // get the node at the given end coordinate
-                dbg!(&self.solution, &n, &coord);
                 let idx = self.solution.iter().position(|n2| n == *n2).unwrap(); // get its position in the current solution
 
                 // 1st rotation to move the end node to the end

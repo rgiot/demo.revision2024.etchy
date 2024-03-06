@@ -135,15 +135,45 @@ select_new_picture
 	ld (select_new_picture+1), hl
 
 	ex de, hl
-	jp  prepare_new_picture
+;	jp  prepare_new_picture moved just here
 
+;;
+; setp up the various variables to be able to start a new pic
+; Input: 
+;  -HL: address
+prepare_new_picture
+	ld (compute_next_point.picture_address), hl ; save the address of the picture
+
+	; retore various flags
+	ld a, 1
+	ld (compute_next_point.first_flag), a
+	if SELECTED_DATA_ENCODING != DATA_ENCODING3
+		ld (compute_next_point.current_repetition_counter), a
+	endif
+
+
+	ld bc, VIEWING_DURATION + 1 : dec bc : ld (state_wait.wait_count), bc ; XXX extra opcodes for better  crunch !!!
+
+	;ld hl, unaligned_data.shake_table : ld (state_shake.table_address), hl
+	ld hl, state_drawing : ld (start.state_routine_address), hl
+	ld hl, aligned_data.trace_buffer : ld (cover_previous_trace.buffer_pointer), hl : ld (store_current_point_in_trace.buffer_pointer), hl
+
+	ld hl, aligned_data.trace_buffer : ld de, hl : inc de : ld bc, 256 : ld (hl), 0xff : ldir
+
+	; allow to draw the trace
+	xor a : ld (state_drawing.state_drawing_draw_trace_ret_opcode_address), a
+
+	; restore shaker stuff
+	ld a, 0x2e : ld (start.horizontal_position_value_address), a
+	ld hl, 0xc000 : ld (state_shake.start_clean_address), hl
+	ret
 
 ;;
 ; Handle the drawing of the picture
 state_drawing
 .state_drawing_recover_trace
 	ld a, high(aligned_data.pixel_lut_pen3) : ld (plot_current_point.lut_for_pen), a
-	call cover_previous_trace
+	call cover_previous_trace ; TODO remove this call and replace it by a macro
 
 
 .state_drawing_draw_before_trace
@@ -231,36 +261,6 @@ store_current_point_in_trace
        ret
 
 
-;;
-; setp up the various variables to be able to start a new pic
-; Input: 
-;  -HL: address
-prepare_new_picture
-	ld (compute_next_point.picture_address), hl ; save the address of the picture
-
-	; retore various flags
-	ld a, 1
-	ld (compute_next_point.first_flag), a
-	if SELECTED_DATA_ENCODING != DATA_ENCODING3
-		ld (compute_next_point.current_repetition_counter), a
-	endif
-
-
-	ld bc, VIEWING_DURATION + 1 : dec bc : ld (state_wait.wait_count), bc ; XXX extra opcodes for better  crunch !!!
-
-	;ld hl, unaligned_data.shake_table : ld (state_shake.table_address), hl
-	ld hl, state_drawing : ld (start.state_routine_address), hl
-	ld hl, aligned_data.trace_buffer : ld (cover_previous_trace.buffer_pointer), hl : ld (store_current_point_in_trace.buffer_pointer), hl
-
-	ld hl, aligned_data.trace_buffer : ld de, hl : inc de : ld bc, 256 : ld (hl), 0xff : ldir
-
-	; allow to draw the trace
-	xor a : ld (state_drawing.state_drawing_draw_trace_ret_opcode_address), a
-
-	; restore shaker stuff
-	ld a, 0x2e : ld (start.horizontal_position_value_address), a
-	ld hl, 0xc000 : ld (state_shake.start_clean_address), hl
-	ret
 
 
 ;;

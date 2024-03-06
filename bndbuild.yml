@@ -6,7 +6,7 @@
   cmd: xfer 192.168.1.26 -y etch_a_sketch.sna
 
 - tgt: etch_a_sketch.sna etch.o etch_header.o etch_a_sketch.sym etch.dsk 
-  dep: src/commands.asm  src/engine.asm src/engine_macros.asm  src/main.asm convert/*.asm src/music.asm music/*.asm baston_multiple.o revision.o
+  dep: src/commands.asm  src/engine.asm src/engine_macros.asm  src/main.asm convert/*.asm src/music.asm music/*.asm baston_multiple.o revision.o src/config.asm
   cmd: 
     - basm -I src main.asm --sna -o etch_a_sketch.sna --override -DLINKED_VERSION=0
     - basm -I src main.asm --lst etch_a_sketch.lst --sym etch_a_sketch.sym -DLINKED_VERSION=1

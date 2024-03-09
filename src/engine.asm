@@ -16,7 +16,7 @@ TRACE_SIZE equ 2
 VIEWING_DURATION equ  50*5
 
 PEN0 equ 0x40
-PEN1 equ 0x4b
+PEN1 equ 0x5b ;0x4b
 PEN2 equ 0x5c ;0x4c
 PEN3 equ 0x54
 
@@ -183,7 +183,7 @@ state_drawing
 	repeat NB_DRAWN_PER_FRAME - TRACE_SIZE
 ;.pixels_loop1
 ;	push bc
-		call compute_next_point
+		call compute_next_point ; TODO use only one call for both of them ?
 		call plot_current_point
 ;	pop bc
 ;	djnz .pixels_loop1

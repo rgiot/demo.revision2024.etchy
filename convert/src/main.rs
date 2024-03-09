@@ -423,7 +423,8 @@ impl<'g> PicCompleteGraphPath<'g> {
             self.solution.first().cloned(),
             "BUG the path does not start as expected"
         );
-        eprintln!("Cost after  selecting the end {}", self.cost());
+        let cost_selected = self.cost();
+        eprintln!("Cost after  selecting the end {}", cost_selected);
 
         // optimize the path by always keeping the last node fixed
         // the optimisation is done 4 times to try to overcome a low quality
@@ -439,7 +440,9 @@ impl<'g> PicCompleteGraphPath<'g> {
             self.solution.first().cloned(),
             "BUG the path does not start as expected"
         );
-        eprintln!("Cost after optimizing the end {}", self.cost());
+        let cost_selected_optimised = self.cost();
+        assert!(cost_selected_optimised <= cost_selected);
+        eprintln!("Cost after optimizing the end {}", cost_selected_optimised);
     }
 
     /// Try to optimize the path

@@ -6,7 +6,7 @@
   cmd: xfer 192.168.1.26 -y etch_a_sketch.sna
 
 - tgt: etch_a_sketch.sna etch.o etch_header.o etch_a_sketch.sym etch.dsk 
-  dep: src/commands.asm  src/engine.asm src/engine_macros.asm  src/main.asm convert/*.asm src/music.asm music/*.asm baston_multiple.o revision.o src/config.asm
+  dep: src/commands.asm  src/engine.asm src/engine_macros.asm  src/main.asm convert/*.asm src/music.asm music/*.asm baston_multiple.o revision_logo.o src/config.asm
   cmd: 
     - basm -I src main.asm --sna -o etch_a_sketch.sna --override -DLINKED_VERSION=0
     - basm -I src main.asm --lst etch_a_sketch.lst --sym etch_a_sketch.sym -DLINKED_VERSION=1
@@ -44,11 +44,11 @@
     - basm -I src pictures/baston_multiple.asm -o baston_multiple.o
 
 
-- tgt: pictures/revision.asm
-  dep: pictures/revisiona.png pictures/revisionb.png pictures/revisionc.png pictures/revisiond.png
-  cmd: extern ./tools/convert --euclidean pictures/revisiona.png pictures/revisionb.png pictures/revisionc.png pictures/revisiond.png pictures/revision.asm
-- tgt: revision.o
-  dep: pictures/revision.asm src/commands.asm
-  cmd: basm -I src pictures/revision.asm -o revision.o
+- tgt: pictures/revision_logo.asm
+  dep: pictures/revision_logoa1.png pictures/revision_logoa2.png  pictures/revision_logob.png pictures/revision_logoc.png pictures/revision_logod.png pictures/revision_logoe.png pictures/revision_logof.png pictures/revision_logog.png
+  cmd: extern ./tools/convert --euclidean pictures/revision_logoa1.png pictures/revision_logoa2.png  pictures/revision_logob.png pictures/revision_logoc.png pictures/revision_logod.png pictures/revision_logoe.png pictures/revision_logof.png  pictures/revision_logog.png pictures/revision_logo.asm
+- tgt: revision_logo.o
+  dep: pictures/revision_logo.asm src/commands.asm
+  cmd: basm -I src pictures/revision_logo.asm -o revision_logo.o
 
 

@@ -71,6 +71,9 @@ macro ENGINE_DRAW_SHADOW
 	if SHADOW_IN_GREY
 		SHADOW1 = 0b00001010; + 0b01010101
 		SHADOW2 = 0b00000101; + 0b10101010 
+	else if SHADOW_IN_PEN_COLOR
+		SHADOW1 = 0b11110000
+		SHADOW2 = 0b11110000
 	else
 		SHADOW1 = 0b00001010 + 0b01010101
 		SHADOW2 = 0b00000101 + 0b10101010 
@@ -87,7 +90,7 @@ macro ENGINE_DRAW_SHADOW
 	if ENABLE_DOUBLE_SHADOW
 		if SHADOW_IN_GREY
 			ld a, SHADOW2  ; black/red rra failed :()
-		else
+		else if !SHADOW_IN_PEN_COLOR
 			ld a, SHADOW2  ; black/red
 		endif
 		ld hl, SCREEN_MEMORY_ADDRESS	+ 0x800 + 24*80 + 6*0x800
@@ -95,6 +98,22 @@ macro ENGINE_DRAW_SHADOW
 		ld bc, 80-1
 		ld (hl), a
 		ldir
+
+
+		if SHADOW_IN_PEN_COLOR ; we double it
+			ld hl, SCREEN_MEMORY_ADDRESS	+ 0x800 + 24*80 + 4*0x800 
+			ld de, hl : inc de
+			ld bc, 80-1
+			ld (hl), a
+			ldir
+			ld hl, SCREEN_MEMORY_ADDRESS	+ 0x800 + 24*80 + 3*0x800 
+			ld de, hl : inc de
+			ld bc, 80-1
+			ld (hl), a
+		ldir
+
+		endif
+
 	endif
 	
 
@@ -104,6 +123,9 @@ macro ENGINE_DRAW_SHADOW
 		if SHADOW_IN_GREY
 			SHADOW1 = 0b00000010 + 0b00000000
 			SHADOW2 = 0b00000001 + 0b00000000
+		else if SHADOW_IN_PEN_COLOR
+			SHAWDOW1 = 00110000
+			SHAWDOW1 = 00110000
 		else
 			SHADOW1 = 0b00000010 + 0b00010001
 			SHADOW2 = 0b00000001 + 0b00100010
@@ -197,5 +219,5 @@ start
 
 
 
-	jr .frame_loop
+	jp .frame_loop
 endm

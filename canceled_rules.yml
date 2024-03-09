@@ -94,3 +94,14 @@
     - basm -I src pictures/baston_multiple_0.asm -o baston_multiple_0.o
     - basm -I src pictures/baston_multiple_1.asm -o baston_multiple_1.o
     - basm -I src pictures/baston_multiple_2.asm -o baston_multiple_2.o
+
+
+
+- tgt: pictures/revision.asm
+  dep: pictures/revisiona.png pictures/revisionb.png pictures/revisionc.png pictures/revisiond.png
+  cmd: extern ./tools/convert --euclidean pictures/revisiona.png pictures/revisionb.png pictures/revisionc.png pictures/revisiond.png pictures/revision.asm
+- tgt: revision.o
+  dep: pictures/revision.asm src/commands.asm
+  cmd: basm -I src pictures/revision.asm -o revision.o
+
+

@@ -53,7 +53,7 @@ BINARY_START
 ;	incbin "croco1.o"
 ;stonks:
 	;incbin "stonks1.o"
-revision: incbin "revision.o"
+revision: incbin "revision_logo.o"
 baston: incbin "baston_multiple.o"
 ;baston1: incbin "baston_multiple_0.o"
 ;baston2: incbin "baston_multiple_1.o"

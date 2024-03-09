@@ -66,6 +66,33 @@ macro ENGINE_INIT
 
 endm
 
+
+macro ENGINE_DRAW_CORNERS
+if ENABLE_ROUND_CORNERS
+
+	; top left
+	ld bc, 0b00001100*256 + 0b0001000
+	ld hl, SCREEN_MEMORY_ADDRESS : ld (hl), b
+	ld hl, SCREEN_MEMORY_ADDRESS + 0x800 : ld (hl), c
+
+	; bottom left
+	ld bc, 0b00111100*256 + 0b01111000
+	ld hl, SCREEN_MEMORY_ADDRESS + 24*80 + 7*0x800 : ld (hl), b
+	ld hl, SCREEN_MEMORY_ADDRESS + 24*80 + 6*0x800 : ld (hl), c
+
+	; top right
+	ld bc, 0b11000011*256 + 0b11100001
+	ld hl, SCREEN_MEMORY_ADDRESS + 79 : ld (hl), b
+	ld hl, SCREEN_MEMORY_ADDRESS + 79 + 0x800 : ld (hl), c
+
+	; bottom right
+	ld hl, SCREEN_MEMORY_ADDRESS + 24*80 + 7*0x800 + 79 : ld (hl), b
+	ld hl, SCREEN_MEMORY_ADDRESS + 24*80 + 6*0x800 + 79 : ld (hl), c
+
+
+endif
+endm
+
 macro ENGINE_DRAW_SHADOW
 
 	if SHADOW_IN_GREY
@@ -130,8 +157,14 @@ macro ENGINE_DRAW_SHADOW
 			SHADOW1 = 0b00000010 + 0b00010001
 			SHADOW2 = 0b00000001 + 0b00100010
 		endif
-		ld b, 25*8/2 - 1 
-		ld hl, SCREEN_MEMORY_ADDRESS + 80-1 ;+ 0x800 ;+ 0x800
+
+		if ENABLE_ROUND_CORNERS
+			ld b, 25*8/2 - 1 - 2
+			ld hl, SCREEN_MEMORY_ADDRESS + 80-1 + 0x800 + 0x800
+		else
+			ld b, 25*8/2 - 1 
+			ld hl, SCREEN_MEMORY_ADDRESS + 80-1 ;+ 0x800 ;+ 0x800
+		endif
 	else
 		SHADOW1 = 0b00000001
 		SHADOW2 = 0b00010001
@@ -140,8 +173,8 @@ macro ENGINE_DRAW_SHADOW
 	endif
 
 
-	ld de, 0xc050
-.init_screen_table_loop
+	ld de, 0xc050 
+.shadow_loop
 			ld a, SHADOW1 : ld (hl), a
 			ld a,8 
 			add h 
@@ -157,7 +190,7 @@ macro ENGINE_DRAW_SHADOW
 			jr nc, .endbc262
 			add hl,de
 .endbc262			
-	djnz .init_screen_table_loop
+	djnz .shadow_loop
 
 	/*
 			 ld a, SHADOW1 : ld (de), a
@@ -179,6 +212,9 @@ macro ENGINE_DRAW_SHADOW
 	endif
 */
 
+
+
+	ENGINE_DRAW_CORNERS (void)
 
 endm
 

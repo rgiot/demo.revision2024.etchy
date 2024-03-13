@@ -5,14 +5,14 @@
   dep: sna
   cmd: xfer 192.168.1.26 -y etch_a_sketch.sna
 
-- tgt: etch_a_sketch.sna etch.o etch_header.o etch_a_sketch.sym etch.dsk 
+- tgt: etch_a_sketch.sna etch.o etch_header.o etch_frame.o etch_a_sketch.sym etch.dsk 
   dep: src/commands.asm  src/engine.asm src/engine_macros.asm  src/main.asm convert/*.asm src/music.asm music/*.asm baston_multiple.o revision_logo.o src/config.asm
   cmd: 
     - basm -I src main.asm --sna -o etch_a_sketch.sna --override -DLINKED_VERSION=0
     - basm -I src main.asm --lst etch_a_sketch.lst --sym etch_a_sketch.sym -DLINKED_VERSION=1
 
 - tgt: bootstrap.o bootstrap.sym
-  dep: src/bootstrap.asm etch.o
+  dep: src/bootstrap.asm src/deshrink.asm etch.o etch_a_sketch.sym 
   cmd: basm -I src bootstrap.asm --sym bootstrap.sym
 
 - tgt: etch4k etch4k.dsk 

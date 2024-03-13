@@ -13,7 +13,6 @@
 
 
 	org 0x0000
-BINARY_START
 
 AMSDOS_HEADER
 ; Standard expected content
@@ -37,12 +36,12 @@ AMSDOS_HEADER
 	ld sp, 0x4000
 	ld hl, 0xc9fb : ld (0x38), hl
 
-	; Do some init
-	ld bc, 0x7f10 : ld hl, PEN0*256 + PEN2
-	xor a
-	out (c), c : out (c), l
-	out (c), a : out (c), h
-
+	; Install frame code and execute it
+	ld ix, crunched_frame
+	ld de, FRAME_ADDRESS
+	call shrinkler_decrunch
+	call embedded_boostrap_init
+ 
 
 	; Install the demo code
 	ld ix, crunched_data 	; the real content of the file, outside of the header

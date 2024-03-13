@@ -71,12 +71,12 @@ macro ENGINE_DRAW_CORNERS
 if ENABLE_ROUND_CORNERS
 
 	; top left
-	ld bc, 0b00001100*256 + 0b0001000
+	ld bc, 0b00111100*256 + 0b01111000
 	ld hl, SCREEN_MEMORY_ADDRESS : ld (hl), b
 	ld hl, SCREEN_MEMORY_ADDRESS + 0x800 : ld (hl), c
 
 	; bottom left
-	ld bc, 0b00111100*256 + 0b01111000
+	ld bc, 0b00001100*256 + 0b00001000
 	ld hl, SCREEN_MEMORY_ADDRESS + 24*80 + 7*0x800 : ld (hl), b
 	ld hl, SCREEN_MEMORY_ADDRESS + 24*80 + 6*0x800 : ld (hl), c
 
@@ -86,6 +86,7 @@ if ENABLE_ROUND_CORNERS
 	ld hl, SCREEN_MEMORY_ADDRESS + 79 + 0x800 : ld (hl), c
 
 	; bottom right
+	ld bc, 0b11000011*256 + 0b11100001
 	ld hl, SCREEN_MEMORY_ADDRESS + 24*80 + 7*0x800 + 79 : ld (hl), b
 	ld hl, SCREEN_MEMORY_ADDRESS + 24*80 + 6*0x800 + 79 : ld (hl), c
 
@@ -108,7 +109,7 @@ macro ENGINE_DRAW_SHADOW
 
 	; horizontal shadow
 	ld a, SHADOW1  ; red/black
-	ld hl, SCREEN_MEMORY_ADDRESS + 24*80 + 6*0x800
+	ld hl, SCREEN_MEMORY_ADDRESS ;+ 24*80 + 6*0x800
 	ld de, hl : inc de
 	ld bc, 80-1
 	ld (hl), a
@@ -120,7 +121,7 @@ macro ENGINE_DRAW_SHADOW
 		else if !SHADOW_IN_PEN_COLOR
 			ld a, SHADOW2  ; black/red
 		endif
-		ld hl, SCREEN_MEMORY_ADDRESS	+ 0x800 + 24*80 + 6*0x800
+		ld hl, SCREEN_MEMORY_ADDRESS	+ 0x800 ; + 24*80 + 6*0x800
 		ld de, hl : inc de
 		ld bc, 80-1
 		ld (hl), a
@@ -128,12 +129,12 @@ macro ENGINE_DRAW_SHADOW
 
 
 		if SHADOW_IN_PEN_COLOR ; we double it
-			ld hl, SCREEN_MEMORY_ADDRESS	+ 0x800 + 24*80 + 4*0x800 
+			ld hl, SCREEN_MEMORY_ADDRESS	+ 0x800 ;+ 24*80 + 4*0x800 
 			ld de, hl : inc de
 			ld bc, 80-1
 			ld (hl), a
 			ldir
-			ld hl, SCREEN_MEMORY_ADDRESS	+ 0x800 + 24*80 + 3*0x800 
+			ld hl, SCREEN_MEMORY_ADDRESS	+ 0x800 + 0x800 ;24*80 + 3*0x800 
 			ld de, hl : inc de
 			ld bc, 80-1
 			ld (hl), a
@@ -160,7 +161,7 @@ macro ENGINE_DRAW_SHADOW
 
 		if ENABLE_ROUND_CORNERS
 			ld b, 25*8/2 - 1 - 2
-			ld hl, SCREEN_MEMORY_ADDRESS + 80-1 + 0x800 + 0x800
+			ld hl, SCREEN_MEMORY_ADDRESS + 80-1 + 0x800 + 0x800 + 0x800
 		else
 			ld b, 25*8/2 - 1 
 			ld hl, SCREEN_MEMORY_ADDRESS + 80-1 ;+ 0x800 ;+ 0x800
@@ -236,19 +237,9 @@ start
 	out (c), c : inc b : out (c), a
 
 
-.set_color
-		ld bc, 0x7f00
-		ld hl, PEN0*256 + PEN1
-		out (c), c: out (c), h : inc c
-		out (c), c: out (c), l : inc c
-		ld hl, PEN2*256+PEN3
-		out (c), c: out (c), h : inc c
-		out (c), c: out (c), l
+	call draw_frame
 
-
-	ENGINE_DRAW_SHADOW (void)
-
-	call engine.state_drawing
+	call engine.state_shake ;engine.state_drawing
 .state_routine_address equ $-2
 	call PLY_AKM_Play ; XXX no interrupt must happens but the whole 4k disable interrupts
 

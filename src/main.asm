@@ -9,32 +9,62 @@
 		NOEXPORT
 		EXPORT DATA_MOVED_IN_HEADER_START
 		EXPORT PEN0, PEN1, PEN2, PEN3
+		EXPORT draw_frame, BINARY_START, embedded_boostrap_init
 	endif
 
 ; Set to true when not generated alone
 
 
-	org 0x4000
-	run $
-
-
-
 	include "inner://crtc.asm"
 	include once "engine_macros.asm"
+
+
+	org 0x4000
+	run BINARY_START
+
+
+FRAME_START
+draw_frame
+	ENGINE_DRAW_SHADOW (void)
+	ret
+
+embedded_boostrap_init
+
+
+
+	ld bc, 0x7f10 
+	ld hl, PEN2*256+PEN3
+	out (c), c: out (c), h 
+	ld c, 0x00 + 3: 
+	out (c), c: out (c), l : dec c
+	out (c), c: out (c), h : dec c
+
+	ld hl, PEN0*256 + PEN1
+	out (c), c: out (c), l : dec c
+	out (c), c: out (c), h
+
+	jp draw_frame
+FRAME_END
+
+
+
 
 BINARY_START
 
 	if LINKED_VERSION
 		ENGINE_INIT (void)
+		ld bc, 0x7f00 : out (c), c : ld a, PEN0 : out (c), a
 	else
 		di
 			ld hl, 0xc9fb : ld (0x38), hl
 			ENGINE_INIT (void)
+			call embedded_boostrap_init
 		ld sp, $
 	endif
 
 	
 	call engine.select_new_picture
+	ld hl, engine.state_shake : ld (start.state_routine_address), hl ; ensure we start by cleaning screen
 	ENGINE_MAIN (void)
 
 	include "music.asm"
@@ -108,8 +138,8 @@ unaligned_data
 		dw engine.select_new_picture : dw baston2
 		dw engine.state_wait : dw baston3	
 	else
-		dw revision
 		dw baston
+		dw revision
 	endif
 	dw 00
 
@@ -146,9 +176,10 @@ VERY_LASTE_BYTE equ aligned_data + 6*256
 
 
 	if LINKED_VERSION
-		SAVE "etch.o", BINARY_START, BINARY_END-BINARY_START ; Here data are missing, they will be included within the header
+		SAVE "etch.o", BINARY_START, BINARY_END-BINARY_START ; Here data are missing, they will be included within the header. As well as frame drawing
+		SAVE "etch_frame.o", FRAME_START, FRAME_END-FRAME_START ; Frame drawing code
 		SAVE "etch_header.o", DATA_MOVED_IN_HEADER_START, DATA_END-DATA_MOVED_IN_HEADER_START ; Data that are included within the header
 	else
-		SAVE "ETCH.BIN", BINARY_START, DATA_END-BINARY_START, AMSDOS ; Here we save a file that contains everything and works properly
-		SAVE "ETCH.BIN", BINARY_START, DATA_END-BINARY_START, DSK, "etch.dsk" ; Here we save a file that contains everything and works properly
+		SAVE "ETCH.BIN", FRAME_START, DATA_END-FRAME_START, AMSDOS ; Here we save a file that contains everything and works properly
+		SAVE "ETCH.BIN", FRAME_START, DATA_END-FRAME_START, DSK, "etch.dsk" ; Here we save a file that contains everything and works properly
 	endif

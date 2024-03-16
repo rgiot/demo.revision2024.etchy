@@ -70,7 +70,7 @@ endm
 
 macro ENGINE_DRAW_CORNERS
 if ENABLE_ROUND_CORNERS
-	if True
+	if False
 		; top left
 		ld bc, 0b00111100*256 + 0b01111000
 		ld hl, SCREEN_MEMORY_ADDRESS : ld (hl), b
@@ -92,25 +92,28 @@ if ENABLE_ROUND_CORNERS
 		ld hl, SCREEN_MEMORY_ADDRESS + 24*80 + 6*0x800 + 79 : ld (hl), c
 	else
 		ld de, 0x800	
+
+
+		; bottom left
+		ld bc, 0b00001100*256 + 0b00001000
+		ld hl, SCREEN_MEMORY_ADDRESS + 24*80 + 6*0x800 : ld (hl), c
+		add hl, de : ld (hl), b
+
 		; top left
 		ld bc, 0b00111100*256 + 0b01111000
 		ld hl, SCREEN_MEMORY_ADDRESS : ld (hl), b
 		add hl, de : ld (hl), c
-
-		; bottom left
-		ld bc, 0b00001100*256 + 0b00001000
-		ld hl, SCREEN_MEMORY_ADDRESS + 24*80 + 7*0x800 : ld (hl), b
-		sbc hl, de : ld (hl), c
 
 		; top right
 		ld bc, 0b11000011*256 + 0b11100001
 		ld hl, SCREEN_MEMORY_ADDRESS + 79 : ld (hl), b
 		add hl, de : ld (hl), c
 
+
 		; bottom right
-		ld bc, 0b11000011*256 + 0b11100001
-		ld hl, SCREEN_MEMORY_ADDRESS + 24*80 + 7*0x800 + 79 : ld (hl), b
-		sbc hl, de : ld (hl), c
+		;ld bc, 0b11000011*256 + 0b11100001
+		ld hl, SCREEN_MEMORY_ADDRESS + 24*80 + 6*0x800 + 79 : ld (hl), c
+		add hl, de : ld (hl), b
 	endif
 
 endif

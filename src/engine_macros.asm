@@ -185,7 +185,7 @@ macro ENGINE_DRAW_SHADOW
 		endif
 
 		if ENABLE_ROUND_CORNERS
-			ld b, 25*8/2 - 1 - 2
+			ld b, 25*8/2 - 1 - 2 + 1
 			ld hl, SCREEN_MEMORY_ADDRESS + 80-1 + 0x800 + 0x800 + 0x800
 		else
 			ld b, 25*8/2 - 1 
@@ -217,6 +217,8 @@ macro ENGINE_DRAW_SHADOW
 			add hl,de
 .endbc262			
 	djnz .shadow_loop
+
+
 
 	/*
 			 ld a, SHADOW1 : ld (de), a

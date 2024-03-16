@@ -4,7 +4,7 @@ set -e
 # Try to find why replay is broken
 
 basm PlayerAkm_basm.asm -o player.basm
-rasm PlayerAkm_original.asm -o player.rasm && mv player.rasm.bin player.rasm
+rasm PlayerAkm.asm -o player.rasm && mv player.rasm.bin player.rasm
 
 if diff player.basm player.rasm 
 then
@@ -26,8 +26,8 @@ else
 	exit -1
 fi
 
-basm lookool_akm.asm -o lookool_akm.basm
-rasm lookool_akm.asm -o lookool_akm.rasm && mv lookool_akm.rasm.bin lookool_akm.rasm
+basm Lookool.asm -o lookool_akm.basm
+rasm Lookool.asm -o lookool_akm.rasm && mv lookool_akm.rasm.bin lookool_akm.rasm
 
 if diff lookool_akm.basm lookool_akm.rasm 
 then
@@ -37,8 +37,6 @@ else
 	exit -1
 fi
 
-
-
 # listen the two versions of the music. they seem good on both sides
-rasm  test_replay.asm  && AceDL rasmoutput.sna
-basm  test_replay.asm  --sna -o basmoutput.sna && AceDL basmoutput.sna
+rasm  test_replay.asm 
+basm  test_replay.asm  --sna -o basmoutput.sna

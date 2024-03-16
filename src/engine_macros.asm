@@ -58,6 +58,7 @@ macro ENGINE_INIT
 	endif
 
 .init_music
+	BREAKPOINT
 	xor a
 	ld hl, music_data
 	call PLY_AKM_Init

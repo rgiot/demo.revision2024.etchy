@@ -267,7 +267,7 @@ PLY_AKM_Init:
                                 inc hl
                                 ENDIF ;PLY_CFG_UseEffect_PitchTable
                         ELSE
-dknr3:  ld de,4
+dknr3 (void):  ld de,4
         add hl,de
                         ENDIF ;PLY_CFG_UseEffects
                         
@@ -309,7 +309,7 @@ PLY_AKM_InitVars_Loop:
         ;A is considered 0!
         ld hl,PLY_AKM_Track1_Data
         ld de,PLY_AKM_Track1_Data + 1
-dknr3:  ld bc,PLY_AKM_Track3_Data_End - PLY_AKM_Track1_Data - 1
+dknr3 (void):  ld bc,PLY_AKM_Track3_Data_End - PLY_AKM_Track1_Data - 1
         ld (hl),a
         ldir
         
@@ -336,7 +336,7 @@ dknr3:  ld bc,PLY_AKM_Track3_Data_End - PLY_AKM_Track1_Data - 1
         
         ;If sound effects, clears the SFX state.
         IFDEF PLY_AKM_MANAGE_SOUND_EFFECTS
-dknr3:          ld hl,0
+dknr3 (void):          ld hl,0
                 ld (PLY_AKM_Channel1_SoundEffectData),hl
                 ld (PLY_AKM_Channel2_SoundEffectData),hl
                 ld (PLY_AKM_Channel3_SoundEffectData),hl
@@ -347,7 +347,7 @@ dknr3:          ld hl,0
                 ld ix,PLY_AKM_RegistersForRom           ;Source.
                 ld iy,PLY_AKM_Registers_RetTable        ;Destination.
                 ld bc,PLY_AKM_SendPsgRegister
-dknr3:          ld de,4
+dknr3 (void):          ld de,4
 PLY_AKM_InitRom_Loop:
                 ld a,(ix)                 ;Gets the register.
                 ld h,a
@@ -389,7 +389,7 @@ PLY_AKM_InitRom_WriteEndCode:
         ;Bit 6 if R13/AfterPop the end DW to encode. Exclusive to bit 7.
         IFDEF PLY_AKM_Rom
 PLY_AKM_RegistersForRom:
-dkbs:
+dkbs (void):
                 db 8, 0, 1, 9, 2, 3, 10, 4, 5
                 IFDEF PLY_AKM_USE_NoiseRegister          ;CONFIG SPECIFIC
                         db 6
@@ -399,12 +399,12 @@ dkbs:
                 ELSE
                         db 7, 11, 12 + 64     ;13 is NOT declared, special case.
                 ENDIF
-dkbe:
+dkbe (void):
         ENDIF
 
 ;Addresses where to put the header data.
 PLY_AKM_InitVars_Start:
-dkps:
+dkps (void):
         dw PLY_AKM_NoteIndexTable + PLY_AKM_Offset1b
         dw PLY_AKM_NoteIndexTable + PLY_AKM_Offset1b + 1
         dw PLY_AKM_TrackIndex + PLY_AKM_Offset1b
@@ -418,7 +418,7 @@ dkps:
         dw PLY_AKM_DefaultStartInstrumentInTracks + PLY_AKM_Offset1b
         dw PLY_AKM_DefaultStartWaitInTracks + PLY_AKM_Offset1b
         dw PLY_AKM_FlagNoteAndEffectInCell + PLY_AKM_Offset1b
-dkpe:
+dkpe (void):
 PLY_AKM_InitVars_End:
 
 
@@ -478,14 +478,14 @@ PLY_AKM_PatternRemainingHeight: ld a,0              ;Height. If 0, end of the pa
         ;New pattern. Reads the Linker.
 PLY_AKM_Linker:
         IFNDEF PLY_AKM_Rom
-dknr3:
+dknr3 (void):
 PLY_AKM_TrackIndex: ld de,0              ;DE' points on the Track Index. Useful when new Tracks are found.
         ELSE
         ld de,(PLY_AKM_TrackIndex)
         ENDIF
         exx
         IFNDEF PLY_AKM_Rom
-dknr3:
+dknr3 (void):
 PLY_AKM_PtLinker: ld hl,0
         ELSE
         ld hl,(PLY_AKM_PtLinker)
@@ -582,9 +582,9 @@ PLY_AKM_LinkerSetRemainingHeight:
 ;---------------------------------
 PLY_AKM_ReadLine:
         IFNDEF PLY_AKM_Rom
-dknr3:
+dknr3 (void):
 PLY_AKM_PtInstruments: ld de,0
-dknr3:
+dknr3 (void):
 PLY_AKM_NoteIndexTable: ld bc,0
         ELSE
         ld de,(PLY_AKM_PtInstruments)
@@ -658,14 +658,14 @@ PLY_AKM_SendPsg:
         ld sp,PLY_AKM_Registers_RetTable
 
         IFDEF PLY_AKM_HARDWARE_CPC
-dknr3:  ld bc,#f680
+dknr3 (void):  ld bc,#f680
         ld a,#c0
-dknr3:  ld de,#f4f6
+dknr3 (void):  ld de,#f4f6
         out (c),a	;#f6c0          ;Madram's trick requires to start with this. out (c),b works, but will activate K7's relay! Not clean.
         ENDIF
 
         IFDEF PLY_AKM_HARDWARE_SPECTRUM_OR_PENTAGON
-dknr3:  ld de,#bfff
+dknr3 (void):  ld de,#bfff
         ld c,#fd
         ENDIF
 
@@ -728,7 +728,7 @@ PLY_AKM_SetReg13Old: cp 0
 PLY_AKM_SendPsgRegisterEnd:
 
         IFNDEF PLY_AKM_Rom
-dknr3:
+dknr3 (void):
 PLY_AKM_SaveSP: ld sp,0
         ELSE
         ld sp,(PLY_AKM_SaveSP)
@@ -1538,7 +1538,7 @@ PLY_AKM_CalculatePeriodForBaseNote:
                 ;       BC modified.
 
                 ;Finds the octave.
-dknr3:          ld bc,255 * 256 + 12            ;B = Octave (>=0). Will be increased just below.
+dknr3 (void):   ld bc,255 * 256 + 12            ;B = Octave (>=0). Will be increased just below.
 PLY_AKM_FindOctave_Loop:
                 inc b           ;Next octave.
                 sub c
@@ -1768,6 +1768,7 @@ PLY_AKM_EffectPitchUpDown_Deactivated:
 PLY_AKM_EffectArpeggioTable:
         call PLY_AKM_EffectReadIfEscape         ;Makes sure the data is 0-14, else 15 means: read the next escape value.
         ld (ix + PLY_AKM_Data_OffsetIsArpeggioTableUsed),a       ;Sets to 0 if the Arpeggio is stopped, or any other value if it starts.
+        or a
         jr z,PLY_AKM_EffectArpeggioTable_Stop
 
         ;Gets the Arpeggio address.
@@ -1777,7 +1778,7 @@ PLY_AKM_EffectArpeggioTable:
                 ld h,0
         ;BC is modified, will be restored below.
         IFNDEF PLY_AKM_Rom
-dknr3:
+dknr3 (void):
 PLY_AKM_PtArpeggios: ld bc,0            ;Arpeggio table does not encode entry 0, but the pointer points two bytes earlier to compensate.
         ELSE
         ld bc,(PLY_AKM_PtArpeggios)
@@ -1816,6 +1817,7 @@ PLY_AKM_EffectArpeggioTable_Stop:
 PLY_AKM_EffectPitchTable:
         call PLY_AKM_EffectReadIfEscape         ;Makes sure the data is 0-14, else 15 means: read the next escape value.
         ld (ix + PLY_AKM_Data_OffsetIsPitchTableUsed),a  ;Sets to 0 if the Pitch is stopped, or any other value if it starts.
+        or a
         jp z,PLY_AKM_RT_ReadEffect_Return
         
         ;Gets the Pitch address.
@@ -1825,7 +1827,7 @@ PLY_AKM_EffectPitchTable:
                 ld h,0
         ;BC is modified, will be restored below.
         IFNDEF PLY_AKM_Rom
-dknr3:
+dknr3 (void):
 PLY_AKM_PtPitches: ld bc,0            ;Pitch table does not encode entry 0, but the pointer points two bytes earlier to compensate.
         ELSE
         ld bc,(PLY_AKM_PtPitches)
@@ -1883,9 +1885,9 @@ PLY_AKM_EffectReadIfEscape:
         ;Macro to declare a DB if RAM player, or an increasing EQU for ROM player.
         MACRO PLY_AKM_db label
                 IFNDEF PLY_AKM_Rom
-                        dkbs
+                        dkbs (void)
                         {label} db 0
-                        dkbe
+                        dkbe (void)
                 ELSE
                         {label} equ PLY_AKM_ROM_Buffer + counter
                         counter = counter + 1
@@ -1895,9 +1897,9 @@ PLY_AKM_EffectReadIfEscape:
         ;Macro to declare a DW if RAM player, or an increasing (of two bytes) EQU for ROM player.
         MACRO PLY_AKM_dw label
                 IFNDEF PLY_AKM_Rom
-                        dkws
+                        dkws (void)
                         {label} dw 0
-                        dkwe
+                        dkwe (void)
                 ELSE
                         {label} equ PLY_AKM_ROM_Buffer + counter
                         counter = counter + 2
@@ -2131,9 +2133,9 @@ PLY_AKM_Data_OffsetCurrentPitchTableValue:       equ PLY_AKM_Track1_CurrentPitch
 ;Data block for channel 2.
         IFNDEF PLY_AKM_Rom
 PLY_AKM_Track2_Data:
-dkbs:
+dkbs (void):
         ds PLY_AKM_Track1_Data_Size, 0
-dkbe:
+dkbe (void):
 PLY_AKM_Track2_Data_End:
         ELSE
 PLY_AKM_Track2_Data: equ PLY_AKM_Track1_Data + PLY_AKM_Track1_Data_Size
@@ -2149,9 +2151,9 @@ PLY_AKM_Track2_EscapeWait: equ PLY_AKM_Track2_Data + PLY_AKM_Data_OffsetEscapeWa
 ;Data block for channel 3.
         IFNDEF PLY_AKM_Rom
 PLY_AKM_Track3_Data:
-dkbs:
+dkbs (void):
         ds PLY_AKM_Track1_Data_Size, 0
-dkbe:
+dkbe (void):
 PLY_AKM_Track3_Data_End:
         ELSE
 PLY_AKM_Track3_Data: equ PLY_AKM_Track2_Data + PLY_AKM_Track1_Data_Size
@@ -2195,95 +2197,95 @@ PLY_AKM_Track3_EscapeWait: equ PLY_AKM_Track3_Data + PLY_AKM_Data_OffsetEscapeWa
         IFNDEF PLY_AKM_Rom              ;For ROM, a table is generated.
 PLY_AKM_Registers_RetTable:
 PLY_AKM_Track1_Registers:
-dkbs:   db 8
+dkbs (void):   db 8
 PLY_AKM_Track1_Volume: db 0
-dkbe:
-dkps:   dw PLY_AKM_SendPsgRegister
-dkpe:
+dkbe (void):
+dkps (void):   dw PLY_AKM_SendPsgRegister
+dkpe (void):
 
-dkbs:   db 0
+dkbs (void):   db 0
 PLY_AKM_Track1_SoftwarePeriodLSB: db 0
-dkbe:
-dkps:   dw PLY_AKM_SendPsgRegister
-dkpe:
+dkbe (void):
+dkps (void):   dw PLY_AKM_SendPsgRegister
+dkpe (void):
 
-dkbs:   db 1
+dkbs (void):   db 1
 PLY_AKM_Track1_SoftwarePeriodMSB: db 0
-dkbe:
-dkps:   dw PLY_AKM_SendPsgRegister
-dkpe:
+dkbe (void):
+dkps (void):   dw PLY_AKM_SendPsgRegister
+dkpe (void):
 
 PLY_AKM_Track2_Registers:
-dkbs:   db 9
+dkbs (void):   db 9
 PLY_AKM_Track2_Volume: db 0
-dkbe:
-dkps:   dw PLY_AKM_SendPsgRegister
-dkpe:
+dkbe (void):
+dkps (void):   dw PLY_AKM_SendPsgRegister
+dkpe (void):
 
-dkbs:   db 2
+dkbs (void):   db 2
 PLY_AKM_Track2_SoftwarePeriodLSB: db 0
-dkbe:
-dkps:   dw PLY_AKM_SendPsgRegister
-dkpe:
+dkbe (void):
+dkps (void):   dw PLY_AKM_SendPsgRegister
+dkpe (void):
 
-dkbs:   db 3
+dkbs (void):   db 3
 PLY_AKM_Track2_SoftwarePeriodMSB: db 0
-dkbe:
-dkps:   dw PLY_AKM_SendPsgRegister
-dkpe:
+dkbe (void):
+dkps (void):   dw PLY_AKM_SendPsgRegister
+dkpe (void):
 
 
 PLY_AKM_Track3_Registers:
-dkbs:   db 10
+dkbs (void):   db 10
 PLY_AKM_Track3_Volume: db 0
-dkbe:
-dkps:   dw PLY_AKM_SendPsgRegister
-dkpe:
+dkbe (void):
+dkps (void):   dw PLY_AKM_SendPsgRegister
+dkpe (void):
 
-dkbs:   db 4
+dkbs (void):   db 4
 PLY_AKM_Track3_SoftwarePeriodLSB: db 0
-dkbe:
-dkps:   dw PLY_AKM_SendPsgRegister
-dkpe:
+dkbe (void):
+dkps (void):   dw PLY_AKM_SendPsgRegister
+dkpe (void):
 
-dkbs:   db 5
+dkbs (void):   db 5
 PLY_AKM_Track3_SoftwarePeriodMSB: db 0
-dkbe:
-dkps:   dw PLY_AKM_SendPsgRegister
-dkpe:
+dkbe (void):
+dkps (void):   dw PLY_AKM_SendPsgRegister
+dkpe (void):
 
 ;Generic registers.
                         IFDEF PLY_AKM_USE_NoiseRegister          ;CONFIG SPECIFIC
-dkbs:   db 6
+dkbs (void):   db 6
 PLY_AKM_NoiseRegister: db 0
-dkbe:
-dkps:   dw PLY_AKM_SendPsgRegister
-dkpe:
+dkbe (void):
+dkps (void):   dw PLY_AKM_SendPsgRegister
+dkpe (void):
                         ENDIF ;PLY_AKM_USE_NoiseRegister
 
-dkbs:   db 7
+dkbs (void):   db 7
 PLY_AKM_MixerRegister: db 0
-dkbe:
+dkbe (void):
         IFDEF PLY_CFG_UseHardwareSounds         ;CONFIG SPECIFIC
-dkps:           dw PLY_AKM_SendPsgRegister
-dkpe:
+dkps (void):           dw PLY_AKM_SendPsgRegister
+dkpe (void):
         
-dkbs:           db 11
+dkbs (void):    db 11
 PLY_AKM_Reg11:  db 0
-dkbe:
-dkps:           dw PLY_AKM_SendPsgRegister
-dkpe:
+dkbe (void):
+dkps (void):           dw PLY_AKM_SendPsgRegister
+dkpe (void):
 
-dkbs:           db 12
+dkbs (void):    db 12
 PLY_AKM_Reg12:  db 0
-dkbe:
-dkps:           dw PLY_AKM_SendPsgRegisterR13
+dkbe (void):
+dkps (void):           dw PLY_AKM_SendPsgRegisterR13
                 ;This one is a trick to send the register after R13 is managed.
                 dw PLY_AKM_SendPsgRegisterAfterPop
-dkpe:
+dkpe (void):
         ENDIF ;PLY_CFG_UseHardwareSounds
-dkps:   dw PLY_AKM_SendPsgRegisterEnd
-dkpe:
+dkps (void):   dw PLY_AKM_SendPsgRegisterEnd
+dkpe (void):
 
         ENDIF ;PLY_AKM_Rom
 
@@ -2294,7 +2296,7 @@ PLY_AKM_Registers_OffsetSoftwarePeriodMSB: equ PLY_AKM_Track1_SoftwarePeriodMSB 
 
 ;The period table for the first octave only.
 PLY_AKM_PeriodTable:
-dkws:
+dkws (void):
         IFDEF PLY_AKM_HARDWARE_CPC
         ;PSG running to 1000000 Hz.
          dw 3822,3608,3405,3214,3034,2863,2703,2551,2408,2273,2145,2025          ; Octave 0.
@@ -2319,7 +2321,7 @@ dkws:
         ;PSG running to 1750000 Hz.
         dw 6689, 6314, 5959, 5625, 5309, 5011, 4730, 4464, 4214, 3977, 3754, 3543	; Octave 0.
         ENDIF
-dkwe:
+dkwe (void):
 PLY_AKM_End:
 
 

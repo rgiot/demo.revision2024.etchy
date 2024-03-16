@@ -267,7 +267,7 @@ PLY_AKM_Init:
                                 inc hl
                                 ENDIF ;PLY_CFG_UseEffect_PitchTable
                         ELSE
-dknr3:  ld de,4
+dknr3 (void):  ld de,4
         add hl,de
                         ENDIF ;PLY_CFG_UseEffects
                         
@@ -285,7 +285,7 @@ dknr3:  ld de,4
 
         ;Reads the header of the Subsong, copies the values inside the code via a table.
         ld ix,PLY_AKM_InitVars_Start
-        ld a, int((PLY_AKM_InitVars_End - PLY_AKM_InitVars_Start) / 2)
+        ld a,(PLY_AKM_InitVars_End - PLY_AKM_InitVars_Start) / 2
 PLY_AKM_InitVars_Loop:
         ld e,(ix + 0)
         ld d,(ix + 1)
@@ -389,7 +389,7 @@ PLY_AKM_InitRom_WriteEndCode:
         ;Bit 6 if R13/AfterPop the end DW to encode. Exclusive to bit 7.
         IFDEF PLY_AKM_Rom
 PLY_AKM_RegistersForRom:
-dkbs:
+dkbs (void):
                 db 8, 0, 1, 9, 2, 3, 10, 4, 5
                 IFDEF PLY_AKM_USE_NoiseRegister          ;CONFIG SPECIFIC
                         db 6
@@ -1538,7 +1538,7 @@ PLY_AKM_CalculatePeriodForBaseNote:
                 ;       BC modified.
 
                 ;Finds the octave.
-dknr3 (void):          ld bc,255 * 256 + 12            ;B = Octave (>=0). Will be increased just below.
+dknr3 (void):   ld bc,255 * 256 + 12            ;B = Octave (>=0). Will be increased just below.
 PLY_AKM_FindOctave_Loop:
                 inc b           ;Next octave.
                 sub c
@@ -1768,6 +1768,7 @@ PLY_AKM_EffectPitchUpDown_Deactivated:
 PLY_AKM_EffectArpeggioTable:
         call PLY_AKM_EffectReadIfEscape         ;Makes sure the data is 0-14, else 15 means: read the next escape value.
         ld (ix + PLY_AKM_Data_OffsetIsArpeggioTableUsed),a       ;Sets to 0 if the Arpeggio is stopped, or any other value if it starts.
+        or a
         jr z,PLY_AKM_EffectArpeggioTable_Stop
 
         ;Gets the Arpeggio address.
@@ -1816,6 +1817,7 @@ PLY_AKM_EffectArpeggioTable_Stop:
 PLY_AKM_EffectPitchTable:
         call PLY_AKM_EffectReadIfEscape         ;Makes sure the data is 0-14, else 15 means: read the next escape value.
         ld (ix + PLY_AKM_Data_OffsetIsPitchTableUsed),a  ;Sets to 0 if the Pitch is stopped, or any other value if it starts.
+        or a
         jp z,PLY_AKM_RT_ReadEffect_Return
         
         ;Gets the Pitch address.
@@ -2268,13 +2270,13 @@ dkbe (void):
 dkps (void):           dw PLY_AKM_SendPsgRegister
 dkpe (void):
         
-dkbs (void):           db 11
+dkbs (void):    db 11
 PLY_AKM_Reg11:  db 0
 dkbe (void):
 dkps (void):           dw PLY_AKM_SendPsgRegister
 dkpe (void):
 
-dkbs (void):           db 12
+dkbs (void):    db 12
 PLY_AKM_Reg12:  db 0
 dkbe (void):
 dkps (void):           dw PLY_AKM_SendPsgRegisterR13

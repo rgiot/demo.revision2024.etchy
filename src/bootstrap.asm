@@ -41,7 +41,7 @@ crunched_data
 	LZCLOSE
 
 message 
-	db 0x1c, 3, 0, 1 ; color
+	db 0x1c, 3, 1, 1 ; color
 	db 15, 3  ; Set pen
 	db 0x1f, 4, 2 
 	db "T"

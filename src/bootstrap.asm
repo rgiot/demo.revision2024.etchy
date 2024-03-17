@@ -15,7 +15,7 @@ BOOTSTRAP_START
 
 	ld hl, message
 .loop
-	ld a, (hl) : or a : jr z, .end
+	ld a, (hl) : cp 255 : jr z, .end
 	inc hl
 	call 0xbb5a
 	jr .loop
@@ -41,13 +41,54 @@ crunched_data
 	LZCLOSE
 
 message 
-	db 10,13
-	db 15, 3 ; Set pen
-	db 0x1f, 1, 20 ; Locate
-	db "J VAIS PE-TELECRAN", 10, 13
-	db "EXOCET - KRUSTY - TARGHAN", 10, 13
-	db "REVISION 2024"
-	db 0
+	db 0x1c, 3, 0, 1 ; color
+	db 15, 3  ; Set pen
+	db 0x1f, 4, 2 
+	db "T"
+	db 10, 8 , "A"
+	db 10, 8 , "R"
+	db 10, 8 , "G"
+	db 10, 8 , "H"
+	db 0x1f, 1, 7, "J VAIS PE-TELECRAN"
+	db 0x1f, 4, 8 ; Locate
+	db "N"
+
+	db 0x1f, 9, 8, "X"
+	db 10, 8, "O"
+	db 10, 8, "C"
+	db 10, 8, "E"
+	db 10, 8, "T"
+
+
+	db 0x1f, 16, 8, "E"
+	db 10, 8, "V"
+	db 10, 8, "I"
+	db 10, 8, "S"
+	db 10, 8, "I"
+	db 10, 8, "O"
+	db 10, 8, "N"
+	db 10
+	db 10, 8, "2"
+	db 10, 8, "0"
+	db 10, 8, "2"
+	db 10, 8, "4K"
+
+	db 0x1f, 13, 11, "KRUSTY"
+
+
+
+
+
+;	db 10,13
+;	db 15, 3 ; Set pen
+;	db 0x1f, 1, 20 ; Locate
+;	db "J VAIS PE-TELECRAN", 10, 13
+;	db "EXOCET"
+;	db 10
+;	db "A"
+;	db "KRUSTY", 10, 13
+;	db "REVISION 2024"
+	db 255
 
 deshrink_start
 	include "deshrink.asm" ; nothing can be put after because of the buffer

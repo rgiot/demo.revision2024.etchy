@@ -42,25 +42,30 @@ crunched_data
 
 message 
 	db 0x1c, 3, 1, 1 ; color
+	db 0x1c, 2, 1, 1 ; color
 	db 15, 3  ; Set pen
-	db 0x1f, 4, 2 
+	db 0x1f, 14, 5 
 	db "T"
 	db 10, 8 , "A"
 	db 10, 8 , "R"
 	db 10, 8 , "G"
 	db 10, 8 , "H"
-	db 0x1f, 1, 7, "J VAIS PE-TELECRAN"
-	db 0x1f, 4, 8 ; Locate
+	db 0x1f, 14, 11; Locate
 	db "N"
 
-	db 0x1f, 9, 8, "X"
+	db 0x1f, 19, 11, "X"
 	db 10, 8, "O"
 	db 10, 8, "C"
 	db 10, 8, "E"
 	db 10, 8, "T"
 
+	db 0x1f, 23, 14, "KRUSTY"
 
-	db 0x1f, 16, 8, "E"
+	db 15, 2  ; Set pen
+
+	db 0x1f, 11, 10, "J VAIS PE-TELECRAN"
+
+	db 0x1f, 26, 11, "E"
 	db 10, 8, "V"
 	db 10, 8, "I"
 	db 10, 8, "S"
@@ -73,7 +78,6 @@ message
 	db 10, 8, "2"
 	db 10, 8, "4K"
 
-	db 0x1f, 13, 11, "KRUSTY"
 
 
 

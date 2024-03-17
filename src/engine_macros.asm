@@ -264,14 +264,39 @@ start
 	out (c), c : inc b : out (c), a
 
 
-	call draw_frame
 
 	call engine.state_shake ;engine.state_drawing
 .state_routine_address equ $-2
+
 	call PLY_AKM_Play ; XXX no interrupt must happens but the whole 4k disable interrupts
+	
+	call draw_frame
 
 
 
 
 	jp .frame_loop
+endm
+
+
+
+macro HANDLE_RASTERS
+	; select the appropriate ink
+	ld bc, 0x7f03 : out (c), c
+	ld hl, unaligned_data.rasters_table
+
+	defs 10
+
+	ld a, RASTERS_HEIGHT
+.loop
+	defs 64 - 1 -3
+	dec a
+	jr nz, .loop
+
+	ld bc, 0x7f54 : out (c), c
+
+
+
+
+
 endm

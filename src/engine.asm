@@ -33,6 +33,13 @@ module engine
 ;;
 ; Does nothing during a while
 state_wait
+
+
+	if ENABLE_RASTERS
+		HANDLE_RASTERS (void)
+	endif
+
+
 	ld bc, VIEWING_DURATION + 1
 .wait_count equ $-2
 	dec bc
@@ -171,6 +178,7 @@ prepare_new_picture
 ;;
 ; Handle the drawing of the picture
 state_drawing
+
 .state_drawing_recover_trace
 	ld a, high(aligned_data.pixel_lut_pen3) : ld (plot_current_point.lut_for_pen), a
 	call cover_previous_trace ; TODO remove this call and replace it by a macro
@@ -239,6 +247,8 @@ cover_previous_trace
        pop af : ld (unaligned_data.x_pixel_pos), a
        pop af : ld (unaligned_data.x_byte_delta), a
        pop af : ld (unaligned_data.y), a
+
+
 
        ret
 

@@ -151,6 +151,12 @@ unaligned_data
 	db high(aligned_data.screen_addresses)
 .x_pixel_pos equ $  ;1
 .x_byte_delta equ $ + 1 ;1
+
+if ENABLE_RASTERS
+
+.rasters_table
+	defs RASTERS_HEIGHT, 0x54
+endif
 DATA_END
 
 

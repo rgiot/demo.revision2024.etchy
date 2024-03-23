@@ -65,7 +65,7 @@ getkind
 
     push de 
     ld b, 0x7f ;: out (c), c
-    ld de, 0x404b
+    ld de, PEN0*256 + PEN3
 .color equ $-2
     out (c), e
     ld a, e : ld e, d : ld d, a

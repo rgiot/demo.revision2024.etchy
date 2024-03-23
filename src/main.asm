@@ -43,6 +43,8 @@ embedded_boostrap_init
 	out (c), c: out (c), l : dec c
 	out (c), c: out (c), h
 
+	ld c, 3: out (c), c
+
 	jp draw_frame
 FRAME_END
 
@@ -53,7 +55,7 @@ BINARY_START
 
 	if LINKED_VERSION
 		ENGINE_INIT (void)
-		ld bc, 0x7f00 : out (c), c : ld a, PEN0 : out (c), a
+		ld bc, 0x7f03 : out (c), c : ld a, PEN3 : out (c), a
 	else
 		di
 			ld hl, 0xc9fb : ld (0x38), hl

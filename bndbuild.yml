@@ -34,6 +34,16 @@
   cmd: -rm etch_a_sketch.sna etch4k.sna etch4k.dsk
 
 
+- tgt: pictures/dent.asm
+  dep: pictures/dent.png
+  cmd: extern ./tools/convert --euclidean pictures/dent.png pictures/dent.asm
+- tgt: dent.o 
+  dep: pictures/dent.asm 
+  cmd: 
+    - basm -I src pictures/dent.asm -o dent.o
+
+
+
 
 - tgt: pictures/baston_multiple.asm 
   dep: pictures/bastona2.png pictures/bastonb1.png pictures/bastonb2.png pictures/bastonc1.png pictures/bastonc2.png pictures/bastonc3.png pictures/bastonc4.png pictures/bastonc5.png

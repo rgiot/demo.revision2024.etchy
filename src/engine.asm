@@ -16,7 +16,7 @@ TRACE_SIZE equ 2
 VIEWING_DURATION equ  50*5
 
 PEN0 equ 0x40
-PEN1 equ 0x46 ;0x4b
+PEN1 equ 0x46 ;0x4b ;;;
 PEN2 equ 0x5c ;0x4c
 PEN3 equ 0x54
 

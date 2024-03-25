@@ -1,5 +1,8 @@
 
 	include "etch_a_sketch.sym"
+
+
+	ENABLE_CROSSWORDS equ false
 	
 	NOEXPORT
 	EXPORT LOAD_ADDRESS, ADDRESS, FRAME_ADDRESS, BINARY_LEN
@@ -40,6 +43,11 @@ crunched_data
 		incbin "etch_header.o"
 	LZCLOSE
 
+
+
+
+	if ENABLE_CROSSWORDS
+
 message 
 	db 0x1c, 3, 1, 1 ; color
 	db 0x1c, 2, 1, 1 ; color
@@ -78,9 +86,12 @@ message
 	db 10, 8, "2"
 	db 10, 8, "4K"
 
+   else
+message 
+	db 15, 3  ; Set pen
+	db 0x1f, 15, 15, "DESHRINK"
 
-
-
+   endif
 
 
 ;	db 10,13

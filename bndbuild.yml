@@ -35,8 +35,8 @@
 
 
 - tgt: pictures/dent.asm
-  dep: pictures/dent.png
-  cmd: extern ./tools/convert --euclidean pictures/dent.png pictures/dent.asm
+  dep: pictures/denta.png pictures/dentb.png pictures/dentc.png pictures/dentd.png pictures/dente.png
+  cmd: extern ./tools/convert --euclidean pictures/denta.png pictures/dentb.png pictures/dentc.png pictures/dentd.png pictures/dente.png  pictures/dent.asm
 - tgt: dent.o 
   dep: pictures/dent.asm 
   cmd: 
@@ -46,8 +46,8 @@
 
 
 - tgt: pictures/baston_multiple.asm 
-  dep: pictures/bastona2.png pictures/bastonb1.png pictures/bastonb2.png pictures/bastonc1.png pictures/bastonc2.png pictures/bastonc3.png pictures/bastonc4.png pictures/bastonc5.png
-  cmd: extern ./tools/convert --euclidean pictures/bastona2.png pictures/bastonb1.png pictures/bastonb2.png  pictures/bastonc3.png pictures/bastonc2.png pictures/bastonc1.png pictures/bastonc4.png pictures/bastonc5.png  pictures/baston_multiple.asm 
+  dep: pictures/bastona2start.png pictures/bastona2.png  pictures/bastona2end.png  pictures/bastonb1.png pictures/bastonb2.png pictures/bastonc1.png pictures/bastonc2.png pictures/bastonc3.png pictures/bastonc4.png pictures/bastonc5.png pictures/bastonc6.png
+  cmd: extern ./tools/convert --euclidean  pictures/bastona2start.png   pictures/bastona2.png  pictures/bastona2end.png  pictures/bastonb1.png pictures/bastonb2.png  pictures/bastonc3.png pictures/bastonc2.png pictures/bastonc1.png pictures/bastonc4.png pictures/bastonc5.png  pictures/bastonc6.png pictures/baston_multiple.asm 
 - tgt: baston_multiple.o 
   dep: pictures/baston_multiple.asm 
   cmd: 

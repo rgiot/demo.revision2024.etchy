@@ -3,7 +3,7 @@
 
 - tgt: etch4k
   dep: TELECRAN
-  
+
 - tgt: m4
   dep: sna
   cmd: xfer 192.168.1.26 -y etch_a_sketch.sna
@@ -50,8 +50,8 @@
 
 
 - tgt: pictures/baston_multiple.asm 
-  dep: pictures/bastona2start.png pictures/bastona2.png  pictures/bastona2end.png  pictures/bastonb1.png pictures/bastonb2.png pictures/bastonc1.png pictures/bastonc2.png pictures/bastonc3.png pictures/bastonc4.png pictures/bastonc5.png pictures/bastonc6.png
-  cmd: extern ./tools/convert --euclidean  pictures/bastona2start.png   pictures/bastona2.png  pictures/bastona2end.png  pictures/bastonb1.png pictures/bastonb2.png  pictures/bastonc3.png pictures/bastonc2.png pictures/bastonc1.png pictures/bastonc4.png pictures/bastonc5.png  pictures/bastonc6.png pictures/baston_multiple.asm 
+  dep: pictures/bastona2start.png pictures/bastona2start2.png  pictures/bastona2.png  pictures/bastona2end.png  pictures/bastonb1.png pictures/bastonb2.png pictures/bastonc1.png pictures/bastonc2.png pictures/bastonc3.png pictures/bastonc4.png pictures/bastonc5.png pictures/bastonc6.png
+  cmd: extern ./tools/convert --euclidean  pictures/bastona2start.png pictures/bastona2start2.png   pictures/bastona2.png  pictures/bastona2end.png  pictures/bastonb1.png pictures/bastonb2.png  pictures/bastonc3.png pictures/bastonc2.png pictures/bastonc1.png pictures/bastonc4.png pictures/bastonc5.png  pictures/bastonc6.png pictures/baston_multiple.asm 
 - tgt: baston_multiple.o 
   dep: pictures/baston_multiple.asm 
   cmd: 

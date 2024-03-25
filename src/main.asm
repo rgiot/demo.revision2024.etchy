@@ -189,7 +189,7 @@ VERY_LASTE_BYTE equ aligned_data + 6*256
 		SAVE "etch.o", BINARY_START, BINARY_END-BINARY_START ; Here data are missing, they will be included within the header. As well as frame drawing
 		SAVE "etch_frame.o", FRAME_START, FRAME_END-FRAME_START ; Frame drawing code
 		SAVE "etch_header.o", DATA_MOVED_IN_HEADER_START, DATA_END-DATA_MOVED_IN_HEADER_START ; Data that are included within the header
-	else
+	else if !FINAL
 		SAVE "ETCH.BIN", FRAME_START, DATA_END-FRAME_START, AMSDOS ; Here we save a file that contains everything and works properly
 		SAVE "ETCH.BIN", FRAME_START, DATA_END-FRAME_START, DSK, "etch.dsk" ; Here we save a file that contains everything and works properly
 	endif

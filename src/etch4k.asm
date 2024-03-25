@@ -17,7 +17,7 @@
 AMSDOS_HEADER
 ; Standard expected content
 	org 0x00 : .user 	: db 0
-	org 0x01 : .fname 	: db "ETCH4K  "
+	org 0x01 : .fname 	: db "TELECRAN"
 	org 0x09 : .ext 	: db "   "
 	org 0x12 : .ftype 	: db 2
 	org 0x13 : .buffer	: dw 0x4000  ; Am I really supposed to do that ?
@@ -96,6 +96,5 @@ BINARY_END
 
 	PRINT "FINAL SIZE", $
 	PRINT "REMAINING BYTES: ", 4*1024-$
-
 
 	; 1946

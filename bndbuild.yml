@@ -1,6 +1,9 @@
 - tgt: sna
   dep: etch_a_sketch.sna
 
+- tgt: etch4k
+  dep: TELECRAN
+  
 - tgt: m4
   dep: sna
   cmd: xfer 192.168.1.26 -y etch_a_sketch.sna
@@ -15,11 +18,12 @@
   dep: src/bootstrap.asm src/deshrink.asm etch.o etch_a_sketch.sym 
   cmd: basm -I src bootstrap.asm --sym bootstrap.sym
 
-- tgt: etch4k etch4k.dsk 
+- tgt: TELECRAN TELECRAN.DSK 
   dep:  src/etch4k.asm bootstrap.o etch_header.o etch_a_sketch.sym etch.dsk
   cmd: 
-    - basm  -I src etch4k.asm -o etch4k --lst eth4k.lst
-    - disc etch.dsk add etch4k
+    - basm  -I src etch4k.asm -o TELECRAN --lst eth4k.lst
+    - disc TELECRAN.DSK format -f data42
+    - disc TELECRAN.DSK add TELECRAN
 
 - tgt: clean
   cmd:

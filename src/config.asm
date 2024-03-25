@@ -22,3 +22,6 @@ SIMPLE_CLEAN equ 0
 
 
 ENGINE_HANDLE_VIEW_PORT equ 0 ; set to 0 to disable code that check if pen goes outside of screen
+
+
+FINAL equ true

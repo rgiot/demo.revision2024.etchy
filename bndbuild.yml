@@ -9,7 +9,7 @@
   cmd: xfer 192.168.1.26 -y etch_a_sketch.sna
 
 - tgt: etch_a_sketch.sna etch.o etch_header.o etch_frame.o etch_a_sketch.sym etch.dsk 
-  dep: src/commands.asm  src/engine.asm src/engine_macros.asm  src/main.asm convert/*.asm src/music.asm music/*.asm baston_multiple.o revision_logo.o src/config.asm dent.o
+  dep: src/commands.asm  src/engine.asm src/engine_macros.asm  src/main.asm convert/*.asm src/music.asm music/*.asm baston_multiple.o revision_logo.o src/config.asm dent.o craquage.o
   cmd: 
     - basm -I src main.asm --sna -o etch_a_sketch.sna --override -DLINKED_VERSION=0
     - basm -I src main.asm --lst etch_a_sketch.lst --sym etch_a_sketch.sym -DLINKED_VERSION=1
@@ -39,12 +39,21 @@
 
 
 - tgt: pictures/dent.asm
-  dep: pictures/denta.png pictures/dentb.png pictures/dentc.png pictures/dentd.png pictures/dente.png
-  cmd: extern ./tools/convert --euclidean pictures/denta.png pictures/dentb.png pictures/dentc.png pictures/dentd.png pictures/dente.png  pictures/dent.asm
+  dep: pictures/dent4a.png pictures/dent4b.png
+  cmd: extern ./tools/convert --euclidean pictures/dent4a.png pictures/dent4b.png pictures/dent.asm
 - tgt: dent.o 
   dep: pictures/dent.asm 
   cmd: 
     - basm -I src pictures/dent.asm -o dent.o
+
+
+- tgt: pictures/craquage.asm
+  dep: pictures/craquage2.png 
+  cmd: extern ./tools/convert --euclidean pictures/craquage2.png pictures/craquage.asm
+- tgt: craquage.o 
+  dep: pictures/craquage.asm 
+  cmd: 
+    - basm -I src pictures/craquage.asm -o craquage.o
 
 
 
@@ -64,5 +73,13 @@
 - tgt: revision_logo.o
   dep: pictures/revision_logo.asm src/commands.asm
   cmd: basm -I src pictures/revision_logo.asm -o revision_logo.o
+
+
+- tgt: pictures/city.asm
+  dep: pictures/city.png 
+  cmd: extern ./tools/convert --euclidean pictures/city.png pictures/city.asm
+- tgt: city.o
+  dep: pictures/city.asm src/commands.asm
+  cmd: basm -I src pictures/city.asm -o city.o
 
 

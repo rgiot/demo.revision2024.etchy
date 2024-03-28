@@ -88,6 +88,8 @@ BINARY_START
 revision: incbin "revision_logo.o"
 baston: incbin "baston_multiple.o"
 dent: incbin "dent.o"
+craquage: incbin "craquage.o"
+;city: incbin "city.o"
 ;baston1: incbin "baston_multiple_0.o"
 ;baston2: incbin "baston_multiple_1.o"
 ;baston3: incbin "baston_multiple_2.o"
@@ -144,6 +146,7 @@ unaligned_data
 		dw dent
 		dw revision
 		dw baston
+		dw craquage
 	endif
 	dw 00
 

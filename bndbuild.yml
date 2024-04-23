@@ -2,7 +2,7 @@
   dep: etch_a_sketch.sna
 
 - tgt: etch4k
-  dep: TELECRAN
+  dep: GPT-LEC.RAN
 
 - tgt: m4
   dep: sna
@@ -18,12 +18,12 @@
   dep: src/bootstrap.asm src/deshrink.asm etch.o etch_a_sketch.sym 
   cmd: basm -I src bootstrap.asm --sym bootstrap.sym
 
-- tgt: TELECRAN TELECRAN.DSK 
+- tgt: GPT-LEC.RAN GPT_LECRAN.DSK 
   dep:  src/etch4k.asm bootstrap.o etch_header.o etch_a_sketch.sym etch.dsk
   cmd: 
-    - basm  -I src etch4k.asm -o TELECRAN --lst eth4k.lst
-    - disc TELECRAN.DSK format -f data42
-    - disc TELECRAN.DSK add TELECRAN
+    - basm  -I src etch4k.asm -o GPT-LEC.RAN --lst eth4k.lst
+    - disc GPT_LECRAN.DSK format -f data42
+    - disc GPT_LECRAN.DSK add GPT-LEC.RAN
 
 - tgt: clean
   cmd:

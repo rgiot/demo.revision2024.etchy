@@ -17,13 +17,12 @@ FRAME_ADDRESS equ draw_frame
 BOOTSTRAP_START
 
 	ld hl, message
+	ld b, 13
 .loop
-	ld a, (hl) : cp 255 : jr z, .end
-	inc hl
-	call 0xbb5a
-	jr .loop
-	
-.end
+		ld a, (hl)
+		inc hl
+		call 0xbb5a
+	djnz .loop
 
 
 	; real code is in the header
@@ -89,7 +88,7 @@ message
    else
 message 
 	db 15, 3  ; Set pen
-	db 0x1f, 15, 15, "DESHRINK"
+	db 0x1f, int((40-8)/2), 26/2, "DESHRINK"
 
    endif
 

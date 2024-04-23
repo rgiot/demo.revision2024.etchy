@@ -1,6 +1,7 @@
 DATA_ENCODING1 equ 1 ; 4 bits for the length and 4 bits for the directions (1 per directions)
 DATA_ENCODING2 equ 2 ; 5 bits for the length and 3 bits for the direction (u, d, l, r, ul, ur, dl, dr) <= default one
-DATA_ENCODING3 equ 3 ; 4 bits lost; 4 bits for direction1
+DATA_ENCODING3 equ 3 ; 4 bits lost; 4 bits for direction
+DATA_ENCODING equ 4; 2 bytes per displacement: 1 pour up/down 1 pour left/right
 
 
 SELECTED_DATA_ENCODING equ DATA_ENCODING3

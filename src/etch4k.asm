@@ -17,8 +17,8 @@
 AMSDOS_HEADER
 ; Standard expected content
 	org 0x00 : .user 	: db 0
-	org 0x01 : .fname 	: db "TELECRAN"
-	org 0x09 : .ext 	: db "   "
+	org 0x01 : .fname 	: db "GPT-LEC "
+	org 0x09 : .ext 	: db "RAN"
 	org 0x12 : .ftype 	: db 2
 	org 0x13 : .buffer	: dw 0x4000  ; Am I really supposed to do that ?
 	org 0x15 : .load 	: dw LOAD_ADDRESS

@@ -1,3 +1,5 @@
+Source code of "J'AI PÉ-TÉLÉCRAN" <https://www.pouet.net/prod.php?which=96575> ranked 4th at the oldskool intro of Revision 2024.
+
 # Tentative for a eatch-a-sketch 4k
 
 ## How to build the demo
